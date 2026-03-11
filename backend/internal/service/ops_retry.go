@@ -514,7 +514,7 @@ func (s *OpsService) selectAccountForRetry(ctx context.Context, reqType opsRetry
 		if s.openAIGatewayService == nil {
 			return nil, fmt.Errorf("openai gateway service not available")
 		}
-		return s.openAIGatewayService.SelectAccountWithLoadAwareness(ctx, groupID, "", model, excludedIDs)
+		return s.openAIGatewayService.SelectAccountWithLoadAwareness(ctx, groupID, "", model, excludedIDs, PlatformOpenAI)
 	case opsRetryTypeGeminiV1B, opsRetryTypeMessages:
 		if s.gatewayService == nil {
 			return nil, fmt.Errorf("gateway service not available")

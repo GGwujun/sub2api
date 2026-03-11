@@ -61,6 +61,14 @@ func ProvideRouter(
 
 // ProvideHTTPServer 提供 HTTP 服务器
 func ProvideHTTPServer(cfg *config.Config, router *gin.Engine) *http.Server {
+	// DEBUG: Log actual config values
+	log.Printf("[DEBUG] ProvideHTTPServer - Server.Port: %d, Server.Host: %s", cfg.Server.Port, cfg.Server.Host)
+	log.Printf("[DEBUG] ProvideHTTPServer - Address(): %s", cfg.Server.Address())
+	// Temporary fix: force port to 8899
+	if cfg.Server.Port == 3000 {
+		log.Printf("[DEBUG] Forcing port from 3000 to 8899")
+		cfg.Server.Port = 8899
+	}
 	httpHandler := http.Handler(router)
 
 	globalMaxSize := cfg.Server.MaxRequestBodySize

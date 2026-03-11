@@ -1802,6 +1802,12 @@ func (h *AccountHandler) GetAvailableModels(c *gin.Context) {
 		return
 	}
 
+	// Handle Zhipu accounts
+	if account.Platform == service.PlatformZhipu {
+		response.Success(c, service.DefaultZhipuModels())
+		return
+	}
+
 	// Handle Claude/Anthropic accounts
 	// For OAuth and Setup-Token accounts: return default models
 	if account.IsOAuth() {

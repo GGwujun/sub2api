@@ -768,6 +768,10 @@ func (a *Account) IsOpenAI() bool {
 	return a.Platform == PlatformOpenAI
 }
 
+func (a *Account) IsZhipu() bool {
+	return a.Platform == PlatformZhipu
+}
+
 func (a *Account) IsAnthropic() bool {
 	return a.Platform == PlatformAnthropic
 }
@@ -791,6 +795,48 @@ func (a *Account) GetOpenAIBaseURL() string {
 		}
 	}
 	return "https://api.openai.com"
+}
+
+func (a *Account) GetOpenAICompatibleBaseURL() string {
+	if a == nil || !a.IsOpenAI() {
+		return ""
+	}
+	if a.Type == AccountTypeAPIKey {
+		baseURL := strings.TrimSpace(a.GetCredential("base_url"))
+		if baseURL != "" {
+			return baseURL
+		}
+	}
+	return "https://api.openai.com"
+}
+
+func (a *Account) GetOpenAICompatibleAPIKey() string {
+	if a == nil || !a.IsOpenAI() || a.Type != AccountTypeAPIKey {
+		return ""
+	}
+	return a.GetCredential("api_key")
+}
+
+// GetZhipuBaseURL returns the base URL for Zhipu API
+func (a *Account) GetZhipuBaseURL() string {
+	if a == nil || !a.IsZhipu() {
+		return ""
+	}
+	if a.Type == AccountTypeAPIKey {
+		baseURL := strings.TrimSpace(a.GetCredential("base_url"))
+		if baseURL != "" {
+			return baseURL
+		}
+	}
+	return "https://open.bigmodel.cn/api/paas/v4"
+}
+
+// GetZhipuAPIKey returns the API key for Zhipu
+func (a *Account) GetZhipuAPIKey() string {
+	if a == nil || !a.IsZhipu() || a.Type != AccountTypeAPIKey {
+		return ""
+	}
+	return a.GetCredential("api_key")
 }
 
 func (a *Account) GetOpenAIAccessToken() string {

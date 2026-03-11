@@ -351,6 +351,7 @@ var ProviderSet = wire.NewSet(
 	wire.Bind(new(SoraClient), new(*SoraSDKClient)),
 	NewSoraGatewayService,
 	NewOpenAIGatewayService,
+	NewZhipuGatewayService,
 	NewOAuthService,
 	NewOpenAIOAuthService,
 	NewGeminiOAuthService,

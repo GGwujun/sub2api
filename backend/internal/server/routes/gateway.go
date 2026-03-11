@@ -45,7 +45,7 @@ func RegisterGatewayRoutes(
 	{
 		// /v1/messages: auto-route based on group platform
 		gateway.POST("/messages", func(c *gin.Context) {
-			if getGroupPlatform(c) == service.PlatformOpenAI {
+			if platform := getGroupPlatform(c); platform == service.PlatformOpenAI {
 				h.OpenAIGateway.Messages(c)
 				return
 			}
@@ -53,7 +53,7 @@ func RegisterGatewayRoutes(
 		})
 		// /v1/messages/count_tokens: OpenAI groups get 404
 		gateway.POST("/messages/count_tokens", func(c *gin.Context) {
-			if getGroupPlatform(c) == service.PlatformOpenAI {
+			if platform := getGroupPlatform(c); platform == service.PlatformOpenAI {
 				c.JSON(http.StatusNotFound, gin.H{
 					"type": "error",
 					"error": gin.H{
@@ -153,6 +153,19 @@ func RegisterGatewayRoutes(
 	}
 	// Sora 媒体代理（签名 URL，无需 API Key）
 	r.GET("/sora/media-signed/*filepath", h.SoraGateway.MediaProxySigned)
+
+	// Zhipu 专用路由（强制使用 zhipu 平台）
+	zhipuV1 := r.Group("/zhipu/v1")
+	zhipuV1.Use(bodyLimit)
+	zhipuV1.Use(clientRequestID)
+	zhipuV1.Use(opsErrorLogger)
+	zhipuV1.Use(middleware.ForcePlatform(service.PlatformZhipu))
+	zhipuV1.Use(gin.HandlerFunc(apiKeyAuth))
+	zhipuV1.Use(requireGroupAnthropic)
+	{
+		zhipuV1.POST("/chat/completions", h.ZhipuGateway.ChatCompletions)
+		zhipuV1.GET("/models", h.ZhipuGateway.Models)
+	}
 }
 
 // getGroupPlatform extracts the group platform from the API Key stored in context.

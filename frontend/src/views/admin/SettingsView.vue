@@ -1815,6 +1815,7 @@ const form = reactive<SettingsForm>({
   fallback_model_openai: 'gpt-4o',
   fallback_model_gemini: 'gemini-2.5-pro',
   fallback_model_antigravity: 'gemini-2.5-pro',
+  fallback_model_zhipu: 'glm-4',
   // Identity patch (Claude -> Gemini)
   enable_identity_patch: true,
   identity_patch_prompt: '',
@@ -2084,6 +2085,7 @@ async function saveSettings() {
       fallback_model_openai: form.fallback_model_openai,
       fallback_model_gemini: form.fallback_model_gemini,
       fallback_model_antigravity: form.fallback_model_antigravity,
+      fallback_model_zhipu: form.fallback_model_zhipu,
       enable_identity_patch: form.enable_identity_patch,
       identity_patch_prompt: form.identity_patch_prompt,
       min_claude_code_version: form.min_claude_code_version,

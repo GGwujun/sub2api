@@ -158,6 +158,27 @@
           </button>
           <button
             type="button"
+            @click="form.platform = 'zhipu'"
+            :class="[
+              'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
+              form.platform === 'zhipu'
+                ? 'bg-white text-indigo-600 shadow-sm dark:bg-dark-600 dark:text-indigo-400'
+                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+            ]"
+          >
+            <svg
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 6h14l-10 12h10" />
+            </svg>
+            Zhipu
+          </button>
+          <button
+            type="button"
             @click="form.platform = 'antigravity'"
             :class="[
               'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
@@ -2592,12 +2613,14 @@ const oauthStepTitle = computed(() => {
 const baseUrlHint = computed(() => {
   if (form.platform === 'openai' || form.platform === 'sora') return t('admin.accounts.openai.baseUrlHint')
   if (form.platform === 'gemini') return t('admin.accounts.gemini.baseUrlHint')
+  if (form.platform === 'zhipu') return t('admin.accounts.openai.baseUrlHint')
   return t('admin.accounts.baseUrlHint')
 })
 
 const apiKeyHint = computed(() => {
   if (form.platform === 'openai' || form.platform === 'sora') return t('admin.accounts.openai.apiKeyHint')
   if (form.platform === 'gemini') return t('admin.accounts.gemini.apiKeyHint')
+  if (form.platform === 'zhipu') return t('admin.accounts.openai.apiKeyHint')
   return t('admin.accounts.apiKeyHint')
 })
 
@@ -2949,12 +2972,14 @@ watch(
   () => form.platform,
   (newPlatform) => {
     // Reset base URL based on platform
-    apiKeyBaseUrl.value =
-      (newPlatform === 'openai' || newPlatform === 'sora')
-        ? 'https://api.openai.com'
-        : newPlatform === 'gemini'
-          ? 'https://generativelanguage.googleapis.com'
-          : 'https://api.anthropic.com'
+	apiKeyBaseUrl.value =
+		(newPlatform === 'openai' || newPlatform === 'sora')
+			? 'https://api.openai.com'
+			: newPlatform === 'gemini'
+				? 'https://generativelanguage.googleapis.com'
+				: newPlatform === 'zhipu'
+					? 'https://open.bigmodel.cn/api/paas/v4'
+				: 'https://api.anthropic.com'
     // Clear model-related settings
     allowedModels.value = []
     modelMappings.value = []
@@ -2976,13 +3001,17 @@ watch(
     if (newPlatform !== 'anthropic' && newPlatform !== 'antigravity') {
       interceptWarmupRequests.value = false
     }
-    if (newPlatform === 'sora') {
-      // 默认 OAuth，但允许用户选择 API Key
-      accountCategory.value = 'oauth-based'
-      addMethod.value = 'oauth'
-      form.type = 'oauth'
-      soraAccountType.value = 'oauth'
-    }
+	if (newPlatform === 'sora') {
+		// 默认 OAuth，但允许用户选择 API Key
+		accountCategory.value = 'oauth-based'
+		addMethod.value = 'oauth'
+		form.type = 'oauth'
+		soraAccountType.value = 'oauth'
+	}
+	if (newPlatform === 'zhipu') {
+		accountCategory.value = 'apikey'
+		form.type = 'apikey'
+	}
     if (newPlatform !== 'openai') {
       openaiPassthroughEnabled.value = false
       openaiOAuthResponsesWebSocketV2Mode.value = OPENAI_WS_MODE_OFF
@@ -3598,13 +3627,15 @@ const handleSubmit = async () => {
     }
   }
 
-  // Determine default base URL based on platform
-  const defaultBaseUrl =
-    form.platform === 'openai'
-      ? 'https://api.openai.com'
-      : form.platform === 'gemini'
-        ? 'https://generativelanguage.googleapis.com'
-        : 'https://api.anthropic.com'
+	// Determine default base URL based on platform
+	const defaultBaseUrl =
+		form.platform === 'openai'
+			? 'https://api.openai.com'
+			: form.platform === 'gemini'
+				? 'https://generativelanguage.googleapis.com'
+				: form.platform === 'zhipu'
+					? 'https://open.bigmodel.cn/api/paas/v4'
+					: 'https://api.anthropic.com'
 
   // Build credentials with optional model mapping
   const credentials: Record<string, unknown> = {

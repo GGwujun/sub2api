@@ -85,6 +85,10 @@ func (h *OpenAIGatewayHandler) Responses(c *gin.Context) {
 		h.errorResponse(c, http.StatusUnauthorized, "authentication_error", "Invalid API key")
 		return
 	}
+	platform := service.PlatformOpenAI
+	if apiKey.Group != nil && apiKey.Group.Platform != "" {
+		platform = apiKey.Group.Platform
+	}
 
 	subject, ok := middleware2.GetAuthSubjectFromContext(c)
 	if !ok {
@@ -219,7 +223,7 @@ func (h *OpenAIGatewayHandler) Responses(c *gin.Context) {
 	for {
 		// Select account supporting the requested model
 		reqLog.Debug("openai.account_selecting", zap.Int("excluded_account_count", len(failedAccountIDs)))
-		selection, scheduleDecision, err := h.gatewayService.SelectAccountWithScheduler(
+		selection, scheduleDecision, err := h.gatewayService.SelectAccountWithSchedulerForPlatform(
 			c.Request.Context(),
 			apiKey.GroupID,
 			previousResponseID,
@@ -227,6 +231,7 @@ func (h *OpenAIGatewayHandler) Responses(c *gin.Context) {
 			reqModel,
 			failedAccountIDs,
 			service.OpenAIUpstreamTransportAny,
+			platform,
 		)
 		if err != nil {
 			reqLog.Warn("openai.account_select_failed",
@@ -476,6 +481,10 @@ func (h *OpenAIGatewayHandler) Messages(c *gin.Context) {
 		h.anthropicErrorResponse(c, http.StatusUnauthorized, "authentication_error", "Invalid API key")
 		return
 	}
+	platform := service.PlatformOpenAI
+	if apiKey.Group != nil && apiKey.Group.Platform != "" {
+		platform = apiKey.Group.Platform
+	}
 
 	subject, ok := middleware2.GetAuthSubjectFromContext(c)
 	if !ok {
@@ -585,7 +594,7 @@ func (h *OpenAIGatewayHandler) Messages(c *gin.Context) {
 		// 清除上一次迭代的降级模型标记，避免残留影响本次迭代
 		c.Set("openai_messages_fallback_model", "")
 		reqLog.Debug("openai_messages.account_selecting", zap.Int("excluded_account_count", len(failedAccountIDs)))
-		selection, scheduleDecision, err := h.gatewayService.SelectAccountWithScheduler(
+		selection, scheduleDecision, err := h.gatewayService.SelectAccountWithSchedulerForPlatform(
 			c.Request.Context(),
 			apiKey.GroupID,
 			"", // no previous_response_id
@@ -593,6 +602,7 @@ func (h *OpenAIGatewayHandler) Messages(c *gin.Context) {
 			reqModel,
 			failedAccountIDs,
 			service.OpenAIUpstreamTransportAny,
+			platform,
 		)
 		if err != nil {
 			reqLog.Warn("openai_messages.account_select_failed",
@@ -609,7 +619,7 @@ func (h *OpenAIGatewayHandler) Messages(c *gin.Context) {
 					reqLog.Info("openai_messages.fallback_to_default_model",
 						zap.String("default_mapped_model", defaultModel),
 					)
-					selection, scheduleDecision, err = h.gatewayService.SelectAccountWithScheduler(
+					selection, scheduleDecision, err = h.gatewayService.SelectAccountWithSchedulerForPlatform(
 						c.Request.Context(),
 						apiKey.GroupID,
 						"",
@@ -617,6 +627,7 @@ func (h *OpenAIGatewayHandler) Messages(c *gin.Context) {
 						defaultModel,
 						failedAccountIDs,
 						service.OpenAIUpstreamTransportAny,
+						platform,
 					)
 					if err == nil && selection != nil {
 						c.Set("openai_messages_fallback_model", defaultModel)

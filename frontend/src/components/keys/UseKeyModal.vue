@@ -328,6 +328,8 @@ const platformDescription = computed(() => {
       return t('keys.useKeyModal.openai.description')
     case 'gemini':
       return t('keys.useKeyModal.gemini.description')
+    case 'zhipu':
+      return t('keys.useKeyModal.openai.description')
     case 'antigravity':
       return t('keys.useKeyModal.antigravity.description')
     default:
@@ -346,6 +348,10 @@ const platformNote = computed(() => {
         : t('keys.useKeyModal.openai.note')
     case 'gemini':
       return t('keys.useKeyModal.gemini.note')
+    case 'zhipu':
+      return activeTab.value === 'windows'
+        ? t('keys.useKeyModal.openai.noteWindows')
+        : t('keys.useKeyModal.openai.note')
     case 'antigravity':
       return activeClientTab.value === 'claude'
         ? t('keys.useKeyModal.antigravity.claudeNote')
@@ -384,6 +390,7 @@ const currentFiles = computed((): FileConfig[] => {
     return trimmed.endsWith('/v1') ? trimmed : `${trimmed}/v1`
   }
   const apiBase = ensureV1(baseRoot)
+  const zhipuBase = `${baseRoot}/zhipu/v1`
   const antigravityBase = ensureV1(`${baseRoot}/antigravity`)
   const antigravityGeminiBase = (() => {
     const trimmed = `${baseRoot}/antigravity`.replace(/\/+$/, '')
@@ -402,6 +409,8 @@ const currentFiles = computed((): FileConfig[] => {
         return [generateOpenCodeConfig('openai', apiBase, apiKey)]
       case 'gemini':
         return [generateOpenCodeConfig('gemini', geminiBase, apiKey)]
+      case 'zhipu':
+        return [generateOpenCodeConfig('zhipu', zhipuBase, apiKey)]
       case 'antigravity':
         return [
           generateOpenCodeConfig('antigravity-claude', antigravityBase, apiKey, 'opencode.json (Claude)'),
@@ -423,6 +432,8 @@ const currentFiles = computed((): FileConfig[] => {
       return generateOpenAIFiles(baseUrl, apiKey)
     case 'gemini':
       return [generateGeminiCliContent(baseUrl, apiKey)]
+    case 'zhipu':
+      return generateOpenAIFiles(zhipuBase, apiKey)
     case 'antigravity':
       if (activeClientTab.value === 'gemini') {
         return [generateGeminiCliContent(`${baseUrl}/antigravity`, apiKey)]
@@ -977,6 +988,293 @@ function generateOpenCodeConfig(platform: string, baseUrl: string, apiKey: strin
       }
     }
   }
+  const zhipuModels = {
+    'glm-5': {
+      name: 'GLM-5',
+      limit: {
+        context: 200000,
+        output: 8192
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-5-flash': {
+      name: 'GLM-5 Flash',
+      limit: {
+        context: 200000,
+        output: 8192
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4.7': {
+      name: 'GLM-4.7',
+      limit: {
+        context: 200000,
+        output: 128000
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4.7-flash': {
+      name: 'GLM-4.7 Flash',
+      limit: {
+        context: 200000,
+        output: 128000
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4.7-flashx': {
+      name: 'GLM-4.7 FlashX',
+      limit: {
+        context: 200000,
+        output: 128000
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4.7-vision': {
+      name: 'GLM-4.7 Vision',
+      limit: {
+        context: 200000,
+        output: 128000
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4': {
+      name: 'GLM-4',
+      limit: {
+        context: 128000,
+        output: 4096
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4-plus': {
+      name: 'GLM-4 Plus',
+      limit: {
+        context: 128000,
+        output: 8192
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4-flash': {
+      name: 'GLM-4 Flash',
+      limit: {
+        context: 128000,
+        output: 4096
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4-air': {
+      name: 'GLM-4 Air',
+      limit: {
+        context: 128000,
+        output: 4096
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4-airx': {
+      name: 'GLM-4 AirX',
+      limit: {
+        context: 128000,
+        output: 4096
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4v': {
+      name: 'GLM-4V',
+      limit: {
+        context: 128000,
+        output: 4096
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4v-plus': {
+      name: 'GLM-4V Plus',
+      limit: {
+        context: 128000,
+        output: 4096
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4.5': {
+      name: 'GLM-4.5',
+      limit: {
+        context: 200000,
+        output: 8192
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4.6': {
+      name: 'GLM-4.6',
+      limit: {
+        context: 200000,
+        output: 8192
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-3-turbo': {
+      name: 'GLM-3 Turbo',
+      limit: {
+        context: 128000,
+        output: 4096
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'glm-4-alltools': {
+      name: 'GLM-4 AllTools',
+      limit: {
+        context: 128000,
+        output: 4096
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'cogview-3': {
+      name: 'CogView-3',
+      limit: {
+        context: 4096,
+        output: 4096
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'cogvideo': {
+      name: 'CogVideo',
+      limit: {
+        context: 4096,
+        output: 4096
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    }
+  }
   const claudeModels = {
     'claude-opus-4-6-thinking': {
       name: 'Claude 4.6 Opus (Thinking)',
@@ -1029,6 +1327,18 @@ function generateOpenCodeConfig(platform: string, baseUrl: string, apiKey: strin
     provider[platform].models = antigravityGeminiModels
   } else if (platform === 'openai') {
     provider[platform].models = openaiModels
+  } else if (platform === 'zhipu') {
+    // zhipu 默认使用 coding-plan，先删除默认创建的 zhipu provider
+    delete provider[platform]
+    // 直接配置 zhipuai-coding-plan
+    provider['zhipuai-coding-plan'] = {
+      options: {
+        baseURL: baseUrl,
+        apiKey: apiKey
+      },
+      name: 'Zhipu (GLM)',
+      models: zhipuModels
+    }
   }
 
   const agent =

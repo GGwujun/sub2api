@@ -379,6 +379,8 @@ type GatewayConfig struct {
 	OpenAIPassthroughAllowTimeoutHeaders bool `mapstructure:"openai_passthrough_allow_timeout_headers"`
 	// OpenAIWS: OpenAI Responses WebSocket 配置（默认开启，可按需回滚到 HTTP）
 	OpenAIWS GatewayOpenAIWSConfig `mapstructure:"openai_ws"`
+	// Zhipu: Zhipu平台配置
+	Zhipu GatewayZhipuConfig `mapstructure:"zhipu"`
 
 	// HTTP 上游连接池配置（性能优化：支持高并发场景调优）
 	// MaxIdleConns: 所有主机的最大空闲连接总数
@@ -604,6 +606,24 @@ type GatewayOpenAIWSSchedulerScoreWeights struct {
 	Queue     float64 `mapstructure:"queue"`
 	ErrorRate float64 `mapstructure:"error_rate"`
 	TTFT      float64 `mapstructure:"ttft"`
+}
+
+// GatewayZhipuConfig Zhipu平台配置
+type GatewayZhipuConfig struct {
+	// BaseURL: 默认API端点（可覆盖账号配置中的base_url）
+	BaseURL string `mapstructure:"base_url"`
+	// RequestTimeoutSeconds: 请求超时时间（秒），默认300秒（5分钟）
+	RequestTimeoutSeconds int `mapstructure:"request_timeout_seconds"`
+	// MaxRetries: 最大重试次数，默认3次
+	MaxRetries int `mapstructure:"max_retries"`
+	// RetryBaseDelaySeconds: 重试基础延迟（秒），默认1秒
+	RetryBaseDelaySeconds int `mapstructure:"retry_base_delay_seconds"`
+	// RetryMaxDelaySeconds: 重试最大延迟（秒），默认16秒
+	RetryMaxDelaySeconds int `mapstructure:"retry_max_delay_seconds"`
+	// RetryJitterRatio: 重试退避抖动比例（0-1），默认0.2
+	RetryJitterRatio float64 `mapstructure:"retry_jitter_ratio"`
+	// StickySessionTTLSeconds: 粘性会话TTL（秒），默认3600秒（1小时）
+	StickySessionTTLSeconds int `mapstructure:"sticky_session_ttl_seconds"`
 }
 
 // GatewayUsageRecordConfig 使用量记录异步队列配置
@@ -1207,7 +1227,7 @@ func setDefaults() {
 	viper.SetDefault("database.user", "postgres")
 	viper.SetDefault("database.password", "postgres")
 	viper.SetDefault("database.dbname", "sub2api")
-	viper.SetDefault("database.sslmode", "prefer")
+	viper.SetDefault("database.sslmode", "disable")
 	viper.SetDefault("database.max_open_conns", 256)
 	viper.SetDefault("database.max_idle_conns", 128)
 	viper.SetDefault("database.conn_max_lifetime_minutes", 30)
@@ -2285,11 +2305,21 @@ func GetServerAddress() string {
 	v.SetDefault("server.host", "0.0.0.0")
 	v.SetDefault("server.port", 8080)
 
+	// DEBUG: Check environment variables before reading config
+	slog.Info("[DEBUG] GetServerAddress - Environment variables",
+		"SERVER_PORT", os.Getenv("SERVER_PORT"),
+		"SERVER_HOST", os.Getenv("SERVER_HOST"))
+
 	// Try to read config file (ignore errors if not found)
-	_ = v.ReadInConfig()
+	if err := v.ReadInConfig(); err != nil {
+		slog.Info("[DEBUG] GetServerAddress - Failed to read config", "error", err)
+	} else {
+		slog.Info("[DEBUG] GetServerAddress - Config file read successfully", "file", v.ConfigFileUsed())
+	}
 
 	host := v.GetString("server.host")
 	port := v.GetInt("server.port")
+	slog.Info("[DEBUG] GetServerAddress - Final values", "host", host, "port", port)
 	return fmt.Sprintf("%s:%d", host, port)
 }
 

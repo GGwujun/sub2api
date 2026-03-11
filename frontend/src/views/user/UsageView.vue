@@ -149,12 +149,13 @@
       </template>
 
       <template #table>
-        <DataTable :columns="columns" :data="usageLogs" :loading="loading">
-          <template #cell-api_key="{ row }">
-            <span class="text-sm text-gray-900 dark:text-white">{{
-              row.api_key?.name || '-'
-            }}</span>
-          </template>
+        <div class="overflow-x-auto">
+          <DataTable :columns="columns" :data="usageLogs" :loading="loading">
+            <template #cell-api_key="{ row }">
+              <span class="text-sm text-gray-900 dark:text-white">{{
+                row.api_key?.name || '-'
+              }}</span>
+            </template>
 
           <template #cell-model="{ value }">
             <span class="font-medium text-gray-900 dark:text-white">{{ value }}</span>
@@ -307,10 +308,11 @@
             <span v-else class="text-sm text-gray-400 dark:text-gray-500">-</span>
           </template>
 
-          <template #empty>
-            <EmptyState :message="t('usage.noRecords')" />
-          </template>
-        </DataTable>
+            <template #empty>
+              <EmptyState :message="t('usage.noRecords')" />
+            </template>
+          </DataTable>
+        </div>
       </template>
 
       <template #pagination>
@@ -582,7 +584,8 @@ const pagination = reactive({
   pages: 0
 })
 
-const formatDuration = (ms: number): string => {
+const formatDuration = (ms: number | null | undefined): string => {
+  if (ms == null || ms === 0) return '-'
   if (ms < 1000) return `${ms.toFixed(0)}ms`
   return `${(ms / 1000).toFixed(2)}s`
 }
