@@ -318,6 +318,7 @@ func (s *KimiGatewayService) ForwardStream(ctx context.Context, account *Account
 
 	// 流式传输
 	var collectedUsage *KimiUsage
+	var currentEvent string
 	requestID := ""
 	scanner := bufio.NewScanner(resp.Body)
 	// 设置 scanner 的 buffer 大小，避免长行被截断
@@ -327,9 +328,84 @@ func (s *KimiGatewayService) ForwardStream(ctx context.Context, account *Account
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		// 记录首token时间 - 更宽松的匹配，支持 "data:", "data:", "data :" 等格式
-		if firstTokenTime.IsZero() && (strings.HasPrefix(line, "data:") || strings.HasPrefix(line, "data ")) {
+		// 记录首token时间 - 更宽松的匹配
+		if firstTokenTime.IsZero() && (strings.HasPrefix(line, "data:") || strings.HasPrefix(line, "event:")) {
 			firstTokenTime = time.Now()
+		}
+
+		// SSE 事件格式: event: xxx \n data: {...}
+		// 记录当前事件类型
+		if strings.HasPrefix(line, "event:") {
+			currentEvent = strings.TrimPrefix(line, "event:")
+			currentEvent = strings.TrimSpace(currentEvent)
+			continue
+		}
+
+		// 解析 data 行
+		// 支持 "data: " 和 "data:" 两种格式
+		if strings.HasPrefix(line, "data: ") {
+			data := strings.TrimPrefix(line, "data: ")
+			if data != "" && data != "[DONE]" {
+				usage := s.extractUsage([]byte(data))
+				if usage != nil {
+					if collectedUsage == nil {
+						collectedUsage = &KimiUsage{}
+					}
+					if usage.PromptTokens > 0 && collectedUsage.PromptTokens == 0 {
+						collectedUsage.PromptTokens = usage.PromptTokens
+					}
+					if usage.CompletionTokens > 0 {
+						collectedUsage.CompletionTokens = usage.CompletionTokens
+					}
+					if usage.TotalTokens > 0 {
+						collectedUsage.TotalTokens = usage.TotalTokens
+					}
+				}
+				if requestID == "" {
+					requestID = gjson.Get(data, "id").String()
+				}
+			}
+			// 处理 [DONE]
+			if data == "[DONE]" {
+				usage := s.extractUsage([]byte(line))
+				if usage != nil {
+					if collectedUsage == nil {
+						collectedUsage = &KimiUsage{}
+					}
+					if usage.PromptTokens > 0 && collectedUsage.PromptTokens == 0 {
+						collectedUsage.PromptTokens = usage.PromptTokens
+					}
+					if usage.CompletionTokens > 0 {
+						collectedUsage.CompletionTokens = usage.CompletionTokens
+					}
+					if usage.TotalTokens > 0 {
+						collectedUsage.TotalTokens = usage.TotalTokens
+					}
+				}
+			}
+		} else if strings.HasPrefix(line, "data:") && !strings.HasPrefix(line, "data: ") {
+			// 支持 "data:" 格式（无空格）
+			data := strings.TrimPrefix(line, "data:")
+			if data != "" && data != "[DONE]" {
+				usage := s.extractUsage([]byte(data))
+				if usage != nil {
+					if collectedUsage == nil {
+						collectedUsage = &KimiUsage{}
+					}
+					if usage.PromptTokens > 0 && collectedUsage.PromptTokens == 0 {
+						collectedUsage.PromptTokens = usage.PromptTokens
+					}
+					if usage.CompletionTokens > 0 {
+						collectedUsage.CompletionTokens = usage.CompletionTokens
+					}
+					if usage.TotalTokens > 0 {
+						collectedUsage.TotalTokens = usage.TotalTokens
+					}
+				}
+				if requestID == "" && len(data) > 5 {
+					requestID = gjson.Get(data, "id").String()
+				}
+			}
 		}
 
 		// 解析token使用量（包括 [DONE] 消息中的 usage）
