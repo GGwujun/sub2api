@@ -117,7 +117,8 @@ func (h *SettingHandler) GetSettings(c *gin.Context) {
 		FallbackModelOpenAI:                  settings.FallbackModelOpenAI,
 		FallbackModelGemini:                  settings.FallbackModelGemini,
 		FallbackModelAntigravity:             settings.FallbackModelAntigravity,
-		FallbackModelZhipu:                   settings.FallbackModelZhipu,
+		FallbackModelZAI:                   settings.FallbackModelZAI,
+		FallbackModelKimi:                    settings.FallbackModelKimi,
 		EnableIdentityPatch:                  settings.EnableIdentityPatch,
 		IdentityPatchPrompt:                  settings.IdentityPatchPrompt,
 		OpsMonitoringEnabled:                 opsEnabled && settings.OpsMonitoringEnabled,
@@ -185,7 +186,8 @@ type UpdateSettingsRequest struct {
 	FallbackModelOpenAI      string `json:"fallback_model_openai"`
 	FallbackModelGemini      string `json:"fallback_model_gemini"`
 	FallbackModelAntigravity string `json:"fallback_model_antigravity"`
-	FallbackModelZhipu       string `json:"fallback_model_zhipu"`
+	FallbackModelZAI         string `json:"fallback_model_zai"`
+	FallbackModelKimi        string `json:"fallback_model_kimi"`
 
 	// Identity patch configuration (Claude -> Gemini)
 	EnableIdentityPatch bool   `json:"enable_identity_patch"`
@@ -471,7 +473,8 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		FallbackModelOpenAI:              req.FallbackModelOpenAI,
 		FallbackModelGemini:              req.FallbackModelGemini,
 		FallbackModelAntigravity:         req.FallbackModelAntigravity,
-		FallbackModelZhipu:               req.FallbackModelZhipu,
+		FallbackModelZAI:               req.FallbackModelZAI,
+		FallbackModelKimi:                req.FallbackModelKimi,
 		EnableIdentityPatch:              req.EnableIdentityPatch,
 		IdentityPatchPrompt:              req.IdentityPatchPrompt,
 		MinClaudeCodeVersion:             req.MinClaudeCodeVersion,
@@ -566,7 +569,8 @@ func (h *SettingHandler) UpdateSettings(c *gin.Context) {
 		FallbackModelOpenAI:                  updatedSettings.FallbackModelOpenAI,
 		FallbackModelGemini:                  updatedSettings.FallbackModelGemini,
 		FallbackModelAntigravity:             updatedSettings.FallbackModelAntigravity,
-		FallbackModelZhipu:                   updatedSettings.FallbackModelZhipu,
+		FallbackModelZAI:                   updatedSettings.FallbackModelZAI,
+		FallbackModelKimi:                    updatedSettings.FallbackModelKimi,
 		EnableIdentityPatch:                  updatedSettings.EnableIdentityPatch,
 		IdentityPatchPrompt:                  updatedSettings.IdentityPatchPrompt,
 		OpsMonitoringEnabled:                 updatedSettings.OpsMonitoringEnabled,
@@ -705,8 +709,11 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	if before.FallbackModelAntigravity != after.FallbackModelAntigravity {
 		changed = append(changed, "fallback_model_antigravity")
 	}
-	if before.FallbackModelZhipu != after.FallbackModelZhipu {
+	if before.FallbackModelZAI != after.FallbackModelZAI {
 		changed = append(changed, "fallback_model_zhipu")
+	}
+	if before.FallbackModelKimi != after.FallbackModelKimi {
+		changed = append(changed, "fallback_model_kimi")
 	}
 	if before.EnableIdentityPatch != after.EnableIdentityPatch {
 		changed = append(changed, "enable_identity_patch")

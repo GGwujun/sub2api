@@ -1834,7 +1834,9 @@ const platformOptions = computed(() => [
   { value: 'gemini', label: 'Gemini' },
   { value: 'antigravity', label: 'Antigravity' },
   { value: 'sora', label: 'Sora' },
-  { value: 'zhipu', label: 'Zhipu' }
+  { value: 'zai', label: 'Z.AI Coding Plan' },
+  { value: 'kimi', label: 'Kimi For Coding' },
+  { value: 'minimaxCode', label: 'MiniMax Coding Plan' }
 ])
 
 const platformFilterOptions = computed(() => [
@@ -1844,7 +1846,9 @@ const platformFilterOptions = computed(() => [
   { value: 'gemini', label: 'Gemini' },
   { value: 'antigravity', label: 'Antigravity' },
   { value: 'sora', label: 'Sora' },
-  { value: 'zhipu', label: 'Zhipu' }
+  { value: 'zai', label: 'Z.AI Coding Plan' },
+  { value: 'kimi', label: 'Kimi For Coding' },
+  { value: 'minimaxCode', label: 'MiniMax Coding Plan' }
 ])
 
 const editStatusOptions = computed(() => [

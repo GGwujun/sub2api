@@ -36,12 +36,14 @@ const (
 	PlatformOpenAI      = "openai"
 	PlatformGemini      = "gemini"
 	PlatformAntigravity = "antigravity"
-	PlatformZhipu       = "zhipu"
+	PlatformZAI         = "zai"
+	PlatformKimi        = "kimi"
+	PlatformMiniMaxCode = "minimaxCode"
 )
 
 // AllPlatforms 返回所有支持的平台列表
 func AllPlatforms() []string {
-	return []string{PlatformAnthropic, PlatformOpenAI, PlatformGemini, PlatformAntigravity, PlatformZhipu}
+	return []string{PlatformAnthropic, PlatformOpenAI, PlatformGemini, PlatformAntigravity, PlatformZAI, PlatformKimi, PlatformMiniMaxCode}
 }
 
 // Validate 验证规则配置的有效性

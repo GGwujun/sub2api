@@ -352,6 +352,8 @@ var ProviderSet = wire.NewSet(
 	NewSoraGatewayService,
 	NewOpenAIGatewayService,
 	NewZhipuGatewayService,
+	NewKimiGatewayService,
+	NewMiniMaxGatewayService,
 	NewOAuthService,
 	NewOpenAIOAuthService,
 	NewGeminiOAuthService,

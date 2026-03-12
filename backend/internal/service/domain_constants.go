@@ -25,7 +25,10 @@ const (
 	PlatformGemini      = domain.PlatformGemini
 	PlatformAntigravity = domain.PlatformAntigravity
 	PlatformSora        = domain.PlatformSora
-	PlatformZhipu       = domain.PlatformZhipu
+	PlatformZAI         = domain.PlatformZAI
+	PlatformZhipu       = domain.PlatformZAI // Alias for backwards compatibility
+	PlatformKimi        = domain.PlatformKimi
+	PlatformMiniMaxCode = domain.PlatformMiniMaxCode
 )
 
 // Account type constants
@@ -136,7 +139,8 @@ const (
 	SettingKeyFallbackModelOpenAI      = "fallback_model_openai"
 	SettingKeyFallbackModelGemini      = "fallback_model_gemini"
 	SettingKeyFallbackModelAntigravity = "fallback_model_antigravity"
-	SettingKeyFallbackModelZhipu       = "fallback_model_zhipu"
+	SettingKeyFallbackModelZAI         = "fallback_model_zai"
+	SettingKeyFallbackModelKimi        = "fallback_model_kimi"
 
 	// Request identity patch (Claude -> Gemini systemInstruction injection)
 	SettingKeyEnableIdentityPatch = "enable_identity_patch"

@@ -380,7 +380,11 @@ type GatewayConfig struct {
 	// OpenAIWS: OpenAI Responses WebSocket 配置（默认开启，可按需回滚到 HTTP）
 	OpenAIWS GatewayOpenAIWSConfig `mapstructure:"openai_ws"`
 	// Zhipu: Zhipu平台配置
-	Zhipu GatewayZhipuConfig `mapstructure:"zhipu"`
+	Zhipu GatewayZhipuConfig `mapstructure:"zai"`
+	// Kimi: Kimi For Coding平台配置
+	Kimi GatewayKimiConfig `mapstructure:"kimi"`
+	// MiniMaxCode: MiniMax Coding Plan平台配置
+	MiniMaxCode GatewayMiniMaxCodeConfig `mapstructure:"minimax_code"`
 
 	// HTTP 上游连接池配置（性能优化：支持高并发场景调优）
 	// MaxIdleConns: 所有主机的最大空闲连接总数
@@ -622,6 +626,26 @@ type GatewayZhipuConfig struct {
 	RetryMaxDelaySeconds int `mapstructure:"retry_max_delay_seconds"`
 	// RetryJitterRatio: 重试退避抖动比例（0-1），默认0.2
 	RetryJitterRatio float64 `mapstructure:"retry_jitter_ratio"`
+	// StickySessionTTLSeconds: 粘性会话TTL（秒），默认3600秒（1小时）
+	StickySessionTTLSeconds int `mapstructure:"sticky_session_ttl_seconds"`
+}
+
+// GatewayKimiConfig Kimi For Coding平台配置
+type GatewayKimiConfig struct {
+	// BaseURL: 默认API端点（可覆盖账号配置中的base_url）
+	BaseURL string `mapstructure:"base_url"`
+	// RequestTimeoutSeconds: 请求超时时间（秒），默认300秒（5分钟）
+	RequestTimeoutSeconds int `mapstructure:"request_timeout_seconds"`
+	// StickySessionTTLSeconds: 粘性会话TTL（秒），默认3600秒（1小时）
+	StickySessionTTLSeconds int `mapstructure:"sticky_session_ttl_seconds"`
+}
+
+// GatewayMiniMaxCodeConfig MiniMax Coding Plan平台配置
+type GatewayMiniMaxCodeConfig struct {
+	// BaseURL: 默认API端点（可覆盖账号配置中的base_url）
+	BaseURL string `mapstructure:"base_url"`
+	// RequestTimeoutSeconds: 请求超时时间（秒），默认300秒（5分钟）
+	RequestTimeoutSeconds int `mapstructure:"request_timeout_seconds"`
 	// StickySessionTTLSeconds: 粘性会话TTL（秒），默认3600秒（1小时）
 	StickySessionTTLSeconds int `mapstructure:"sticky_session_ttl_seconds"`
 }
@@ -1174,7 +1198,7 @@ func setDefaults() {
 		"api.openai.com",
 		"api.anthropic.com",
 		"api.kimi.com",
-		"open.bigmodel.cn",
+		"api.z.ai",
 		"api.minimaxi.com",
 		"generativelanguage.googleapis.com",
 		"cloudcode-pa.googleapis.com",

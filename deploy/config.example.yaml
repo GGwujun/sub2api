@@ -93,7 +93,7 @@ security:
       - "api.openai.com"
       - "api.anthropic.com"
       - "api.kimi.com"
-      - "open.bigmodel.cn"
+      - "api.z.ai"
       - "api.minimaxi.com"
       - "generativelanguage.googleapis.com"
       - "cloudcode-pa.googleapis.com"

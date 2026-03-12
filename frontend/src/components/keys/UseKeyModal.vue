@@ -328,7 +328,7 @@ const platformDescription = computed(() => {
       return t('keys.useKeyModal.openai.description')
     case 'gemini':
       return t('keys.useKeyModal.gemini.description')
-    case 'zhipu':
+    case 'zai':
       return t('keys.useKeyModal.openai.description')
     case 'antigravity':
       return t('keys.useKeyModal.antigravity.description')
@@ -348,7 +348,7 @@ const platformNote = computed(() => {
         : t('keys.useKeyModal.openai.note')
     case 'gemini':
       return t('keys.useKeyModal.gemini.note')
-    case 'zhipu':
+    case 'zai':
       return activeTab.value === 'windows'
         ? t('keys.useKeyModal.openai.noteWindows')
         : t('keys.useKeyModal.openai.note')
@@ -390,7 +390,9 @@ const currentFiles = computed((): FileConfig[] => {
     return trimmed.endsWith('/v1') ? trimmed : `${trimmed}/v1`
   }
   const apiBase = ensureV1(baseRoot)
-  const zhipuBase = `${baseRoot}/zhipu/v1`
+  const zhipuBase = `${baseRoot}/api/coding/paas/v4`
+  const kimiBase = `${baseRoot}/kimi/v1`
+  const minimaxBase = `${baseRoot}/minimaxCode/v1`
   const antigravityBase = ensureV1(`${baseRoot}/antigravity`)
   const antigravityGeminiBase = (() => {
     const trimmed = `${baseRoot}/antigravity`.replace(/\/+$/, '')
@@ -401,16 +403,23 @@ const currentFiles = computed((): FileConfig[] => {
     return trimmed.endsWith('/v1beta') ? trimmed : `${trimmed}/v1beta`
   })()
 
+  // Normalize platform: zhipu -> zai (for backwards compatibility)
+  const normalizedPlatform = props.platform === 'zhipu' ? 'zai' : props.platform
+
   if (activeClientTab.value === 'opencode') {
-    switch (props.platform) {
+    switch (normalizedPlatform) {
       case 'anthropic':
         return [generateOpenCodeConfig('anthropic', apiBase, apiKey)]
       case 'openai':
         return [generateOpenCodeConfig('openai', apiBase, apiKey)]
       case 'gemini':
         return [generateOpenCodeConfig('gemini', geminiBase, apiKey)]
-      case 'zhipu':
-        return [generateOpenCodeConfig('zhipu', zhipuBase, apiKey)]
+      case 'zai':
+        return [generateOpenCodeConfig('zai', zhipuBase, apiKey)]
+      case 'kimi':
+        return [generateOpenCodeConfig('kimi', kimiBase, apiKey)]
+      case 'minimaxCode':
+        return [generateOpenCodeConfig('minimaxCode', minimaxBase, apiKey)]
       case 'antigravity':
         return [
           generateOpenCodeConfig('antigravity-claude', antigravityBase, apiKey, 'opencode.json (Claude)'),
@@ -421,7 +430,7 @@ const currentFiles = computed((): FileConfig[] => {
     }
   }
 
-  switch (props.platform) {
+  switch (normalizedPlatform) {
     case 'openai':
       if (activeClientTab.value === 'claude') {
         return generateAnthropicFiles(baseUrl, apiKey)
@@ -432,8 +441,12 @@ const currentFiles = computed((): FileConfig[] => {
       return generateOpenAIFiles(baseUrl, apiKey)
     case 'gemini':
       return [generateGeminiCliContent(baseUrl, apiKey)]
-    case 'zhipu':
+    case 'zai':
       return generateOpenAIFiles(zhipuBase, apiKey)
+    case 'kimi':
+      return generateOpenAIFiles(kimiBase, apiKey)
+    case 'minimaxCode':
+      return generateOpenAIFiles(minimaxBase, apiKey)
     case 'antigravity':
       if (activeClientTab.value === 'gemini') {
         return [generateGeminiCliContent(`${baseUrl}/antigravity`, apiKey)]
@@ -1275,6 +1288,100 @@ function generateOpenCodeConfig(platform: string, baseUrl: string, apiKey: strin
       }
     }
   }
+  const kimiModels = {
+    'k2p5': {
+      name: 'K2.5',
+      limit: {
+        context: 200000,
+        output: 128000
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'kimi-k2-thinking': {
+      name: 'Kimi K2 Thinking',
+      limit: {
+        context: 200000,
+        output: 128000
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    }
+  }
+  const minimaxModels = {
+    'MiniMax-M2.5': {
+      name: 'MiniMax M2.5',
+      limit: {
+        context: 200000,
+        output: 128000
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'MiniMax-M2.5-highspeed': {
+      name: 'MiniMax M2.5 Highspeed',
+      limit: {
+        context: 200000,
+        output: 128000
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'MiniMax-M2.1': {
+      name: 'MiniMax M2.1',
+      limit: {
+        context: 200000,
+        output: 128000
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    },
+    'MiniMax-M2': {
+      name: 'MiniMax M2',
+      limit: {
+        context: 200000,
+        output: 128000
+      },
+      options: {
+        store: false
+      },
+      variants: {
+        low: {},
+        medium: {},
+        high: {}
+      }
+    }
+  }
   const claudeModels = {
     'claude-opus-4-6-thinking': {
       name: 'Claude 4.6 Opus (Thinking)',
@@ -1327,7 +1434,7 @@ function generateOpenCodeConfig(platform: string, baseUrl: string, apiKey: strin
     provider[platform].models = antigravityGeminiModels
   } else if (platform === 'openai') {
     provider[platform].models = openaiModels
-  } else if (platform === 'zhipu') {
+  } else if (platform === 'zai' || platform === 'zhipu') {
     // zhipu 默认使用 coding-plan，先删除默认创建的 zhipu provider
     delete provider[platform]
     // 直接配置 zhipuai-coding-plan
@@ -1336,8 +1443,30 @@ function generateOpenCodeConfig(platform: string, baseUrl: string, apiKey: strin
         baseURL: baseUrl,
         apiKey: apiKey
       },
-      name: 'Zhipu (GLM)',
+      name: 'Z.AI Coding Plan (GLM)',
       models: zhipuModels
+    }
+  } else if (platform === 'kimi') {
+    // Kimi 使用自定义 provider
+    delete provider[platform]
+    provider['kimi-coding-plan'] = {
+      options: {
+        baseURL: baseUrl,
+        apiKey: apiKey
+      },
+      name: 'Kimi For Coding',
+      models: kimiModels
+    }
+  } else if (platform === 'minimaxCode') {
+    // MiniMax 使用自定义 provider
+    delete provider[platform]
+    provider['minimax-coding-plan'] = {
+      options: {
+        baseURL: baseUrl,
+        apiKey: apiKey
+      },
+      name: 'MiniMax Coding Plan',
+      models: minimaxModels
     }
   }
 

@@ -768,8 +768,8 @@ func (a *Account) IsOpenAI() bool {
 	return a.Platform == PlatformOpenAI
 }
 
-func (a *Account) IsZhipu() bool {
-	return a.Platform == PlatformZhipu
+func (a *Account) IsZAI() bool {
+	return a.Platform == PlatformZAI
 }
 
 func (a *Account) IsAnthropic() bool {
@@ -817,9 +817,9 @@ func (a *Account) GetOpenAICompatibleAPIKey() string {
 	return a.GetCredential("api_key")
 }
 
-// GetZhipuBaseURL returns the base URL for Zhipu API
-func (a *Account) GetZhipuBaseURL() string {
-	if a == nil || !a.IsZhipu() {
+// GetZAIBaseURL returns the base URL for Z.AI API
+func (a *Account) GetZAIBaseURL() string {
+	if a == nil || !a.IsZAI() {
 		return ""
 	}
 	if a.Type == AccountTypeAPIKey {
@@ -828,12 +828,12 @@ func (a *Account) GetZhipuBaseURL() string {
 			return baseURL
 		}
 	}
-	return "https://open.bigmodel.cn/api/paas/v4"
+	return "https://api.z.ai/api/coding/paas/v4"
 }
 
-// GetZhipuAPIKey returns the API key for Zhipu
-func (a *Account) GetZhipuAPIKey() string {
-	if a == nil || !a.IsZhipu() || a.Type != AccountTypeAPIKey {
+// GetZAIAPIKey returns the API key for Z.AI
+func (a *Account) GetZAIAPIKey() string {
+	if a == nil || !a.IsZAI() || a.Type != AccountTypeAPIKey {
 		return ""
 	}
 	return a.GetCredential("api_key")

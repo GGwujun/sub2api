@@ -175,8 +175,8 @@ func (s *AccountTestService) TestAccountConnection(c *gin.Context, accountID int
 		return s.testOpenAIAccountConnection(c, account, modelID)
 	}
 
-	if account.Platform == PlatformZhipu {
-		return s.testZhipuAccountConnection(c, account, modelID)
+	if account.Platform == PlatformZAI {
+		return s.testZAIAccountConnection(c, account, modelID)
 	}
 
 	if account.IsGemini() {
@@ -438,11 +438,11 @@ func (s *AccountTestService) testOpenAIAccountConnection(c *gin.Context, account
 	return s.processOpenAIStream(c, resp.Body)
 }
 
-// testZhipuAccountConnection tests a Zhipu account's connection
-func (s *AccountTestService) testZhipuAccountConnection(c *gin.Context, account *Account, modelID string) error {
+// testZAIAccountConnection tests a Z.AI account's connection
+func (s *AccountTestService) testZAIAccountConnection(c *gin.Context, account *Account, modelID string) error {
 	ctx := c.Request.Context()
 
-	// Default to a common Zhipu model
+	// Default to a common Z.AI model
 	testModelID := modelID
 	if testModelID == "" {
 		testModelID = "glm-4"
@@ -467,7 +467,7 @@ func (s *AccountTestService) testZhipuAccountConnection(c *gin.Context, account 
 	// Get base URL
 	baseURL := account.GetCredential("base_url")
 	if baseURL == "" {
-		baseURL = "https://open.bigmodel.cn/api/paas/v4"
+		baseURL = "https://api.z.ai/api/coding/paas/v4"
 	}
 	normalizedBaseURL, err := s.validateUpstreamBaseURL(baseURL)
 	if err != nil {

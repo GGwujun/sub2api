@@ -1473,7 +1473,9 @@ export default {
         gemini: 'Gemini',
         antigravity: 'Antigravity',
         sora: 'Sora',
-        zhipu: '智谱'
+        zhipu: 'Z.AI Coding Plan',
+        kimi: 'Kimi For Coding',
+        minimaxCode: 'MiniMax Coding Plan'
       },
       saving: '保存中...',
       noGroups: '暂无分组',

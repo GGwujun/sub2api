@@ -182,6 +182,20 @@ const moonshotModels = [
   'kimi-latest'
 ]
 
+// Kimi For Coding 官方模型
+const kimiModels = [
+  'k2p5',
+  'kimi-k2-thinking'
+]
+
+// MiniMax Coding Plan 官方模型
+const minimaxCodeModels = [
+  'MiniMax-M2.5',
+  'MiniMax-M2.5-highspeed',
+  'MiniMax-M2.1',
+  'MiniMax-M2'
+]
+
 // 字节跳动 豆包
 const doubaoModels = [
   'doubao-pro-256k', 'doubao-pro-128k', 'doubao-pro-32k', 'doubao-pro-4k',
@@ -243,6 +257,8 @@ const allModelsList: string[] = [
   ...cohereModels,
   ...yiModels,
   ...moonshotModels,
+  ...kimiModels,
+  ...minimaxCodeModels,
   ...doubaoModels,
   ...minimaxModels,
   ...baiduModels,
@@ -370,7 +386,7 @@ export function getModelsByPlatform(platform: string): string[] {
     case 'gemini': return geminiModels
     case 'sora': return soraModels
     case 'antigravity': return antigravityModels
-    case 'zhipu': return zhipuModels
+    case 'zai': return zhipuModels
     case 'qwen': return qwenModels
     case 'deepseek': return deepseekModels
     case 'mistral': return mistralModels
@@ -379,6 +395,8 @@ export function getModelsByPlatform(platform: string): string[] {
     case 'cohere': return cohereModels
     case 'yi': return yiModels
     case 'moonshot': return moonshotModels
+    case 'kimi': return kimiModels
+    case 'minimaxCode': return minimaxCodeModels
     case 'doubao': return doubaoModels
     case 'minimax': return minimaxModels
     case 'baidu': return baiduModels

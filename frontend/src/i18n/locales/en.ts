@@ -1416,7 +1416,9 @@ export default {
         gemini: 'Gemini',
         antigravity: 'Antigravity',
         sora: 'Sora',
-        zhipu: 'Zhipu'
+        zhipu: 'Z.AI Coding Plan',
+        kimi: 'Kimi For Coding',
+        minimaxCode: 'MiniMax Coding Plan'
       },
       deleteConfirm:
         "Are you sure you want to delete '{name}'? All associated API keys will no longer belong to any group.",

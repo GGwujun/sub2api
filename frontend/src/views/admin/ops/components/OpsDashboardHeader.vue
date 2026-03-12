@@ -112,7 +112,7 @@ const platformOptions = computed(() => [
   { value: 'anthropic', label: 'Anthropic' },
   { value: 'gemini', label: 'Gemini' },
   { value: 'antigravity', label: 'Antigravity' },
-  { value: 'zhipu', label: 'Zhipu' }
+  { value: 'zai', label: 'Z.AI Coding Plan' }
 ])
 
 const timeRangeOptions = computed(() => [

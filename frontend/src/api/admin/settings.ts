@@ -66,7 +66,8 @@ export interface SystemSettings {
   fallback_model_openai: string
   fallback_model_gemini: string
   fallback_model_antigravity: string
-  fallback_model_zhipu: string
+  fallback_model_zai: string
+  fallback_model_kimi: string
 
   // Identity patch configuration (Claude -> Gemini)
   enable_identity_patch: boolean
@@ -127,7 +128,8 @@ export interface UpdateSettingsRequest {
   fallback_model_openai?: string
   fallback_model_gemini?: string
   fallback_model_antigravity?: string
-  fallback_model_zhipu?: string
+  fallback_model_zai?: string
+  fallback_model_kimi?: string
   enable_identity_patch?: boolean
   identity_patch_prompt?: string
   ops_monitoring_enabled?: boolean

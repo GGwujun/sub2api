@@ -54,7 +54,7 @@ func TestZhipuGatewayService_TestConnection_Success(t *testing.T) {
 			"base_url": ts.URL,
 		},
 		Concurrency: 1,
-		Platform:    PlatformZhipu,
+		Platform:    PlatformZAI,
 	}
 
 	svc := &ZhipuGatewayService{
@@ -102,7 +102,7 @@ func TestZhipuGatewayService_TestConnection_InvalidAPIKey(t *testing.T) {
 			"base_url": ts.URL,
 		},
 		Concurrency: 1,
-		Platform:    PlatformZhipu,
+		Platform:    PlatformZAI,
 	}
 
 	svc := &ZhipuGatewayService{
@@ -154,7 +154,7 @@ func TestZhipuGatewayService_TestConnection_DefaultModel(t *testing.T) {
 			"base_url": ts.URL,
 		},
 		Concurrency: 1,
-		Platform:    PlatformZhipu,
+		Platform:    PlatformZAI,
 	}
 
 	svc := &ZhipuGatewayService{
@@ -219,7 +219,7 @@ func TestZhipuGatewayService_TestConnection_Timeout(t *testing.T) {
 			"base_url": ts.URL,
 		},
 		Concurrency: 1,
-		Platform:    PlatformZhipu,
+		Platform:    PlatformZAI,
 	}
 
 	svc := &ZhipuGatewayService{
@@ -262,7 +262,7 @@ func TestZhipuGatewayService_TestConnection_NoAPIKey(t *testing.T) {
 			// 缺少api_key
 		},
 		Concurrency: 1,
-		Platform:    PlatformZhipu,
+		Platform:    PlatformZAI,
 	}
 
 	svc := &ZhipuGatewayService{
@@ -308,7 +308,7 @@ func TestZhipuGatewayService_TestConnection_ParseFailed(t *testing.T) {
 			"base_url": ts.URL,
 		},
 		Concurrency: 1,
-		Platform:    PlatformZhipu,
+		Platform:    PlatformZAI,
 	}
 
 	svc := &ZhipuGatewayService{
@@ -356,7 +356,7 @@ func TestZhipuGatewayService_TestConnection_EmptyResponse(t *testing.T) {
 			"base_url": ts.URL,
 		},
 		Concurrency: 1,
-		Platform:    PlatformZhipu,
+		Platform:    PlatformZAI,
 	}
 
 	svc := &ZhipuGatewayService{

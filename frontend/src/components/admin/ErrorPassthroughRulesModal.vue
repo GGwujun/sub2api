@@ -490,7 +490,7 @@ const platformOptions = [
   { value: 'openai', label: 'OpenAI' },
   { value: 'gemini', label: 'Gemini' },
   { value: 'antigravity', label: 'Antigravity' },
-  { value: 'zhipu', label: 'Zhipu' }
+  { value: 'zai', label: 'Z.AI Coding Plan' }
 ]
 
 // Load rules when dialog opens

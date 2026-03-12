@@ -1432,8 +1432,8 @@ func (s *OpenAIGatewayService) SelectAccountWithLoadAwareness(ctx context.Contex
 }
 
 func normalizeOpenAIPlatform(platform string) string {
-	if platform == PlatformZhipu {
-		return PlatformZhipu
+	if platform == PlatformZAI {
+		return PlatformZAI
 	}
 	return PlatformOpenAI
 }

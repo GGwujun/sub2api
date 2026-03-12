@@ -1802,9 +1802,21 @@ func (h *AccountHandler) GetAvailableModels(c *gin.Context) {
 		return
 	}
 
-	// Handle Zhipu accounts
-	if account.Platform == service.PlatformZhipu {
+	// Handle Z.AI Coding Plan accounts
+	if account.Platform == service.PlatformZAI {
 		response.Success(c, service.DefaultZhipuModels())
+		return
+	}
+
+	// Handle Kimi accounts
+	if account.Platform == service.PlatformKimi {
+		response.Success(c, service.DefaultKimiModels())
+		return
+	}
+
+	// Handle MiniMax accounts
+	if account.Platform == service.PlatformMiniMaxCode {
+		response.Success(c, service.DefaultMiniMaxModels())
 		return
 	}
 

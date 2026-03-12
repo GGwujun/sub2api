@@ -24,8 +24,8 @@ import (
 )
 
 const (
-	// Zhipu API endpoint (默认配置，可由config覆盖)
-	defaultZhipuBaseURL = "https://open.bigmodel.cn/api/coding/paas/v4"
+	// Zhipu API endpoint (Z.AI Coding Plan 专用 API)
+	defaultZhipuBaseURL = "https://api.z.ai/api/coding/paas/v4"
 )
 
 // ZhipuAccountSwitchError 账号切换信号
@@ -139,7 +139,7 @@ func calculateZhipuRetryBackoff(attempt int, baseDelay, maxDelay time.Duration, 
 }
 
 // Zhipu模型定价表（单位：元/千tokens）
-// 参考智谱官方定价：https://open.bigmodel.cn/dev/api#prices
+// 参考 Z.AI Coding Plan 官方定价
 // 更新时间：2026-03-11
 var defaultZhipuPricing = map[string]*zhipuModelPricing{
 	// GLM-4 系列
@@ -801,11 +801,11 @@ func (s *ZhipuGatewayService) SelectAccount(ctx context.Context, groupID *int64,
 
 			// 验证绑定账号是否仍然可用
 			if s.schedulerSnapshot != nil {
-				accounts, _, err := s.schedulerSnapshot.ListSchedulableAccounts(ctx, groupID, PlatformZhipu, false)
+				accounts, _, err := s.schedulerSnapshot.ListSchedulableAccounts(ctx, groupID, PlatformZAI, false)
 				if err == nil {
 					for i := range accounts {
 						acc := &accounts[i]
-						if acc.ID == stickyAccountID && acc.IsSchedulable() && acc.Platform == PlatformZhipu {
+						if acc.ID == stickyAccountID && acc.IsSchedulable() && acc.Platform == PlatformZAI {
 							// 刷新粘性会话TTL
 							_ = s.refreshStickySessionTTL(ctx, gid, sessionHash)
 
@@ -836,13 +836,13 @@ func (s *ZhipuGatewayService) SelectAccount(ctx context.Context, groupID *int64,
 	var accounts []Account
 	var err error
 	if s.schedulerSnapshot != nil {
-		accounts, _, err = s.schedulerSnapshot.ListSchedulableAccounts(ctx, groupID, PlatformZhipu, false)
+		accounts, _, err = s.schedulerSnapshot.ListSchedulableAccounts(ctx, groupID, PlatformZAI, false)
 	} else if s.cfg != nil && s.cfg.RunMode == config.RunModeSimple {
-		accounts, err = s.accountRepo.ListSchedulableByPlatform(ctx, PlatformZhipu)
+		accounts, err = s.accountRepo.ListSchedulableByPlatform(ctx, PlatformZAI)
 	} else if groupID != nil {
-		accounts, err = s.accountRepo.ListSchedulableByGroupIDAndPlatform(ctx, *groupID, PlatformZhipu)
+		accounts, err = s.accountRepo.ListSchedulableByGroupIDAndPlatform(ctx, *groupID, PlatformZAI)
 	} else {
-		accounts, err = s.accountRepo.ListSchedulableUngroupedByPlatform(ctx, PlatformZhipu)
+		accounts, err = s.accountRepo.ListSchedulableUngroupedByPlatform(ctx, PlatformZAI)
 	}
 
 	if err != nil {
@@ -865,7 +865,7 @@ func (s *ZhipuGatewayService) SelectAccount(ctx context.Context, groupID *int64,
 	schedulableAccounts := make([]*Account, 0, len(accounts))
 	for i := range accounts {
 		acc := &accounts[i]
-		if acc.IsSchedulable() && acc.Platform == PlatformZhipu {
+		if acc.IsSchedulable() && acc.Platform == PlatformZAI {
 			schedulableAccounts = append(schedulableAccounts, acc)
 		}
 	}
@@ -968,25 +968,25 @@ func (s *ZhipuGatewayService) copyRequestHeaders(original *http.Request, target 
 // DefaultZhipuModels returns the default list of Zhipu models
 func DefaultZhipuModels() []map[string]interface{} {
 	return []map[string]interface{}{
-		{"id": "glm-4", "object": "model", "owned_by": "zhipu"},
-		{"id": "glm-4v", "object": "model", "owned_by": "zhipu"},
-		{"id": "glm-4-plus", "object": "model", "owned_by": "zhipu"},
-		{"id": "glm-4-0520", "object": "model", "owned_by": "zhipu"},
-		{"id": "glm-4-air", "object": "model", "owned_by": "zhipu"},
-		{"id": "glm-4-airx", "object": "model", "owned_by": "zhipu"},
-		{"id": "glm-4-long", "object": "model", "owned_by": "zhipu"},
-		{"id": "glm-4-flash", "object": "model", "owned_by": "zhipu"},
-		{"id": "glm-4v-plus", "object": "model", "owned_by": "zhipu"},
-		{"id": "glm-4.5", "object": "model", "owned_by": "zhipu"},
-		{"id": "glm-4.6", "object": "model", "owned_by": "zhipu"},
-		{"id": "glm-3-turbo", "object": "model", "owned_by": "zhipu"},
-		{"id": "glm-4-alltools", "object": "model", "owned_by": "zhipu"},
-		{"id": "chatglm_turbo", "object": "model", "owned_by": "zhipu"},
-		{"id": "chatglm_pro", "object": "model", "owned_by": "zhipu"},
-		{"id": "chatglm_std", "object": "model", "owned_by": "zhipu"},
-		{"id": "chatglm_lite", "object": "model", "owned_by": "zhipu"},
-		{"id": "cogview-3", "object": "model", "owned_by": "zhipu"},
-		{"id": "cogvideo", "object": "model", "owned_by": "zhipu"},
+		{"id": "glm-4", "object": "model", "owned_by": "zai"},
+		{"id": "glm-4v", "object": "model", "owned_by": "zai"},
+		{"id": "glm-4-plus", "object": "model", "owned_by": "zai"},
+		{"id": "glm-4-0520", "object": "model", "owned_by": "zai"},
+		{"id": "glm-4-air", "object": "model", "owned_by": "zai"},
+		{"id": "glm-4-airx", "object": "model", "owned_by": "zai"},
+		{"id": "glm-4-long", "object": "model", "owned_by": "zai"},
+		{"id": "glm-4-flash", "object": "model", "owned_by": "zai"},
+		{"id": "glm-4v-plus", "object": "model", "owned_by": "zai"},
+		{"id": "glm-4.5", "object": "model", "owned_by": "zai"},
+		{"id": "glm-4.6", "object": "model", "owned_by": "zai"},
+		{"id": "glm-3-turbo", "object": "model", "owned_by": "zai"},
+		{"id": "glm-4-alltools", "object": "model", "owned_by": "zai"},
+		{"id": "chatglm_turbo", "object": "model", "owned_by": "zai"},
+		{"id": "chatglm_pro", "object": "model", "owned_by": "zai"},
+		{"id": "chatglm_std", "object": "model", "owned_by": "zai"},
+		{"id": "chatglm_lite", "object": "model", "owned_by": "zai"},
+		{"id": "cogview-3", "object": "model", "owned_by": "zai"},
+		{"id": "cogvideo", "object": "model", "owned_by": "zai"},
 	}
 }
 
@@ -1447,11 +1447,11 @@ func (s *ZhipuGatewayService) HealthCheck(ctx context.Context) (*ZhipuHealthChec
 	var err error
 
 	if s.schedulerSnapshot != nil {
-		accounts, _, err = s.schedulerSnapshot.ListSchedulableAccounts(ctx, nil, PlatformZhipu, false)
+		accounts, _, err = s.schedulerSnapshot.ListSchedulableAccounts(ctx, nil, PlatformZAI, false)
 	} else if s.cfg != nil && s.cfg.RunMode == config.RunModeSimple {
-		accounts, err = s.accountRepo.ListSchedulableByPlatform(ctx, PlatformZhipu)
+		accounts, err = s.accountRepo.ListSchedulableByPlatform(ctx, PlatformZAI)
 	} else {
-		accounts, err = s.accountRepo.ListSchedulableUngroupedByPlatform(ctx, PlatformZhipu)
+		accounts, err = s.accountRepo.ListSchedulableUngroupedByPlatform(ctx, PlatformZAI)
 	}
 
 	if err != nil {

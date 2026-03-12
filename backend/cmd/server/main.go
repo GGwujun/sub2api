@@ -64,7 +64,7 @@ func main() {
 	flag.Parse()
 
 	if *showVersion {
-		log.Printf("Sub2API %s (commit: %s, built: %s)\n", Version, Commit, Date)
+		log.Printf("Dsx2API %s (commit: %s, built: %s)\n", Version, Commit, Date)
 		return
 	}
 
@@ -117,7 +117,7 @@ func runSetupServer() {
 	log.Printf("[DEBUG] Server address from config: %s", addr)
 	log.Printf("[DEBUG] SERVER_PORT env: %s", os.Getenv("SERVER_PORT"))
 	log.Printf("Setup wizard available at http://%s", addr)
-	log.Println("Complete the setup wizard to configure Sub2API")
+	log.Println("Complete the setup wizard to configure Dsx2API")
 
 	server := &http.Server{
 		Addr:              addr,

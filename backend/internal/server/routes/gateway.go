@@ -166,6 +166,34 @@ func RegisterGatewayRoutes(
 		zhipuV1.POST("/chat/completions", h.ZhipuGateway.ChatCompletions)
 		zhipuV1.GET("/models", h.ZhipuGateway.Models)
 	}
+
+	// Kimi 专用路由（强制使用 kimi 平台）
+	kimiV1 := r.Group("/kimi/v1")
+	kimiV1.Use(bodyLimit)
+	kimiV1.Use(clientRequestID)
+	kimiV1.Use(opsErrorLogger)
+	kimiV1.Use(middleware.ForcePlatform(service.PlatformKimi))
+	kimiV1.Use(gin.HandlerFunc(apiKeyAuth))
+	kimiV1.Use(requireGroupAnthropic)
+	{
+		kimiV1.POST("/chat/completions", h.KimiGateway.ChatCompletions)
+		kimiV1.POST("/messages", h.KimiGateway.ChatCompletions) // Anthropic 协议
+		kimiV1.GET("/models", h.KimiGateway.Models)
+	}
+
+	// MiniMaxCode 专用路由（强制使用 minimaxCode 平台）
+	minimaxV1 := r.Group("/minimaxCode/v1")
+	minimaxV1.Use(bodyLimit)
+	minimaxV1.Use(clientRequestID)
+	minimaxV1.Use(opsErrorLogger)
+	minimaxV1.Use(middleware.ForcePlatform(service.PlatformMiniMaxCode))
+	minimaxV1.Use(gin.HandlerFunc(apiKeyAuth))
+	minimaxV1.Use(requireGroupAnthropic)
+	{
+		minimaxV1.POST("/chat/completions", h.MiniMaxGateway.ChatCompletions)
+		minimaxV1.POST("/messages", h.MiniMaxGateway.ChatCompletions) // Anthropic 协议
+		minimaxV1.GET("/models", h.MiniMaxGateway.Models)
+	}
 }
 
 // getGroupPlatform extracts the group platform from the API Key stored in context.

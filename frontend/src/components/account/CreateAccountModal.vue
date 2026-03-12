@@ -70,12 +70,12 @@
       <!-- Platform Selection - Segmented Control Style -->
       <div>
         <label class="input-label">{{ t('admin.accounts.platform') }}</label>
-        <div class="mt-2 flex rounded-lg bg-gray-100 p-1 dark:bg-dark-700" data-tour="account-form-platform">
+        <div class="mt-2 flex flex-wrap gap-1 rounded-lg bg-gray-100 p-1 dark:bg-dark-700" data-tour="account-form-platform">
           <button
             type="button"
             @click="form.platform = 'anthropic'"
             :class="[
-              'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
+              'flex items-center justify-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-all',
               form.platform === 'anthropic'
                 ? 'bg-white text-orange-600 shadow-sm dark:bg-dark-600 dark:text-orange-400'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
@@ -88,7 +88,7 @@
             type="button"
             @click="form.platform = 'openai'"
             :class="[
-              'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
+              'flex items-center justify-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-all',
               form.platform === 'openai'
                 ? 'bg-white text-green-600 shadow-sm dark:bg-dark-600 dark:text-green-400'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
@@ -113,7 +113,7 @@
             type="button"
             @click="form.platform = 'sora'"
             :class="[
-              'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
+              'flex items-center justify-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-all',
               form.platform === 'sora'
                 ? 'bg-white text-rose-600 shadow-sm dark:bg-dark-600 dark:text-rose-400'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
@@ -135,7 +135,7 @@
             type="button"
             @click="form.platform = 'gemini'"
             :class="[
-              'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
+              'flex items-center justify-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-all',
               form.platform === 'gemini'
                 ? 'bg-white text-blue-600 shadow-sm dark:bg-dark-600 dark:text-blue-400'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
@@ -158,10 +158,10 @@
           </button>
           <button
             type="button"
-            @click="form.platform = 'zhipu'"
+            @click="form.platform = 'zai'"
             :class="[
-              'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
-              form.platform === 'zhipu'
+              'flex items-center justify-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-all',
+              form.platform === 'zai'
                 ? 'bg-white text-indigo-600 shadow-sm dark:bg-dark-600 dark:text-indigo-400'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
             ]"
@@ -175,13 +175,55 @@
             >
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 6h14l-10 12h10" />
             </svg>
-            Zhipu
+            Z.AI
+          </button>
+          <button
+            type="button"
+            @click="form.platform = 'kimi'"
+            :class="[
+              'flex items-center justify-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-all',
+              form.platform === 'kimi'
+                ? 'bg-white text-cyan-600 shadow-sm dark:bg-dark-600 dark:text-cyan-400'
+                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+            ]"
+          >
+            <svg
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+            </svg>
+            Kimi
+          </button>
+          <button
+            type="button"
+            @click="form.platform = 'minimaxCode'"
+            :class="[
+              'flex items-center justify-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-all',
+              form.platform === 'minimaxCode'
+                ? 'bg-white text-teal-600 shadow-sm dark:bg-dark-600 dark:text-teal-400'
+                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+            ]"
+          >
+            <svg
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21V3.104a2.25 2.25 0 01.659-1.591l5.432-5.432a2.25 2.25 0 00.659-1.591V3.104a2.25 2.25 0 00-.659-1.591L3.659 2.25A2.25 2.25 0 002.25 3.75V6a2.25 2.25 0 001.591.659l5.432 5.432a2.25 2.25 0 001.591.659H15.75a2.25 2.25 0 001.591-.659l5.432-5.432a2.25 2.25 0 00.659-1.591V3.104a2.25 2.25 0 00-.659-1.591L15.75.75A2.25 2.25 0 0014.25 0H9.75A2.25 2.25 0 007.5 2.25v1.183l5.432 5.432a2.25 2.25 0 001.591.659z" />
+            </svg>
+            MiniMax
           </button>
           <button
             type="button"
             @click="form.platform = 'antigravity'"
             :class="[
-              'flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-medium transition-all',
+              'flex items-center justify-center gap-1 rounded-md px-3 py-2 text-sm font-medium transition-all',
               form.platform === 'antigravity'
                 ? 'bg-white text-purple-600 shadow-sm dark:bg-dark-600 dark:text-purple-400'
                 : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
@@ -2613,14 +2655,14 @@ const oauthStepTitle = computed(() => {
 const baseUrlHint = computed(() => {
   if (form.platform === 'openai' || form.platform === 'sora') return t('admin.accounts.openai.baseUrlHint')
   if (form.platform === 'gemini') return t('admin.accounts.gemini.baseUrlHint')
-  if (form.platform === 'zhipu') return t('admin.accounts.openai.baseUrlHint')
+  if (form.platform === 'zai' || form.platform === 'kimi' || form.platform === 'minimaxCode') return t('admin.accounts.openai.baseUrlHint')
   return t('admin.accounts.baseUrlHint')
 })
 
 const apiKeyHint = computed(() => {
   if (form.platform === 'openai' || form.platform === 'sora') return t('admin.accounts.openai.apiKeyHint')
   if (form.platform === 'gemini') return t('admin.accounts.gemini.apiKeyHint')
-  if (form.platform === 'zhipu') return t('admin.accounts.openai.apiKeyHint')
+  if (form.platform === 'zai' || form.platform === 'kimi' || form.platform === 'minimaxCode') return t('admin.accounts.openai.apiKeyHint')
   return t('admin.accounts.apiKeyHint')
 })
 
@@ -2977,9 +3019,13 @@ watch(
 			? 'https://api.openai.com'
 			: newPlatform === 'gemini'
 				? 'https://generativelanguage.googleapis.com'
-				: newPlatform === 'zhipu'
-					? 'https://open.bigmodel.cn/api/paas/v4'
-				: 'https://api.anthropic.com'
+				: newPlatform === 'zai'
+					? 'https://api.z.ai/api/coding/paas/v4'
+					: newPlatform === 'kimi'
+						? 'https://api.kimi.com/coding/v1'
+						: newPlatform === 'minimaxCode'
+							? 'https://api.minimaxi.com/anthropic'
+						: 'https://api.anthropic.com'
     // Clear model-related settings
     allowedModels.value = []
     modelMappings.value = []
@@ -3008,7 +3054,7 @@ watch(
 		form.type = 'oauth'
 		soraAccountType.value = 'oauth'
 	}
-	if (newPlatform === 'zhipu') {
+	if (newPlatform === 'zai') {
 		accountCategory.value = 'apikey'
 		form.type = 'apikey'
 	}
@@ -3633,9 +3679,13 @@ const handleSubmit = async () => {
 			? 'https://api.openai.com'
 			: form.platform === 'gemini'
 				? 'https://generativelanguage.googleapis.com'
-				: form.platform === 'zhipu'
-					? 'https://open.bigmodel.cn/api/paas/v4'
-					: 'https://api.anthropic.com'
+				: form.platform === 'zai'
+					? 'https://api.z.ai/api/coding/paas/v4'
+					: form.platform === 'kimi'
+						? 'https://api.kimi.com/coding/v1'
+						: form.platform === 'minimaxCode'
+							? 'https://api.minimaxi.com/anthropic'
+						: 'https://api.anthropic.com'
 
   // Build credentials with optional model mapping
   const credentials: Record<string, unknown> = {

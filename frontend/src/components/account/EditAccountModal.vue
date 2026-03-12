@@ -39,11 +39,15 @@
                 ? 'https://api.openai.com'
                 : account.platform === 'gemini'
                   ? 'https://generativelanguage.googleapis.com'
-                  : account.platform === 'zhipu'
-                    ? 'https://open.bigmodel.cn/api/paas/v4'
-                    : account.platform === 'antigravity'
-                      ? 'https://cloudcode-pa.googleapis.com'
-                      : 'https://api.anthropic.com'
+                  : account.platform === 'zai'
+                    ? 'https://api.z.ai/api/coding/paas/v4'
+                    : account.platform === 'kimi'
+                      ? 'https://api.kimi.com/coding/v1'
+                      : account.platform === 'minimaxCode'
+                        ? 'https://api.minimaxi.com/anthropic'
+                        : account.platform === 'antigravity'
+                          ? 'https://cloudcode-pa.googleapis.com'
+                          : 'https://api.anthropic.com'
             "
           />
           <p class="input-hint">{{ baseUrlHint }}</p>
@@ -59,8 +63,8 @@
                 ? 'sk-proj-...'
                 : account.platform === 'gemini'
                   ? 'AIza...'
-                  : account.platform === 'zhipu'
-                    ? 'glm-...'
+                  : account.platform === 'zai' || account.platform === 'kimi' || account.platform === 'minimaxCode'
+                    ? 'sk-...'
                     : account.platform === 'antigravity'
                       ? 'sk-...'
                       : 'sk-ant-...'
@@ -1529,7 +1533,7 @@ const baseUrlHint = computed(() => {
   if (!props.account) return t('admin.accounts.baseUrlHint')
   if (props.account.platform === 'openai') return t('admin.accounts.openai.baseUrlHint')
   if (props.account.platform === 'gemini') return t('admin.accounts.gemini.baseUrlHint')
-  if (props.account.platform === 'zhipu') return t('admin.accounts.openai.baseUrlHint')
+  if (props.account.platform === 'zai' || props.account.platform === 'kimi' || props.account.platform === 'minimaxCode') return t('admin.accounts.openai.baseUrlHint')
   return t('admin.accounts.baseUrlHint')
 })
 
@@ -1677,7 +1681,9 @@ const tempUnschedPresets = computed(() => [
 const defaultBaseUrl = computed(() => {
   if (props.account?.platform === 'openai' || props.account?.platform === 'sora') return 'https://api.openai.com'
   if (props.account?.platform === 'gemini') return 'https://generativelanguage.googleapis.com'
-  if (props.account?.platform === 'zhipu') return 'https://open.bigmodel.cn/api/paas/v4'
+  if (props.account?.platform === 'zai') return 'https://api.z.ai/api/coding/paas/v4'
+  if (props.account?.platform === 'kimi') return 'https://api.kimi.com/coding/v1'
+  if (props.account?.platform === 'minimaxCode') return 'https://api.minimaxi.com/anthropic'
   return 'https://api.anthropic.com'
 })
 
@@ -1852,7 +1858,13 @@ watch(
             ? 'https://api.openai.com'
             : newAccount.platform === 'gemini'
               ? 'https://generativelanguage.googleapis.com'
-              : 'https://api.anthropic.com'
+              : newAccount.platform === 'zai'
+                ? 'https://api.z.ai/api/coding/paas/v4'
+                : newAccount.platform === 'kimi'
+                  ? 'https://api.kimi.com/coding/v1'
+                  : newAccount.platform === 'minimaxCode'
+                    ? 'https://api.minimaxi.com/anthropic'
+                    : 'https://api.anthropic.com'
         editBaseUrl.value = (credentials.base_url as string) || platformDefaultUrl
 
         // Load model mappings and detect mode
@@ -1904,7 +1916,13 @@ watch(
             ? 'https://api.openai.com'
             : newAccount.platform === 'gemini'
               ? 'https://generativelanguage.googleapis.com'
-              : 'https://api.anthropic.com'
+              : newAccount.platform === 'zai'
+                ? 'https://api.z.ai/api/coding/paas/v4'
+                : newAccount.platform === 'kimi'
+                  ? 'https://api.kimi.com/coding/v1'
+                  : newAccount.platform === 'minimaxCode'
+                    ? 'https://api.minimaxi.com/anthropic'
+                    : 'https://api.anthropic.com'
         editBaseUrl.value = platformDefaultUrl
 
         // Load model mappings for OpenAI OAuth accounts
