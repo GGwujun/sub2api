@@ -303,26 +303,31 @@ func (s *MiniMaxGatewayService) ForwardStream(ctx context.Context, account *Acco
 
 	// 流式传输
 	var collectedUsage *MiniMaxUsage
+	var currentEvent string
 	requestID := ""
 	scanner := bufio.NewScanner(resp.Body)
 	for scanner.Scan() {
 		line := scanner.Text()
 
 		// 记录首token时间
-		if firstTokenTime.IsZero() && strings.HasPrefix(line, "data: ") {
+		if firstTokenTime.IsZero() && (strings.HasPrefix(line, "data:") || strings.HasPrefix(line, "event:")) {
 			firstTokenTime = time.Now()
 		}
 
-		// 解析token使用量（包括 [DONE] 消息中的 usage）
+		// SSE 事件格式: event: xxx \n data: {...}
+		// 记录当前事件类型
+		if strings.HasPrefix(line, "event:") {
+			currentEvent = strings.TrimPrefix(line, "event:")
+			currentEvent = strings.TrimSpace(currentEvent)
+			continue
+		}
+
+		// 解析 data 行
 		// 支持 "data: " 和 "data:" 两种格式
 		if strings.HasPrefix(line, "data: ") {
 			data := strings.TrimPrefix(line, "data: ")
-			// 即使是 [DONE] 也要尝试解析 usage（usage 通常在最后消息中）
 			if data != "" && data != "[DONE]" {
-				// 尝试解析usage
 				usage := s.extractUsage([]byte(data))
-				// 流式响应中，需要累加 usage 而不是覆盖
-				// 因为 input_tokens 在 message_start，output_tokens 在 message_delta
 				if usage != nil {
 					if collectedUsage == nil {
 						collectedUsage = &MiniMaxUsage{}
@@ -341,7 +346,7 @@ func (s *MiniMaxGatewayService) ForwardStream(ctx context.Context, account *Acco
 					requestID = gjson.Get(data, "id").String()
 				}
 			}
-			// 如果是 [DONE]，也尝试解析 usage（某些 API 会在最后返回 usage）
+			// 处理 [DONE]
 			if data == "[DONE]" {
 				usage := s.extractUsage([]byte(line))
 				if usage != nil {
