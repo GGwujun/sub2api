@@ -390,7 +390,7 @@ const currentFiles = computed((): FileConfig[] => {
     return trimmed.endsWith('/v1') ? trimmed : `${trimmed}/v1`
   }
   const apiBase = ensureV1(baseRoot)
-  const zhipuBase = `${baseRoot}/api/coding/paas/v4`
+  const zhipuBase = `${baseRoot}/zhipu/v1`
   const kimiBase = `${baseRoot}/kimi/v1`
   const minimaxBase = `${baseRoot}/minimaxCode/v1`
   const antigravityBase = ensureV1(`${baseRoot}/antigravity`)

@@ -573,6 +573,7 @@ export default {
     failedToChangeGroup: '更换分组失败',
     groupRequired: '请选择分组',
     usage: '用量',
+    tokens: 'Token',
     today: '今日',
     total: '累计',
     quota: '额度',

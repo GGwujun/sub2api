@@ -21,25 +21,26 @@
             :options="statusFilterOptions"
             @update:model-value="onStatusFilterChange"
           />
-        </div>
-      </template>
+            </div>
+          </template>
 
-      <template #actions>
-        <div class="flex justify-end gap-3">
-        <button
-          @click="loadApiKeys"
-          :disabled="loading"
-          class="btn btn-secondary"
-          :title="t('common.refresh')"
-        >
-          <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
-        </button>
-        <button @click="showCreateModal = true" class="btn btn-primary" data-tour="keys-create-btn">
-          <Icon name="plus" size="md" class="mr-2" />
-          {{ t('keys.createKey') }}
-        </button>
-      </div>
-      </template>
+          <template #cell-tokens="{ row }">
+            <div class="text-xs">
+              <div class="flex items-center gap-1.5 mb-0.5">
+                <span class="text-gray-500 dark:text-gray-400">{{ t('keys.today') }}:</span>
+                <span class="font-medium text-gray-900 dark:text-white">
+                  {{ formatTokens(usageStats[row.id]?.today_total_tokens ?? 0) }}
+                </span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-gray-500 dark:text-gray-400">{{ t('keys.total') }}:</span>
+                <span class="font-medium text-gray-900 dark:text-white">
+                  {{ formatTokens(usageStats[row.id]?.total_total_tokens ?? 0) }}
+                </span>
+              </div>
+            </div>
+          </template>
+
 
       <template #table>
         <DataTable :columns="columns" :data="apiKeys" :loading="loading">
@@ -1074,6 +1075,13 @@ interface GroupOption {
 }
 
 const appStore = useAppStore()
+
+// Token 数量格式化
+function formatTokens(num: number): string {
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M'
+  if (num >= 1000) return (num / 1000).toFixed(1) + 'K'
+  return num.toLocaleString()
+}
 const onboardingStore = useOnboardingStore()
 const { copyToClipboard: clipboardCopy } = useClipboard()
 
@@ -1081,6 +1089,7 @@ const columns = computed<Column[]>(() => [
   { key: 'name', label: t('common.name'), sortable: true },
   { key: 'key', label: t('keys.apiKey'), sortable: false },
   { key: 'group', label: t('keys.group'), sortable: false },
+  { key: 'tokens', label: t('keys.tokens'), sortable: false },
   { key: 'usage', label: t('keys.usage'), sortable: false },
   { key: 'rate_limit', label: t('keys.rateLimitColumn'), sortable: false },
   { key: 'expires_at', label: t('keys.expiresAt'), sortable: true },

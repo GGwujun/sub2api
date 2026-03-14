@@ -139,6 +139,12 @@ func runMainServer() {
 	// DEBUG: Print server configuration
 	log.Printf("[DEBUG] Loaded config - Host: %s, Port: %d", cfg.Server.Host, cfg.Server.Port)
 	log.Printf("[DEBUG] Config Server.Address(): %s", cfg.Server.Address())
+	// 强制 IPv4，避免 systemd 下绑定到 IPv6
+	if cfg.Server.Host == "" || cfg.Server.Host == ":" {
+		cfg.Server.Host = "0.0.0.0"
+		log.Printf("[DEBUG] Forced Host to 0.0.0.0")
+	}
+
 	log.Printf("[DEBUG] SERVER_PORT env: %s", os.Getenv("SERVER_PORT"))
 	// FORCE: Override port to 8899 for testing
 	if cfg.Server.Port != 8899 {

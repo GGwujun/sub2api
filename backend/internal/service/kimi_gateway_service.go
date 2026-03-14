@@ -147,6 +147,17 @@ func NewKimiGatewayService(
 	}
 }
 
+// billingDeps 获取扣费逻辑依赖的服务
+func (s *KimiGatewayService) billingDeps() *billingDeps {
+	return &billingDeps{
+		accountRepo:         s.accountRepo,
+		userRepo:            s.userRepo,
+		userSubRepo:         s.userSubRepo,
+		billingCacheService: s.billingCacheService,
+		deferredService:     s.deferredService,
+	}
+}
+
 // getKimiRequestTimeout 获取Kimi请求超时时间
 func getKimiRequestTimeout(cfg *config.Config) int {
 	if cfg != nil && cfg.Gateway.Kimi.RequestTimeoutSeconds > 0 {
@@ -818,6 +829,28 @@ func (s *KimiGatewayService) RecordUsage(ctx context.Context, input *KimiRecordU
 	// 获取账号计费倍率
 	accountRateMultiplier := input.Account.BillingRateMultiplier()
 
+	// 确定计费类型（订阅 vs 余额）
+	var subscription *UserSubscription
+	isSubscriptionBilling := input.APIKey.GroupID != nil && input.APIKey.Group != nil && input.APIKey.Group.IsSubscriptionType()
+	if isSubscriptionBilling && s.userSubRepo != nil {
+		sub, subErr := s.userSubRepo.GetActiveByUserIDAndGroupID(ctx, user.ID, *input.APIKey.GroupID)
+		if subErr != nil {
+			logger.FromContext(ctx).Warn("kimi.subscription_not_found",
+				zap.Error(subErr),
+				zap.Int64("user_id", user.ID),
+				zap.Int64("group_id", *input.APIKey.GroupID),
+			)
+			isSubscriptionBilling = false
+		} else {
+			subscription = sub
+		}
+	}
+
+	billingType := BillingTypeBalance
+	if isSubscriptionBilling {
+		billingType = BillingTypeSubscription
+	}
+
 	// 创建使用记录
 	usageLog := &UsageLog{
 		UserID:                input.APIKey.UserID,
@@ -833,8 +866,17 @@ func (s *KimiGatewayService) RecordUsage(ctx context.Context, input *KimiRecordU
 		ActualCost:            totalCost,
 		RateMultiplier:        multiplier,
 		AccountRateMultiplier: &accountRateMultiplier,
+		BillingType:           billingType,
 		RequestType:           RequestTypeSync,
 		Stream:                input.Stream,
+	}
+
+	// 设置分组和订阅关联
+	if input.APIKey.GroupID != nil {
+		usageLog.GroupID = input.APIKey.GroupID
+	}
+	if subscription != nil {
+		usageLog.SubscriptionID = &subscription.ID
 	}
 
 	// 根据是否流式设置请求类型
@@ -865,7 +907,7 @@ func (s *KimiGatewayService) RecordUsage(ctx context.Context, input *KimiRecordU
 	}
 
 	// 保存使用记录
-	_, err = s.usageRepo.Create(ctx, usageLog)
+	inserted, err := s.usageRepo.Create(ctx, usageLog)
 	if err != nil {
 		return fmt.Errorf("failed to create usage log: %w", err)
 	}
@@ -881,7 +923,40 @@ func (s *KimiGatewayService) RecordUsage(ctx context.Context, input *KimiRecordU
 		)
 	}
 
-	_ = user // silence unused variable warning
+	// SIMPLE MODE: skip billing, only update last used
+	if s.cfg != nil && s.cfg.RunMode == config.RunModeSimple {
+		logger.LegacyPrintf("service.kimi_gateway", "[SIMPLE MODE] Usage recorded (not billed): user=%d, tokens=%d", usageLog.UserID, usageLog.TotalTokens())
+		return nil
+	}
+
+	// PRODUCTION MODE: apply billing (balance deduction or subscription usage increment)
+	if inserted {
+		postUsageBilling(ctx, &postUsageBillingParams{
+			Cost: &CostBreakdown{
+				InputCost:     inputCost * multiplier,
+				OutputCost:    outputCost * multiplier,
+				CacheReadCost: 0,
+				TotalCost:     totalCost,
+				ActualCost:    totalCost,
+			},
+			User:                  user,
+			APIKey:                input.APIKey,
+			Account:               input.Account,
+			Subscription:          subscription,
+			IsSubscriptionBill:    isSubscriptionBilling,
+			AccountRateMultiplier: accountRateMultiplier,
+			APIKeyService:         input.APIKeyService,
+		}, s.billingDeps())
+	}
+
+	// SIMPLE MODE: skip billing, only update last used
+	if s.cfg != nil && s.cfg.RunMode == config.RunModeSimple {
+		logger.LegacyPrintf("service.kimi_gateway", "[SIMPLE MODE] Usage recorded (not billed): user=%d, tokens=%d", usageLog.UserID, usageLog.TotalTokens())
+		if s.deferredService != nil {
+			s.deferredService.ScheduleLastUsedUpdate(input.Account.ID)
+		}
+		return nil
+	}
 
 	return nil
 }

@@ -573,6 +573,7 @@ export default {
     failedToChangeGroup: 'Failed to change group',
     groupRequired: 'Please select a group',
     usage: 'Usage',
+    tokens: 'Tokens',
     today: 'Today',
     total: 'Total',
     quota: 'Quota',
