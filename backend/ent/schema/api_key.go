@@ -69,6 +69,17 @@ func (APIKey) Fields() []ent.Field {
 			SchemaType(map[string]string{dialect.Postgres: "decimal(20,8)"}).
 			Default(0).
 			Comment("Used quota amount in USD"),
+
+		// ========== Token Quota fields ==========
+		// Token quota limit (0 = unlimited)
+		field.Int64("token_quota").
+			Default(0).
+			Comment("Token quota limit (0 = unlimited)"),
+		// Used token quota amount
+		field.Int64("token_quota_used").
+			Default(0).
+			Comment("Used token quota amount"),
+
 		// Expiration time (nil = never expires)
 		field.Time("expires_at").
 			Optional().
@@ -143,6 +154,7 @@ func (APIKey) Indexes() []ent.Index {
 		index.Fields("last_used_at"),
 		// Index for quota queries
 		index.Fields("quota", "quota_used"),
+		index.Fields("token_quota", "token_quota_used"),
 		index.Fields("expires_at"),
 	}
 }

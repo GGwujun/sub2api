@@ -72,51 +72,55 @@ const (
 // APIKeyMutation represents an operation that mutates the APIKey nodes in the graph.
 type APIKeyMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *int64
-	created_at         *time.Time
-	updated_at         *time.Time
-	deleted_at         *time.Time
-	key                *string
-	name               *string
-	status             *string
-	last_used_at       *time.Time
-	ip_whitelist       *[]string
-	appendip_whitelist []string
-	ip_blacklist       *[]string
-	appendip_blacklist []string
-	quota              *float64
-	addquota           *float64
-	quota_used         *float64
-	addquota_used      *float64
-	expires_at         *time.Time
-	rate_limit_5h      *float64
-	addrate_limit_5h   *float64
-	rate_limit_1d      *float64
-	addrate_limit_1d   *float64
-	rate_limit_7d      *float64
-	addrate_limit_7d   *float64
-	usage_5h           *float64
-	addusage_5h        *float64
-	usage_1d           *float64
-	addusage_1d        *float64
-	usage_7d           *float64
-	addusage_7d        *float64
-	window_5h_start    *time.Time
-	window_1d_start    *time.Time
-	window_7d_start    *time.Time
-	clearedFields      map[string]struct{}
-	user               *int64
-	cleareduser        bool
-	group              *int64
-	clearedgroup       bool
-	usage_logs         map[int64]struct{}
-	removedusage_logs  map[int64]struct{}
-	clearedusage_logs  bool
-	done               bool
-	oldValue           func(context.Context) (*APIKey, error)
-	predicates         []predicate.APIKey
+	op                  Op
+	typ                 string
+	id                  *int64
+	created_at          *time.Time
+	updated_at          *time.Time
+	deleted_at          *time.Time
+	key                 *string
+	name                *string
+	status              *string
+	last_used_at        *time.Time
+	ip_whitelist        *[]string
+	appendip_whitelist  []string
+	ip_blacklist        *[]string
+	appendip_blacklist  []string
+	quota               *float64
+	addquota            *float64
+	quota_used          *float64
+	addquota_used       *float64
+	token_quota         *int64
+	addtoken_quota      *int64
+	token_quota_used    *int64
+	addtoken_quota_used *int64
+	expires_at          *time.Time
+	rate_limit_5h       *float64
+	addrate_limit_5h    *float64
+	rate_limit_1d       *float64
+	addrate_limit_1d    *float64
+	rate_limit_7d       *float64
+	addrate_limit_7d    *float64
+	usage_5h            *float64
+	addusage_5h         *float64
+	usage_1d            *float64
+	addusage_1d         *float64
+	usage_7d            *float64
+	addusage_7d         *float64
+	window_5h_start     *time.Time
+	window_1d_start     *time.Time
+	window_7d_start     *time.Time
+	clearedFields       map[string]struct{}
+	user                *int64
+	cleareduser         bool
+	group               *int64
+	clearedgroup        bool
+	usage_logs          map[int64]struct{}
+	removedusage_logs   map[int64]struct{}
+	clearedusage_logs   bool
+	done                bool
+	oldValue            func(context.Context) (*APIKey, error)
+	predicates          []predicate.APIKey
 }
 
 var _ ent.Mutation = (*APIKeyMutation)(nil)
@@ -822,6 +826,118 @@ func (m *APIKeyMutation) ResetQuotaUsed() {
 	m.addquota_used = nil
 }
 
+// SetTokenQuota sets the "token_quota" field.
+func (m *APIKeyMutation) SetTokenQuota(i int64) {
+	m.token_quota = &i
+	m.addtoken_quota = nil
+}
+
+// TokenQuota returns the value of the "token_quota" field in the mutation.
+func (m *APIKeyMutation) TokenQuota() (r int64, exists bool) {
+	v := m.token_quota
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuota returns the old "token_quota" field's value of the APIKey entity.
+// If the APIKey object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIKeyMutation) OldTokenQuota(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuota is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuota requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuota: %w", err)
+	}
+	return oldValue.TokenQuota, nil
+}
+
+// AddTokenQuota adds i to the "token_quota" field.
+func (m *APIKeyMutation) AddTokenQuota(i int64) {
+	if m.addtoken_quota != nil {
+		*m.addtoken_quota += i
+	} else {
+		m.addtoken_quota = &i
+	}
+}
+
+// AddedTokenQuota returns the value that was added to the "token_quota" field in this mutation.
+func (m *APIKeyMutation) AddedTokenQuota() (r int64, exists bool) {
+	v := m.addtoken_quota
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTokenQuota resets all changes to the "token_quota" field.
+func (m *APIKeyMutation) ResetTokenQuota() {
+	m.token_quota = nil
+	m.addtoken_quota = nil
+}
+
+// SetTokenQuotaUsed sets the "token_quota_used" field.
+func (m *APIKeyMutation) SetTokenQuotaUsed(i int64) {
+	m.token_quota_used = &i
+	m.addtoken_quota_used = nil
+}
+
+// TokenQuotaUsed returns the value of the "token_quota_used" field in the mutation.
+func (m *APIKeyMutation) TokenQuotaUsed() (r int64, exists bool) {
+	v := m.token_quota_used
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaUsed returns the old "token_quota_used" field's value of the APIKey entity.
+// If the APIKey object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIKeyMutation) OldTokenQuotaUsed(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaUsed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaUsed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaUsed: %w", err)
+	}
+	return oldValue.TokenQuotaUsed, nil
+}
+
+// AddTokenQuotaUsed adds i to the "token_quota_used" field.
+func (m *APIKeyMutation) AddTokenQuotaUsed(i int64) {
+	if m.addtoken_quota_used != nil {
+		*m.addtoken_quota_used += i
+	} else {
+		m.addtoken_quota_used = &i
+	}
+}
+
+// AddedTokenQuotaUsed returns the value that was added to the "token_quota_used" field in this mutation.
+func (m *APIKeyMutation) AddedTokenQuotaUsed() (r int64, exists bool) {
+	v := m.addtoken_quota_used
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTokenQuotaUsed resets all changes to the "token_quota_used" field.
+func (m *APIKeyMutation) ResetTokenQuotaUsed() {
+	m.token_quota_used = nil
+	m.addtoken_quota_used = nil
+}
+
 // SetExpiresAt sets the "expires_at" field.
 func (m *APIKeyMutation) SetExpiresAt(t time.Time) {
 	m.expires_at = &t
@@ -1496,7 +1612,7 @@ func (m *APIKeyMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *APIKeyMutation) Fields() []string {
-	fields := make([]string, 0, 23)
+	fields := make([]string, 0, 25)
 	if m.created_at != nil {
 		fields = append(fields, apikey.FieldCreatedAt)
 	}
@@ -1535,6 +1651,12 @@ func (m *APIKeyMutation) Fields() []string {
 	}
 	if m.quota_used != nil {
 		fields = append(fields, apikey.FieldQuotaUsed)
+	}
+	if m.token_quota != nil {
+		fields = append(fields, apikey.FieldTokenQuota)
+	}
+	if m.token_quota_used != nil {
+		fields = append(fields, apikey.FieldTokenQuotaUsed)
 	}
 	if m.expires_at != nil {
 		fields = append(fields, apikey.FieldExpiresAt)
@@ -1600,6 +1722,10 @@ func (m *APIKeyMutation) Field(name string) (ent.Value, bool) {
 		return m.Quota()
 	case apikey.FieldQuotaUsed:
 		return m.QuotaUsed()
+	case apikey.FieldTokenQuota:
+		return m.TokenQuota()
+	case apikey.FieldTokenQuotaUsed:
+		return m.TokenQuotaUsed()
 	case apikey.FieldExpiresAt:
 		return m.ExpiresAt()
 	case apikey.FieldRateLimit5h:
@@ -1655,6 +1781,10 @@ func (m *APIKeyMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldQuota(ctx)
 	case apikey.FieldQuotaUsed:
 		return m.OldQuotaUsed(ctx)
+	case apikey.FieldTokenQuota:
+		return m.OldTokenQuota(ctx)
+	case apikey.FieldTokenQuotaUsed:
+		return m.OldTokenQuotaUsed(ctx)
 	case apikey.FieldExpiresAt:
 		return m.OldExpiresAt(ctx)
 	case apikey.FieldRateLimit5h:
@@ -1775,6 +1905,20 @@ func (m *APIKeyMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetQuotaUsed(v)
 		return nil
+	case apikey.FieldTokenQuota:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuota(v)
+		return nil
+	case apikey.FieldTokenQuotaUsed:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaUsed(v)
+		return nil
 	case apikey.FieldExpiresAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -1859,6 +2003,12 @@ func (m *APIKeyMutation) AddedFields() []string {
 	if m.addquota_used != nil {
 		fields = append(fields, apikey.FieldQuotaUsed)
 	}
+	if m.addtoken_quota != nil {
+		fields = append(fields, apikey.FieldTokenQuota)
+	}
+	if m.addtoken_quota_used != nil {
+		fields = append(fields, apikey.FieldTokenQuotaUsed)
+	}
 	if m.addrate_limit_5h != nil {
 		fields = append(fields, apikey.FieldRateLimit5h)
 	}
@@ -1889,6 +2039,10 @@ func (m *APIKeyMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedQuota()
 	case apikey.FieldQuotaUsed:
 		return m.AddedQuotaUsed()
+	case apikey.FieldTokenQuota:
+		return m.AddedTokenQuota()
+	case apikey.FieldTokenQuotaUsed:
+		return m.AddedTokenQuotaUsed()
 	case apikey.FieldRateLimit5h:
 		return m.AddedRateLimit5h()
 	case apikey.FieldRateLimit1d:
@@ -1923,6 +2077,20 @@ func (m *APIKeyMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddQuotaUsed(v)
+		return nil
+	case apikey.FieldTokenQuota:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenQuota(v)
+		return nil
+	case apikey.FieldTokenQuotaUsed:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenQuotaUsed(v)
 		return nil
 	case apikey.FieldRateLimit5h:
 		v, ok := value.(float64)
@@ -2088,6 +2256,12 @@ func (m *APIKeyMutation) ResetField(name string) error {
 		return nil
 	case apikey.FieldQuotaUsed:
 		m.ResetQuotaUsed()
+		return nil
+	case apikey.FieldTokenQuota:
+		m.ResetTokenQuota()
+		return nil
+	case apikey.FieldTokenQuotaUsed:
+		m.ResetTokenQuotaUsed()
 		return nil
 	case apikey.FieldExpiresAt:
 		m.ResetExpiresAt()
@@ -8220,6 +8394,14 @@ type GroupMutation struct {
 	addweekly_limit_usd                     *float64
 	monthly_limit_usd                       *float64
 	addmonthly_limit_usd                    *float64
+	token_quota                             *int64
+	addtoken_quota                          *int64
+	token_quota_daily                       *int64
+	addtoken_quota_daily                    *int64
+	token_quota_weekly                      *int64
+	addtoken_quota_weekly                   *int64
+	token_quota_monthly                     *int64
+	addtoken_quota_monthly                  *int64
 	default_validity_days                   *int
 	adddefault_validity_days                *int
 	image_price_1k                          *float64
@@ -8988,6 +9170,286 @@ func (m *GroupMutation) ResetMonthlyLimitUsd() {
 	m.monthly_limit_usd = nil
 	m.addmonthly_limit_usd = nil
 	delete(m.clearedFields, group.FieldMonthlyLimitUsd)
+}
+
+// SetTokenQuota sets the "token_quota" field.
+func (m *GroupMutation) SetTokenQuota(i int64) {
+	m.token_quota = &i
+	m.addtoken_quota = nil
+}
+
+// TokenQuota returns the value of the "token_quota" field in the mutation.
+func (m *GroupMutation) TokenQuota() (r int64, exists bool) {
+	v := m.token_quota
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuota returns the old "token_quota" field's value of the Group entity.
+// If the Group object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupMutation) OldTokenQuota(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuota is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuota requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuota: %w", err)
+	}
+	return oldValue.TokenQuota, nil
+}
+
+// AddTokenQuota adds i to the "token_quota" field.
+func (m *GroupMutation) AddTokenQuota(i int64) {
+	if m.addtoken_quota != nil {
+		*m.addtoken_quota += i
+	} else {
+		m.addtoken_quota = &i
+	}
+}
+
+// AddedTokenQuota returns the value that was added to the "token_quota" field in this mutation.
+func (m *GroupMutation) AddedTokenQuota() (r int64, exists bool) {
+	v := m.addtoken_quota
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTokenQuota clears the value of the "token_quota" field.
+func (m *GroupMutation) ClearTokenQuota() {
+	m.token_quota = nil
+	m.addtoken_quota = nil
+	m.clearedFields[group.FieldTokenQuota] = struct{}{}
+}
+
+// TokenQuotaCleared returns if the "token_quota" field was cleared in this mutation.
+func (m *GroupMutation) TokenQuotaCleared() bool {
+	_, ok := m.clearedFields[group.FieldTokenQuota]
+	return ok
+}
+
+// ResetTokenQuota resets all changes to the "token_quota" field.
+func (m *GroupMutation) ResetTokenQuota() {
+	m.token_quota = nil
+	m.addtoken_quota = nil
+	delete(m.clearedFields, group.FieldTokenQuota)
+}
+
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (m *GroupMutation) SetTokenQuotaDaily(i int64) {
+	m.token_quota_daily = &i
+	m.addtoken_quota_daily = nil
+}
+
+// TokenQuotaDaily returns the value of the "token_quota_daily" field in the mutation.
+func (m *GroupMutation) TokenQuotaDaily() (r int64, exists bool) {
+	v := m.token_quota_daily
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaDaily returns the old "token_quota_daily" field's value of the Group entity.
+// If the Group object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupMutation) OldTokenQuotaDaily(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaDaily is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaDaily requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaDaily: %w", err)
+	}
+	return oldValue.TokenQuotaDaily, nil
+}
+
+// AddTokenQuotaDaily adds i to the "token_quota_daily" field.
+func (m *GroupMutation) AddTokenQuotaDaily(i int64) {
+	if m.addtoken_quota_daily != nil {
+		*m.addtoken_quota_daily += i
+	} else {
+		m.addtoken_quota_daily = &i
+	}
+}
+
+// AddedTokenQuotaDaily returns the value that was added to the "token_quota_daily" field in this mutation.
+func (m *GroupMutation) AddedTokenQuotaDaily() (r int64, exists bool) {
+	v := m.addtoken_quota_daily
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTokenQuotaDaily clears the value of the "token_quota_daily" field.
+func (m *GroupMutation) ClearTokenQuotaDaily() {
+	m.token_quota_daily = nil
+	m.addtoken_quota_daily = nil
+	m.clearedFields[group.FieldTokenQuotaDaily] = struct{}{}
+}
+
+// TokenQuotaDailyCleared returns if the "token_quota_daily" field was cleared in this mutation.
+func (m *GroupMutation) TokenQuotaDailyCleared() bool {
+	_, ok := m.clearedFields[group.FieldTokenQuotaDaily]
+	return ok
+}
+
+// ResetTokenQuotaDaily resets all changes to the "token_quota_daily" field.
+func (m *GroupMutation) ResetTokenQuotaDaily() {
+	m.token_quota_daily = nil
+	m.addtoken_quota_daily = nil
+	delete(m.clearedFields, group.FieldTokenQuotaDaily)
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (m *GroupMutation) SetTokenQuotaWeekly(i int64) {
+	m.token_quota_weekly = &i
+	m.addtoken_quota_weekly = nil
+}
+
+// TokenQuotaWeekly returns the value of the "token_quota_weekly" field in the mutation.
+func (m *GroupMutation) TokenQuotaWeekly() (r int64, exists bool) {
+	v := m.token_quota_weekly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaWeekly returns the old "token_quota_weekly" field's value of the Group entity.
+// If the Group object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupMutation) OldTokenQuotaWeekly(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaWeekly is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaWeekly requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaWeekly: %w", err)
+	}
+	return oldValue.TokenQuotaWeekly, nil
+}
+
+// AddTokenQuotaWeekly adds i to the "token_quota_weekly" field.
+func (m *GroupMutation) AddTokenQuotaWeekly(i int64) {
+	if m.addtoken_quota_weekly != nil {
+		*m.addtoken_quota_weekly += i
+	} else {
+		m.addtoken_quota_weekly = &i
+	}
+}
+
+// AddedTokenQuotaWeekly returns the value that was added to the "token_quota_weekly" field in this mutation.
+func (m *GroupMutation) AddedTokenQuotaWeekly() (r int64, exists bool) {
+	v := m.addtoken_quota_weekly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTokenQuotaWeekly clears the value of the "token_quota_weekly" field.
+func (m *GroupMutation) ClearTokenQuotaWeekly() {
+	m.token_quota_weekly = nil
+	m.addtoken_quota_weekly = nil
+	m.clearedFields[group.FieldTokenQuotaWeekly] = struct{}{}
+}
+
+// TokenQuotaWeeklyCleared returns if the "token_quota_weekly" field was cleared in this mutation.
+func (m *GroupMutation) TokenQuotaWeeklyCleared() bool {
+	_, ok := m.clearedFields[group.FieldTokenQuotaWeekly]
+	return ok
+}
+
+// ResetTokenQuotaWeekly resets all changes to the "token_quota_weekly" field.
+func (m *GroupMutation) ResetTokenQuotaWeekly() {
+	m.token_quota_weekly = nil
+	m.addtoken_quota_weekly = nil
+	delete(m.clearedFields, group.FieldTokenQuotaWeekly)
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (m *GroupMutation) SetTokenQuotaMonthly(i int64) {
+	m.token_quota_monthly = &i
+	m.addtoken_quota_monthly = nil
+}
+
+// TokenQuotaMonthly returns the value of the "token_quota_monthly" field in the mutation.
+func (m *GroupMutation) TokenQuotaMonthly() (r int64, exists bool) {
+	v := m.token_quota_monthly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaMonthly returns the old "token_quota_monthly" field's value of the Group entity.
+// If the Group object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupMutation) OldTokenQuotaMonthly(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaMonthly is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaMonthly requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaMonthly: %w", err)
+	}
+	return oldValue.TokenQuotaMonthly, nil
+}
+
+// AddTokenQuotaMonthly adds i to the "token_quota_monthly" field.
+func (m *GroupMutation) AddTokenQuotaMonthly(i int64) {
+	if m.addtoken_quota_monthly != nil {
+		*m.addtoken_quota_monthly += i
+	} else {
+		m.addtoken_quota_monthly = &i
+	}
+}
+
+// AddedTokenQuotaMonthly returns the value that was added to the "token_quota_monthly" field in this mutation.
+func (m *GroupMutation) AddedTokenQuotaMonthly() (r int64, exists bool) {
+	v := m.addtoken_quota_monthly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTokenQuotaMonthly clears the value of the "token_quota_monthly" field.
+func (m *GroupMutation) ClearTokenQuotaMonthly() {
+	m.token_quota_monthly = nil
+	m.addtoken_quota_monthly = nil
+	m.clearedFields[group.FieldTokenQuotaMonthly] = struct{}{}
+}
+
+// TokenQuotaMonthlyCleared returns if the "token_quota_monthly" field was cleared in this mutation.
+func (m *GroupMutation) TokenQuotaMonthlyCleared() bool {
+	_, ok := m.clearedFields[group.FieldTokenQuotaMonthly]
+	return ok
+}
+
+// ResetTokenQuotaMonthly resets all changes to the "token_quota_monthly" field.
+func (m *GroupMutation) ResetTokenQuotaMonthly() {
+	m.token_quota_monthly = nil
+	m.addtoken_quota_monthly = nil
+	delete(m.clearedFields, group.FieldTokenQuotaMonthly)
 }
 
 // SetDefaultValidityDays sets the "default_validity_days" field.
@@ -10426,7 +10888,7 @@ func (m *GroupMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GroupMutation) Fields() []string {
-	fields := make([]string, 0, 32)
+	fields := make([]string, 0, 36)
 	if m.created_at != nil {
 		fields = append(fields, group.FieldCreatedAt)
 	}
@@ -10465,6 +10927,18 @@ func (m *GroupMutation) Fields() []string {
 	}
 	if m.monthly_limit_usd != nil {
 		fields = append(fields, group.FieldMonthlyLimitUsd)
+	}
+	if m.token_quota != nil {
+		fields = append(fields, group.FieldTokenQuota)
+	}
+	if m.token_quota_daily != nil {
+		fields = append(fields, group.FieldTokenQuotaDaily)
+	}
+	if m.token_quota_weekly != nil {
+		fields = append(fields, group.FieldTokenQuotaWeekly)
+	}
+	if m.token_quota_monthly != nil {
+		fields = append(fields, group.FieldTokenQuotaMonthly)
 	}
 	if m.default_validity_days != nil {
 		fields = append(fields, group.FieldDefaultValidityDays)
@@ -10557,6 +11031,14 @@ func (m *GroupMutation) Field(name string) (ent.Value, bool) {
 		return m.WeeklyLimitUsd()
 	case group.FieldMonthlyLimitUsd:
 		return m.MonthlyLimitUsd()
+	case group.FieldTokenQuota:
+		return m.TokenQuota()
+	case group.FieldTokenQuotaDaily:
+		return m.TokenQuotaDaily()
+	case group.FieldTokenQuotaWeekly:
+		return m.TokenQuotaWeekly()
+	case group.FieldTokenQuotaMonthly:
+		return m.TokenQuotaMonthly()
 	case group.FieldDefaultValidityDays:
 		return m.DefaultValidityDays()
 	case group.FieldImagePrice1k:
@@ -10630,6 +11112,14 @@ func (m *GroupMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldWeeklyLimitUsd(ctx)
 	case group.FieldMonthlyLimitUsd:
 		return m.OldMonthlyLimitUsd(ctx)
+	case group.FieldTokenQuota:
+		return m.OldTokenQuota(ctx)
+	case group.FieldTokenQuotaDaily:
+		return m.OldTokenQuotaDaily(ctx)
+	case group.FieldTokenQuotaWeekly:
+		return m.OldTokenQuotaWeekly(ctx)
+	case group.FieldTokenQuotaMonthly:
+		return m.OldTokenQuotaMonthly(ctx)
 	case group.FieldDefaultValidityDays:
 		return m.OldDefaultValidityDays(ctx)
 	case group.FieldImagePrice1k:
@@ -10767,6 +11257,34 @@ func (m *GroupMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetMonthlyLimitUsd(v)
+		return nil
+	case group.FieldTokenQuota:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuota(v)
+		return nil
+	case group.FieldTokenQuotaDaily:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaDaily(v)
+		return nil
+	case group.FieldTokenQuotaWeekly:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaWeekly(v)
+		return nil
+	case group.FieldTokenQuotaMonthly:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaMonthly(v)
 		return nil
 	case group.FieldDefaultValidityDays:
 		v, ok := value.(int)
@@ -10921,6 +11439,18 @@ func (m *GroupMutation) AddedFields() []string {
 	if m.addmonthly_limit_usd != nil {
 		fields = append(fields, group.FieldMonthlyLimitUsd)
 	}
+	if m.addtoken_quota != nil {
+		fields = append(fields, group.FieldTokenQuota)
+	}
+	if m.addtoken_quota_daily != nil {
+		fields = append(fields, group.FieldTokenQuotaDaily)
+	}
+	if m.addtoken_quota_weekly != nil {
+		fields = append(fields, group.FieldTokenQuotaWeekly)
+	}
+	if m.addtoken_quota_monthly != nil {
+		fields = append(fields, group.FieldTokenQuotaMonthly)
+	}
 	if m.adddefault_validity_days != nil {
 		fields = append(fields, group.FieldDefaultValidityDays)
 	}
@@ -10973,6 +11503,14 @@ func (m *GroupMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedWeeklyLimitUsd()
 	case group.FieldMonthlyLimitUsd:
 		return m.AddedMonthlyLimitUsd()
+	case group.FieldTokenQuota:
+		return m.AddedTokenQuota()
+	case group.FieldTokenQuotaDaily:
+		return m.AddedTokenQuotaDaily()
+	case group.FieldTokenQuotaWeekly:
+		return m.AddedTokenQuotaWeekly()
+	case group.FieldTokenQuotaMonthly:
+		return m.AddedTokenQuotaMonthly()
 	case group.FieldDefaultValidityDays:
 		return m.AddedDefaultValidityDays()
 	case group.FieldImagePrice1k:
@@ -11033,6 +11571,34 @@ func (m *GroupMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddMonthlyLimitUsd(v)
+		return nil
+	case group.FieldTokenQuota:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenQuota(v)
+		return nil
+	case group.FieldTokenQuotaDaily:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenQuotaDaily(v)
+		return nil
+	case group.FieldTokenQuotaWeekly:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenQuotaWeekly(v)
+		return nil
+	case group.FieldTokenQuotaMonthly:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenQuotaMonthly(v)
 		return nil
 	case group.FieldDefaultValidityDays:
 		v, ok := value.(int)
@@ -11141,6 +11707,18 @@ func (m *GroupMutation) ClearedFields() []string {
 	if m.FieldCleared(group.FieldMonthlyLimitUsd) {
 		fields = append(fields, group.FieldMonthlyLimitUsd)
 	}
+	if m.FieldCleared(group.FieldTokenQuota) {
+		fields = append(fields, group.FieldTokenQuota)
+	}
+	if m.FieldCleared(group.FieldTokenQuotaDaily) {
+		fields = append(fields, group.FieldTokenQuotaDaily)
+	}
+	if m.FieldCleared(group.FieldTokenQuotaWeekly) {
+		fields = append(fields, group.FieldTokenQuotaWeekly)
+	}
+	if m.FieldCleared(group.FieldTokenQuotaMonthly) {
+		fields = append(fields, group.FieldTokenQuotaMonthly)
+	}
 	if m.FieldCleared(group.FieldImagePrice1k) {
 		fields = append(fields, group.FieldImagePrice1k)
 	}
@@ -11199,6 +11777,18 @@ func (m *GroupMutation) ClearField(name string) error {
 		return nil
 	case group.FieldMonthlyLimitUsd:
 		m.ClearMonthlyLimitUsd()
+		return nil
+	case group.FieldTokenQuota:
+		m.ClearTokenQuota()
+		return nil
+	case group.FieldTokenQuotaDaily:
+		m.ClearTokenQuotaDaily()
+		return nil
+	case group.FieldTokenQuotaWeekly:
+		m.ClearTokenQuotaWeekly()
+		return nil
+	case group.FieldTokenQuotaMonthly:
+		m.ClearTokenQuotaMonthly()
 		return nil
 	case group.FieldImagePrice1k:
 		m.ClearImagePrice1k()
@@ -11276,6 +11866,18 @@ func (m *GroupMutation) ResetField(name string) error {
 		return nil
 	case group.FieldMonthlyLimitUsd:
 		m.ResetMonthlyLimitUsd()
+		return nil
+	case group.FieldTokenQuota:
+		m.ResetTokenQuota()
+		return nil
+	case group.FieldTokenQuotaDaily:
+		m.ResetTokenQuotaDaily()
+		return nil
+	case group.FieldTokenQuotaWeekly:
+		m.ResetTokenQuotaWeekly()
+		return nil
+	case group.FieldTokenQuotaMonthly:
+		m.ResetTokenQuotaMonthly()
 		return nil
 	case group.FieldDefaultValidityDays:
 		m.ResetDefaultValidityDays()

@@ -41,6 +41,10 @@ const (
 	FieldQuota = "quota"
 	// FieldQuotaUsed holds the string denoting the quota_used field in the database.
 	FieldQuotaUsed = "quota_used"
+	// FieldTokenQuota holds the string denoting the token_quota field in the database.
+	FieldTokenQuota = "token_quota"
+	// FieldTokenQuotaUsed holds the string denoting the token_quota_used field in the database.
+	FieldTokenQuotaUsed = "token_quota_used"
 	// FieldExpiresAt holds the string denoting the expires_at field in the database.
 	FieldExpiresAt = "expires_at"
 	// FieldRateLimit5h holds the string denoting the rate_limit_5h field in the database.
@@ -108,6 +112,8 @@ var Columns = []string{
 	FieldIPBlacklist,
 	FieldQuota,
 	FieldQuotaUsed,
+	FieldTokenQuota,
+	FieldTokenQuotaUsed,
 	FieldExpiresAt,
 	FieldRateLimit5h,
 	FieldRateLimit1d,
@@ -156,6 +162,10 @@ var (
 	DefaultQuota float64
 	// DefaultQuotaUsed holds the default value on creation for the "quota_used" field.
 	DefaultQuotaUsed float64
+	// DefaultTokenQuota holds the default value on creation for the "token_quota" field.
+	DefaultTokenQuota int64
+	// DefaultTokenQuotaUsed holds the default value on creation for the "token_quota_used" field.
+	DefaultTokenQuotaUsed int64
 	// DefaultRateLimit5h holds the default value on creation for the "rate_limit_5h" field.
 	DefaultRateLimit5h float64
 	// DefaultRateLimit1d holds the default value on creation for the "rate_limit_1d" field.
@@ -231,6 +241,16 @@ func ByQuota(opts ...sql.OrderTermOption) OrderOption {
 // ByQuotaUsed orders the results by the quota_used field.
 func ByQuotaUsed(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldQuotaUsed, opts...).ToFunc()
+}
+
+// ByTokenQuota orders the results by the token_quota field.
+func ByTokenQuota(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuota, opts...).ToFunc()
+}
+
+// ByTokenQuotaUsed orders the results by the token_quota_used field.
+func ByTokenQuotaUsed(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaUsed, opts...).ToFunc()
 }
 
 // ByExpiresAt orders the results by the expires_at field.

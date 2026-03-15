@@ -429,6 +429,58 @@
               />
             </div>
           </div>
+
+          <!-- Token Quota limits (only show when token_quota type is selected) -->
+          <div
+            v-if="createForm.subscription_type === 'token_quota'"
+            class="space-y-4 border-l-2 border-primary-200 pl-4 dark:border-primary-800"
+          >
+            <div>
+              <label class="input-label">{{ t('admin.groups.subscription.tokenQuotaLimit') }}</label>
+              <input
+                v-model.number="createForm.token_quota"
+                type="number"
+                step="1"
+                min="0"
+                class="input"
+                :placeholder="t('admin.groups.subscription.noLimit')"
+              />
+              <p class="input-hint">{{ t('admin.groups.subscription.tokenQuotaHint') }}</p>
+            </div>
+            <div>
+              <label class="input-label">{{ t('admin.groups.subscription.tokenQuotaDaily') }}</label>
+              <input
+                v-model.number="createForm.token_quota_daily"
+                type="number"
+                step="1"
+                min="0"
+                class="input"
+                :placeholder="t('admin.groups.subscription.noLimit')"
+              />
+            </div>
+            <div>
+              <label class="input-label">{{ t('admin.groups.subscription.tokenQuotaWeekly') }}</label>
+              <input
+                v-model.number="createForm.token_quota_weekly"
+                type="number"
+                step="1"
+                min="0"
+                class="input"
+                :placeholder="t('admin.groups.subscription.noLimit')"
+              />
+            </div>
+            <div>
+              <label class="input-label">{{ t('admin.groups.subscription.tokenQuotaMonthly') }}</label>
+              <input
+                v-model.number="createForm.token_quota_monthly"
+                type="number"
+                step="1"
+                min="0"
+                class="input"
+                :placeholder="t('admin.groups.subscription.noLimit')"
+              />
+            </div>
+          </div>
         </div>
 
         <!-- 图片生成计费配置（antigravity 和 gemini 平台） -->
@@ -1164,6 +1216,58 @@
               />
             </div>
           </div>
+
+          <!-- Token Quota limits (only show when token_quota type is selected) -->
+          <div
+            v-if="editForm.subscription_type === 'token_quota'"
+            class="space-y-4 border-l-2 border-primary-200 pl-4 dark:border-primary-800"
+          >
+            <div>
+              <label class="input-label">{{ t('admin.groups.subscription.tokenQuotaLimit') }}</label>
+              <input
+                v-model.number="editForm.token_quota"
+                type="number"
+                step="1"
+                min="0"
+                class="input"
+                :placeholder="t('admin.groups.subscription.noLimit')"
+              />
+              <p class="input-hint">{{ t('admin.groups.subscription.tokenQuotaHint') }}</p>
+            </div>
+            <div>
+              <label class="input-label">{{ t('admin.groups.subscription.tokenQuotaDaily') }}</label>
+              <input
+                v-model.number="editForm.token_quota_daily"
+                type="number"
+                step="1"
+                min="0"
+                class="input"
+                :placeholder="t('admin.groups.subscription.noLimit')"
+              />
+            </div>
+            <div>
+              <label class="input-label">{{ t('admin.groups.subscription.tokenQuotaWeekly') }}</label>
+              <input
+                v-model.number="editForm.token_quota_weekly"
+                type="number"
+                step="1"
+                min="0"
+                class="input"
+                :placeholder="t('admin.groups.subscription.noLimit')"
+              />
+            </div>
+            <div>
+              <label class="input-label">{{ t('admin.groups.subscription.tokenQuotaMonthly') }}</label>
+              <input
+                v-model.number="editForm.token_quota_monthly"
+                type="number"
+                step="1"
+                min="0"
+                class="input"
+                :placeholder="t('admin.groups.subscription.noLimit')"
+              />
+            </div>
+          </div>
         </div>
 
         <!-- 图片生成计费配置（antigravity 和 gemini 平台） -->
@@ -1858,7 +1962,8 @@ const editStatusOptions = computed(() => [
 
 const subscriptionTypeOptions = computed(() => [
   { value: 'standard', label: t('admin.groups.subscription.standard') },
-  { value: 'subscription', label: t('admin.groups.subscription.subscription') }
+  { value: 'subscription', label: t('admin.groups.subscription.subscription') },
+  { value: 'token_quota', label: t('admin.groups.subscription.tokenQuota') }
 ])
 
 // 降级分组选项（创建时）- 仅包含 anthropic 平台且未启用 claude_code_only 的分组
@@ -1988,6 +2093,11 @@ const createForm = reactive({
   daily_limit_usd: null as number | null,
   weekly_limit_usd: null as number | null,
   monthly_limit_usd: null as number | null,
+  // Token 配额配置（token_quota 类型使用）
+  token_quota: null as number | null,
+  token_quota_daily: null as number | null,
+  token_quota_weekly: null as number | null,
+  token_quota_monthly: null as number | null,
   // 图片生成计费配置（仅 antigravity 平台使用）
   image_price_1k: null as number | null,
   image_price_2k: null as number | null,
@@ -2232,6 +2342,11 @@ const editForm = reactive({
   daily_limit_usd: null as number | null,
   weekly_limit_usd: null as number | null,
   monthly_limit_usd: null as number | null,
+  // Token 配额配置（token_quota 类型使用）
+  token_quota: null as number | null,
+  token_quota_daily: null as number | null,
+  token_quota_weekly: null as number | null,
+  token_quota_monthly: null as number | null,
   // 图片生成计费配置（仅 antigravity 平台使用）
   image_price_1k: null as number | null,
   image_price_2k: null as number | null,
@@ -2399,6 +2514,11 @@ const handleEdit = async (group: AdminGroup) => {
   editForm.daily_limit_usd = group.daily_limit_usd
   editForm.weekly_limit_usd = group.weekly_limit_usd
   editForm.monthly_limit_usd = group.monthly_limit_usd
+  // Token 配额字段
+  editForm.token_quota = group.token_quota
+  editForm.token_quota_daily = group.token_quota_daily
+  editForm.token_quota_weekly = group.token_quota_weekly
+  editForm.token_quota_monthly = group.token_quota_monthly
   editForm.image_price_1k = group.image_price_1k
   editForm.image_price_2k = group.image_price_2k
   editForm.image_price_4k = group.image_price_4k

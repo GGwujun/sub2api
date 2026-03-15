@@ -17,6 +17,10 @@ type APIKeyAuthSnapshot struct {
 	Quota     float64 `json:"quota"`      // Quota limit in USD (0 = unlimited)
 	QuotaUsed float64 `json:"quota_used"` // Used quota amount
 
+	// Token Quota fields for API Key token quota feature
+	TokenQuota     int64 `json:"token_quota"`      // Token quota limit (0 = unlimited)
+	TokenQuotaUsed int64 `json:"token_quota_used"` // Used token quota amount
+
 	// Expiration field for API Key expiration feature
 	ExpiresAt *time.Time `json:"expires_at,omitempty"` // Expiration time (nil = never expires)
 
@@ -69,6 +73,12 @@ type APIKeyAuthGroupSnapshot struct {
 	// OpenAI Messages 调度配置（仅 openai 平台使用）
 	AllowMessagesDispatch bool   `json:"allow_messages_dispatch"`
 	DefaultMappedModel    string `json:"default_mapped_model,omitempty"`
+
+	// Token 配额配置（token_quota 类型使用）
+	TokenQuota        *int64 `json:"token_quota,omitempty"`
+	TokenQuotaDaily   *int64 `json:"token_quota_daily,omitempty"`
+	TokenQuotaWeekly  *int64 `json:"token_quota_weekly,omitempty"`
+	TokenQuotaMonthly *int64 `json:"token_quota_monthly,omitempty"`
 }
 
 // APIKeyAuthCacheEntry 缓存条目，支持负缓存

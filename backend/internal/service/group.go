@@ -3,6 +3,8 @@ package service
 import (
 	"strings"
 	"time"
+
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 )
 
 type Group struct {
@@ -20,6 +22,12 @@ type Group struct {
 	WeeklyLimitUSD      *float64
 	MonthlyLimitUSD     *float64
 	DefaultValidityDays int
+
+	// Token 配额配置（token_quota 类型使用）
+	TokenQuota        *int64
+	TokenQuotaDaily   *int64
+	TokenQuotaWeekly  *int64
+	TokenQuotaMonthly *int64
 
 	// 图片生成计费配置（antigravity 和 gemini 平台使用）
 	ImagePrice1K *float64
@@ -73,7 +81,11 @@ func (g *Group) IsActive() bool {
 }
 
 func (g *Group) IsSubscriptionType() bool {
-	return g.SubscriptionType == SubscriptionTypeSubscription
+	return g.SubscriptionType == SubscriptionTypeSubscription || g.SubscriptionType == domain.SubscriptionTypeTokenQuota
+}
+
+func (g *Group) IsTokenQuotaType() bool {
+	return g.SubscriptionType == domain.SubscriptionTypeTokenQuota
 }
 
 func (g *Group) IsFreeSubscription() bool {

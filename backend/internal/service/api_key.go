@@ -49,6 +49,10 @@ type APIKey struct {
 	QuotaUsed float64    // Used quota amount
 	ExpiresAt *time.Time // Expiration time (nil = never expires)
 
+	// Token Quota fields
+	TokenQuota     int64 // Token quota limit (0 = unlimited)
+	TokenQuotaUsed int64 // Used token quota amount
+
 	// Rate limit fields
 	RateLimit5h   float64    // Rate limit in USD per 5h (0 = unlimited)
 	RateLimit1d   float64    // Rate limit in USD per 1d (0 = unlimited)
@@ -96,6 +100,69 @@ func (k *APIKey) GetQuotaRemaining() float64 {
 		return 0
 	}
 	return remaining
+}
+
+// IsTokenQuotaExhausted checks if the API key token quota is exhausted
+func (k *APIKey) IsTokenQuotaExhausted() bool {
+	if k.TokenQuota <= 0 {
+		return false // unlimited
+	}
+	return k.TokenQuotaUsed >= k.TokenQuota
+}
+
+// GetTokenQuotaRemaining returns remaining token quota (-1 for unlimited)
+func (k *APIKey) GetTokenQuotaRemaining() int64 {
+	if k.TokenQuota <= 0 {
+		return -1 // unlimited
+	}
+	remaining := k.TokenQuota - k.TokenQuotaUsed
+	if remaining < 0 {
+		return 0
+	}
+	return remaining
+}
+
+// GetEffectiveTokenQuota returns the effective token quota (API Key > Group > 0)
+// Priority: API Key token_quota > Group token_quota
+func (k *APIKey) GetEffectiveTokenQuota() int64 {
+	if k.TokenQuota > 0 {
+		return k.TokenQuota
+	}
+	if k.Group != nil && k.Group.TokenQuota != nil && *k.Group.TokenQuota > 0 {
+		return *k.Group.TokenQuota
+	}
+	return 0
+}
+
+// GetEffectiveTokenQuotaDaily returns the effective daily token quota
+func (k *APIKey) GetEffectiveTokenQuotaDaily() int64 {
+	// API Key level daily quota (not implemented yet, would need fields)
+	if k.Group != nil && k.Group.TokenQuotaDaily != nil && *k.Group.TokenQuotaDaily > 0 {
+		return *k.Group.TokenQuotaDaily
+	}
+	return 0
+}
+
+// GetEffectiveTokenQuotaWeekly returns the effective weekly token quota
+func (k *APIKey) GetEffectiveTokenQuotaWeekly() int64 {
+	if k.Group != nil && k.Group.TokenQuotaWeekly != nil && *k.Group.TokenQuotaWeekly > 0 {
+		return *k.Group.TokenQuotaWeekly
+	}
+	return 0
+}
+
+// GetEffectiveTokenQuotaMonthly returns the effective monthly token quota
+func (k *APIKey) GetEffectiveTokenQuotaMonthly() int64 {
+	if k.Group != nil && k.Group.TokenQuotaMonthly != nil && *k.Group.TokenQuotaMonthly > 0 {
+		return *k.Group.TokenQuotaMonthly
+	}
+	return 0
+}
+
+// HasTokenQuota returns true if API Key or Group has any token quota configured
+func (k *APIKey) HasTokenQuota() bool {
+	return k.GetEffectiveTokenQuota() > 0 || k.GetEffectiveTokenQuotaDaily() > 0 ||
+		k.GetEffectiveTokenQuotaWeekly() > 0 || k.GetEffectiveTokenQuotaMonthly() > 0
 }
 
 // GetDaysUntilExpiry returns days until expiry (-1 for never expires)

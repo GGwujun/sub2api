@@ -831,7 +831,8 @@ func (s *KimiGatewayService) RecordUsage(ctx context.Context, input *KimiRecordU
 
 	// 确定计费类型（订阅 vs 余额）
 	var subscription *UserSubscription
-	isSubscriptionBilling := input.APIKey.GroupID != nil && input.APIKey.Group != nil && input.APIKey.Group.IsSubscriptionType()
+	isTokenQuotaBill := (input.APIKey.Group != nil && input.APIKey.Group.IsTokenQuotaType()) || input.APIKey.HasTokenQuota()
+	isSubscriptionBilling := !isTokenQuotaBill && input.APIKey.GroupID != nil && input.APIKey.Group != nil && input.APIKey.Group.IsSubscriptionType()
 	if isSubscriptionBilling && s.userSubRepo != nil {
 		sub, subErr := s.userSubRepo.GetActiveByUserIDAndGroupID(ctx, user.ID, *input.APIKey.GroupID)
 		if subErr != nil {
@@ -847,7 +848,9 @@ func (s *KimiGatewayService) RecordUsage(ctx context.Context, input *KimiRecordU
 	}
 
 	billingType := BillingTypeBalance
-	if isSubscriptionBilling {
+	if isTokenQuotaBill {
+		billingType = BillingTypeTokenQuota
+	} else if isSubscriptionBilling {
 		billingType = BillingTypeSubscription
 	}
 
@@ -939,11 +942,13 @@ func (s *KimiGatewayService) RecordUsage(ctx context.Context, input *KimiRecordU
 				TotalCost:     totalCost,
 				ActualCost:    totalCost,
 			},
+			TotalTokens:           int64(usageLog.TotalTokens()),
 			User:                  user,
 			APIKey:                input.APIKey,
 			Account:               input.Account,
 			Subscription:          subscription,
 			IsSubscriptionBill:    isSubscriptionBilling,
+			IsTokenQuotaBill:      isTokenQuotaBill,
 			AccountRateMultiplier: accountRateMultiplier,
 			APIKeyService:         input.APIKeyService,
 		}, s.billingDeps())

@@ -232,6 +232,48 @@ func (_u *APIKeyUpdate) AddQuotaUsed(v float64) *APIKeyUpdate {
 	return _u
 }
 
+// SetTokenQuota sets the "token_quota" field.
+func (_u *APIKeyUpdate) SetTokenQuota(v int64) *APIKeyUpdate {
+	_u.mutation.ResetTokenQuota()
+	_u.mutation.SetTokenQuota(v)
+	return _u
+}
+
+// SetNillableTokenQuota sets the "token_quota" field if the given value is not nil.
+func (_u *APIKeyUpdate) SetNillableTokenQuota(v *int64) *APIKeyUpdate {
+	if v != nil {
+		_u.SetTokenQuota(*v)
+	}
+	return _u
+}
+
+// AddTokenQuota adds value to the "token_quota" field.
+func (_u *APIKeyUpdate) AddTokenQuota(v int64) *APIKeyUpdate {
+	_u.mutation.AddTokenQuota(v)
+	return _u
+}
+
+// SetTokenQuotaUsed sets the "token_quota_used" field.
+func (_u *APIKeyUpdate) SetTokenQuotaUsed(v int64) *APIKeyUpdate {
+	_u.mutation.ResetTokenQuotaUsed()
+	_u.mutation.SetTokenQuotaUsed(v)
+	return _u
+}
+
+// SetNillableTokenQuotaUsed sets the "token_quota_used" field if the given value is not nil.
+func (_u *APIKeyUpdate) SetNillableTokenQuotaUsed(v *int64) *APIKeyUpdate {
+	if v != nil {
+		_u.SetTokenQuotaUsed(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaUsed adds value to the "token_quota_used" field.
+func (_u *APIKeyUpdate) AddTokenQuotaUsed(v int64) *APIKeyUpdate {
+	_u.mutation.AddTokenQuotaUsed(v)
+	return _u
+}
+
 // SetExpiresAt sets the "expires_at" field.
 func (_u *APIKeyUpdate) SetExpiresAt(v time.Time) *APIKeyUpdate {
 	_u.mutation.SetExpiresAt(v)
@@ -636,6 +678,18 @@ func (_u *APIKeyUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.AddedQuotaUsed(); ok {
 		_spec.AddField(apikey.FieldQuotaUsed, field.TypeFloat64, value)
 	}
+	if value, ok := _u.mutation.TokenQuota(); ok {
+		_spec.SetField(apikey.FieldTokenQuota, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuota(); ok {
+		_spec.AddField(apikey.FieldTokenQuota, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenQuotaUsed(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaUsed, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaUsed(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaUsed, field.TypeInt64, value)
+	}
 	if value, ok := _u.mutation.ExpiresAt(); ok {
 		_spec.SetField(apikey.FieldExpiresAt, field.TypeTime, value)
 	}
@@ -1016,6 +1070,48 @@ func (_u *APIKeyUpdateOne) SetNillableQuotaUsed(v *float64) *APIKeyUpdateOne {
 // AddQuotaUsed adds value to the "quota_used" field.
 func (_u *APIKeyUpdateOne) AddQuotaUsed(v float64) *APIKeyUpdateOne {
 	_u.mutation.AddQuotaUsed(v)
+	return _u
+}
+
+// SetTokenQuota sets the "token_quota" field.
+func (_u *APIKeyUpdateOne) SetTokenQuota(v int64) *APIKeyUpdateOne {
+	_u.mutation.ResetTokenQuota()
+	_u.mutation.SetTokenQuota(v)
+	return _u
+}
+
+// SetNillableTokenQuota sets the "token_quota" field if the given value is not nil.
+func (_u *APIKeyUpdateOne) SetNillableTokenQuota(v *int64) *APIKeyUpdateOne {
+	if v != nil {
+		_u.SetTokenQuota(*v)
+	}
+	return _u
+}
+
+// AddTokenQuota adds value to the "token_quota" field.
+func (_u *APIKeyUpdateOne) AddTokenQuota(v int64) *APIKeyUpdateOne {
+	_u.mutation.AddTokenQuota(v)
+	return _u
+}
+
+// SetTokenQuotaUsed sets the "token_quota_used" field.
+func (_u *APIKeyUpdateOne) SetTokenQuotaUsed(v int64) *APIKeyUpdateOne {
+	_u.mutation.ResetTokenQuotaUsed()
+	_u.mutation.SetTokenQuotaUsed(v)
+	return _u
+}
+
+// SetNillableTokenQuotaUsed sets the "token_quota_used" field if the given value is not nil.
+func (_u *APIKeyUpdateOne) SetNillableTokenQuotaUsed(v *int64) *APIKeyUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaUsed(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaUsed adds value to the "token_quota_used" field.
+func (_u *APIKeyUpdateOne) AddTokenQuotaUsed(v int64) *APIKeyUpdateOne {
+	_u.mutation.AddTokenQuotaUsed(v)
 	return _u
 }
 
@@ -1452,6 +1548,18 @@ func (_u *APIKeyUpdateOne) sqlSave(ctx context.Context) (_node *APIKey, err erro
 	}
 	if value, ok := _u.mutation.AddedQuotaUsed(); ok {
 		_spec.AddField(apikey.FieldQuotaUsed, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.TokenQuota(); ok {
+		_spec.SetField(apikey.FieldTokenQuota, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuota(); ok {
+		_spec.AddField(apikey.FieldTokenQuota, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenQuotaUsed(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaUsed, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaUsed(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaUsed, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.ExpiresAt(); ok {
 		_spec.SetField(apikey.FieldExpiresAt, field.TypeTime, value)

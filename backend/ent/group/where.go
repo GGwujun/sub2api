@@ -120,6 +120,26 @@ func MonthlyLimitUsd(v float64) predicate.Group {
 	return predicate.Group(sql.FieldEQ(FieldMonthlyLimitUsd, v))
 }
 
+// TokenQuota applies equality check predicate on the "token_quota" field. It's identical to TokenQuotaEQ.
+func TokenQuota(v int64) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldTokenQuota, v))
+}
+
+// TokenQuotaDaily applies equality check predicate on the "token_quota_daily" field. It's identical to TokenQuotaDailyEQ.
+func TokenQuotaDaily(v int64) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaWeekly applies equality check predicate on the "token_quota_weekly" field. It's identical to TokenQuotaWeeklyEQ.
+func TokenQuotaWeekly(v int64) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaMonthly applies equality check predicate on the "token_quota_monthly" field. It's identical to TokenQuotaMonthlyEQ.
+func TokenQuotaMonthly(v int64) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldTokenQuotaMonthly, v))
+}
+
 // DefaultValidityDays applies equality check predicate on the "default_validity_days" field. It's identical to DefaultValidityDaysEQ.
 func DefaultValidityDays(v int) predicate.Group {
 	return predicate.Group(sql.FieldEQ(FieldDefaultValidityDays, v))
@@ -868,6 +888,206 @@ func MonthlyLimitUsdIsNil() predicate.Group {
 // MonthlyLimitUsdNotNil applies the NotNil predicate on the "monthly_limit_usd" field.
 func MonthlyLimitUsdNotNil() predicate.Group {
 	return predicate.Group(sql.FieldNotNull(FieldMonthlyLimitUsd))
+}
+
+// TokenQuotaEQ applies the EQ predicate on the "token_quota" field.
+func TokenQuotaEQ(v int64) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldTokenQuota, v))
+}
+
+// TokenQuotaNEQ applies the NEQ predicate on the "token_quota" field.
+func TokenQuotaNEQ(v int64) predicate.Group {
+	return predicate.Group(sql.FieldNEQ(FieldTokenQuota, v))
+}
+
+// TokenQuotaIn applies the In predicate on the "token_quota" field.
+func TokenQuotaIn(vs ...int64) predicate.Group {
+	return predicate.Group(sql.FieldIn(FieldTokenQuota, vs...))
+}
+
+// TokenQuotaNotIn applies the NotIn predicate on the "token_quota" field.
+func TokenQuotaNotIn(vs ...int64) predicate.Group {
+	return predicate.Group(sql.FieldNotIn(FieldTokenQuota, vs...))
+}
+
+// TokenQuotaGT applies the GT predicate on the "token_quota" field.
+func TokenQuotaGT(v int64) predicate.Group {
+	return predicate.Group(sql.FieldGT(FieldTokenQuota, v))
+}
+
+// TokenQuotaGTE applies the GTE predicate on the "token_quota" field.
+func TokenQuotaGTE(v int64) predicate.Group {
+	return predicate.Group(sql.FieldGTE(FieldTokenQuota, v))
+}
+
+// TokenQuotaLT applies the LT predicate on the "token_quota" field.
+func TokenQuotaLT(v int64) predicate.Group {
+	return predicate.Group(sql.FieldLT(FieldTokenQuota, v))
+}
+
+// TokenQuotaLTE applies the LTE predicate on the "token_quota" field.
+func TokenQuotaLTE(v int64) predicate.Group {
+	return predicate.Group(sql.FieldLTE(FieldTokenQuota, v))
+}
+
+// TokenQuotaIsNil applies the IsNil predicate on the "token_quota" field.
+func TokenQuotaIsNil() predicate.Group {
+	return predicate.Group(sql.FieldIsNull(FieldTokenQuota))
+}
+
+// TokenQuotaNotNil applies the NotNil predicate on the "token_quota" field.
+func TokenQuotaNotNil() predicate.Group {
+	return predicate.Group(sql.FieldNotNull(FieldTokenQuota))
+}
+
+// TokenQuotaDailyEQ applies the EQ predicate on the "token_quota_daily" field.
+func TokenQuotaDailyEQ(v int64) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaDailyNEQ applies the NEQ predicate on the "token_quota_daily" field.
+func TokenQuotaDailyNEQ(v int64) predicate.Group {
+	return predicate.Group(sql.FieldNEQ(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaDailyIn applies the In predicate on the "token_quota_daily" field.
+func TokenQuotaDailyIn(vs ...int64) predicate.Group {
+	return predicate.Group(sql.FieldIn(FieldTokenQuotaDaily, vs...))
+}
+
+// TokenQuotaDailyNotIn applies the NotIn predicate on the "token_quota_daily" field.
+func TokenQuotaDailyNotIn(vs ...int64) predicate.Group {
+	return predicate.Group(sql.FieldNotIn(FieldTokenQuotaDaily, vs...))
+}
+
+// TokenQuotaDailyGT applies the GT predicate on the "token_quota_daily" field.
+func TokenQuotaDailyGT(v int64) predicate.Group {
+	return predicate.Group(sql.FieldGT(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaDailyGTE applies the GTE predicate on the "token_quota_daily" field.
+func TokenQuotaDailyGTE(v int64) predicate.Group {
+	return predicate.Group(sql.FieldGTE(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaDailyLT applies the LT predicate on the "token_quota_daily" field.
+func TokenQuotaDailyLT(v int64) predicate.Group {
+	return predicate.Group(sql.FieldLT(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaDailyLTE applies the LTE predicate on the "token_quota_daily" field.
+func TokenQuotaDailyLTE(v int64) predicate.Group {
+	return predicate.Group(sql.FieldLTE(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaDailyIsNil applies the IsNil predicate on the "token_quota_daily" field.
+func TokenQuotaDailyIsNil() predicate.Group {
+	return predicate.Group(sql.FieldIsNull(FieldTokenQuotaDaily))
+}
+
+// TokenQuotaDailyNotNil applies the NotNil predicate on the "token_quota_daily" field.
+func TokenQuotaDailyNotNil() predicate.Group {
+	return predicate.Group(sql.FieldNotNull(FieldTokenQuotaDaily))
+}
+
+// TokenQuotaWeeklyEQ applies the EQ predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyEQ(v int64) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaWeeklyNEQ applies the NEQ predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyNEQ(v int64) predicate.Group {
+	return predicate.Group(sql.FieldNEQ(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaWeeklyIn applies the In predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyIn(vs ...int64) predicate.Group {
+	return predicate.Group(sql.FieldIn(FieldTokenQuotaWeekly, vs...))
+}
+
+// TokenQuotaWeeklyNotIn applies the NotIn predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyNotIn(vs ...int64) predicate.Group {
+	return predicate.Group(sql.FieldNotIn(FieldTokenQuotaWeekly, vs...))
+}
+
+// TokenQuotaWeeklyGT applies the GT predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyGT(v int64) predicate.Group {
+	return predicate.Group(sql.FieldGT(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaWeeklyGTE applies the GTE predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyGTE(v int64) predicate.Group {
+	return predicate.Group(sql.FieldGTE(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaWeeklyLT applies the LT predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyLT(v int64) predicate.Group {
+	return predicate.Group(sql.FieldLT(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaWeeklyLTE applies the LTE predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyLTE(v int64) predicate.Group {
+	return predicate.Group(sql.FieldLTE(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaWeeklyIsNil applies the IsNil predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyIsNil() predicate.Group {
+	return predicate.Group(sql.FieldIsNull(FieldTokenQuotaWeekly))
+}
+
+// TokenQuotaWeeklyNotNil applies the NotNil predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyNotNil() predicate.Group {
+	return predicate.Group(sql.FieldNotNull(FieldTokenQuotaWeekly))
+}
+
+// TokenQuotaMonthlyEQ applies the EQ predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyEQ(v int64) predicate.Group {
+	return predicate.Group(sql.FieldEQ(FieldTokenQuotaMonthly, v))
+}
+
+// TokenQuotaMonthlyNEQ applies the NEQ predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyNEQ(v int64) predicate.Group {
+	return predicate.Group(sql.FieldNEQ(FieldTokenQuotaMonthly, v))
+}
+
+// TokenQuotaMonthlyIn applies the In predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyIn(vs ...int64) predicate.Group {
+	return predicate.Group(sql.FieldIn(FieldTokenQuotaMonthly, vs...))
+}
+
+// TokenQuotaMonthlyNotIn applies the NotIn predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyNotIn(vs ...int64) predicate.Group {
+	return predicate.Group(sql.FieldNotIn(FieldTokenQuotaMonthly, vs...))
+}
+
+// TokenQuotaMonthlyGT applies the GT predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyGT(v int64) predicate.Group {
+	return predicate.Group(sql.FieldGT(FieldTokenQuotaMonthly, v))
+}
+
+// TokenQuotaMonthlyGTE applies the GTE predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyGTE(v int64) predicate.Group {
+	return predicate.Group(sql.FieldGTE(FieldTokenQuotaMonthly, v))
+}
+
+// TokenQuotaMonthlyLT applies the LT predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyLT(v int64) predicate.Group {
+	return predicate.Group(sql.FieldLT(FieldTokenQuotaMonthly, v))
+}
+
+// TokenQuotaMonthlyLTE applies the LTE predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyLTE(v int64) predicate.Group {
+	return predicate.Group(sql.FieldLTE(FieldTokenQuotaMonthly, v))
+}
+
+// TokenQuotaMonthlyIsNil applies the IsNil predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyIsNil() predicate.Group {
+	return predicate.Group(sql.FieldIsNull(FieldTokenQuotaMonthly))
+}
+
+// TokenQuotaMonthlyNotNil applies the NotNil predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyNotNil() predicate.Group {
+	return predicate.Group(sql.FieldNotNull(FieldTokenQuotaMonthly))
 }
 
 // DefaultValidityDaysEQ applies the EQ predicate on the "default_validity_days" field.

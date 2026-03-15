@@ -41,6 +41,14 @@ const (
 	FieldWeeklyLimitUsd = "weekly_limit_usd"
 	// FieldMonthlyLimitUsd holds the string denoting the monthly_limit_usd field in the database.
 	FieldMonthlyLimitUsd = "monthly_limit_usd"
+	// FieldTokenQuota holds the string denoting the token_quota field in the database.
+	FieldTokenQuota = "token_quota"
+	// FieldTokenQuotaDaily holds the string denoting the token_quota_daily field in the database.
+	FieldTokenQuotaDaily = "token_quota_daily"
+	// FieldTokenQuotaWeekly holds the string denoting the token_quota_weekly field in the database.
+	FieldTokenQuotaWeekly = "token_quota_weekly"
+	// FieldTokenQuotaMonthly holds the string denoting the token_quota_monthly field in the database.
+	FieldTokenQuotaMonthly = "token_quota_monthly"
 	// FieldDefaultValidityDays holds the string denoting the default_validity_days field in the database.
 	FieldDefaultValidityDays = "default_validity_days"
 	// FieldImagePrice1k holds the string denoting the image_price_1k field in the database.
@@ -167,6 +175,10 @@ var Columns = []string{
 	FieldDailyLimitUsd,
 	FieldWeeklyLimitUsd,
 	FieldMonthlyLimitUsd,
+	FieldTokenQuota,
+	FieldTokenQuotaDaily,
+	FieldTokenQuotaWeekly,
+	FieldTokenQuotaMonthly,
 	FieldDefaultValidityDays,
 	FieldImagePrice1k,
 	FieldImagePrice2k,
@@ -332,6 +344,26 @@ func ByWeeklyLimitUsd(opts ...sql.OrderTermOption) OrderOption {
 // ByMonthlyLimitUsd orders the results by the monthly_limit_usd field.
 func ByMonthlyLimitUsd(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMonthlyLimitUsd, opts...).ToFunc()
+}
+
+// ByTokenQuota orders the results by the token_quota field.
+func ByTokenQuota(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuota, opts...).ToFunc()
+}
+
+// ByTokenQuotaDaily orders the results by the token_quota_daily field.
+func ByTokenQuotaDaily(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaDaily, opts...).ToFunc()
+}
+
+// ByTokenQuotaWeekly orders the results by the token_quota_weekly field.
+func ByTokenQuotaWeekly(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaWeekly, opts...).ToFunc()
+}
+
+// ByTokenQuotaMonthly orders the results by the token_quota_monthly field.
+func ByTokenQuotaMonthly(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaMonthly, opts...).ToFunc()
 }
 
 // ByDefaultValidityDays orders the results by the default_validity_days field.

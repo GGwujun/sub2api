@@ -124,6 +124,11 @@ type CreateGroupInput struct {
 	DailyLimitUSD    *float64 // 日限额 (USD)
 	WeeklyLimitUSD   *float64 // 周限额 (USD)
 	MonthlyLimitUSD  *float64 // 月限额 (USD)
+	// Token 配额配置（token_quota 类型使用）
+	TokenQuota        *int64
+	TokenQuotaDaily   *int64
+	TokenQuotaWeekly  *int64
+	TokenQuotaMonthly *int64
 	// 图片生成计费配置（仅 antigravity 平台使用）
 	ImagePrice1K *float64
 	ImagePrice2K *float64
@@ -163,6 +168,11 @@ type UpdateGroupInput struct {
 	DailyLimitUSD    *float64 // 日限额 (USD)
 	WeeklyLimitUSD   *float64 // 周限额 (USD)
 	MonthlyLimitUSD  *float64 // 月限额 (USD)
+	// Token 配额配置（token_quota 类型使用）
+	TokenQuota        *int64
+	TokenQuotaDaily   *int64
+	TokenQuotaWeekly  *int64
+	TokenQuotaMonthly *int64
 	// 图片生成计费配置（仅 antigravity 平台使用）
 	ImagePrice1K *float64
 	ImagePrice2K *float64
@@ -904,6 +914,10 @@ func (s *adminServiceImpl) CreateGroup(ctx context.Context, input *CreateGroupIn
 		DailyLimitUSD:                   dailyLimit,
 		WeeklyLimitUSD:                  weeklyLimit,
 		MonthlyLimitUSD:                 monthlyLimit,
+		TokenQuota:                      input.TokenQuota,
+		TokenQuotaDaily:                 input.TokenQuotaDaily,
+		TokenQuotaWeekly:                input.TokenQuotaWeekly,
+		TokenQuotaMonthly:               input.TokenQuotaMonthly,
 		ImagePrice1K:                    imagePrice1K,
 		ImagePrice2K:                    imagePrice2K,
 		ImagePrice4K:                    imagePrice4K,
@@ -1059,6 +1073,19 @@ func (s *adminServiceImpl) UpdateGroup(ctx context.Context, id int64, input *Upd
 	}
 	if input.MonthlyLimitUSD != nil {
 		group.MonthlyLimitUSD = normalizeLimit(input.MonthlyLimitUSD)
+	}
+	// Token 配额字段
+	if input.TokenQuota != nil {
+		group.TokenQuota = input.TokenQuota
+	}
+	if input.TokenQuotaDaily != nil {
+		group.TokenQuotaDaily = input.TokenQuotaDaily
+	}
+	if input.TokenQuotaWeekly != nil {
+		group.TokenQuotaWeekly = input.TokenQuotaWeekly
+	}
+	if input.TokenQuotaMonthly != nil {
+		group.TokenQuotaMonthly = input.TokenQuotaMonthly
 	}
 	// 图片生成计费配置：负数表示清除（使用默认价格）
 	if input.ImagePrice1K != nil {

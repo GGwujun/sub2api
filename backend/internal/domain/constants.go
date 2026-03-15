@@ -59,7 +59,8 @@ const (
 // Group subscription type constants
 const (
 	SubscriptionTypeStandard     = "standard"     // 标准计费模式（按余额扣费）
-	SubscriptionTypeSubscription = "subscription" // 订阅模式（按限额控制）
+	SubscriptionTypeSubscription = "subscription" // 订阅模式（按费用限额控制）
+	SubscriptionTypeTokenQuota   = "token_quota"  // Token 配额模式（按 Token 限额控制）
 )
 
 // Subscription status constants

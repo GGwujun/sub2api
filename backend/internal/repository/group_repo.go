@@ -46,6 +46,10 @@ func (r *groupRepository) Create(ctx context.Context, groupIn *service.Group) er
 		SetNillableDailyLimitUsd(groupIn.DailyLimitUSD).
 		SetNillableWeeklyLimitUsd(groupIn.WeeklyLimitUSD).
 		SetNillableMonthlyLimitUsd(groupIn.MonthlyLimitUSD).
+		SetNillableTokenQuota(groupIn.TokenQuota).
+		SetNillableTokenQuotaDaily(groupIn.TokenQuotaDaily).
+		SetNillableTokenQuotaWeekly(groupIn.TokenQuotaWeekly).
+		SetNillableTokenQuotaMonthly(groupIn.TokenQuotaMonthly).
 		SetNillableImagePrice1k(groupIn.ImagePrice1K).
 		SetNillableImagePrice2k(groupIn.ImagePrice2K).
 		SetNillableImagePrice4k(groupIn.ImagePrice4K).
@@ -116,6 +120,10 @@ func (r *groupRepository) Update(ctx context.Context, groupIn *service.Group) er
 		SetNillableDailyLimitUsd(groupIn.DailyLimitUSD).
 		SetNillableWeeklyLimitUsd(groupIn.WeeklyLimitUSD).
 		SetNillableMonthlyLimitUsd(groupIn.MonthlyLimitUSD).
+		SetNillableTokenQuota(groupIn.TokenQuota).
+		SetNillableTokenQuotaDaily(groupIn.TokenQuotaDaily).
+		SetNillableTokenQuotaWeekly(groupIn.TokenQuotaWeekly).
+		SetNillableTokenQuotaMonthly(groupIn.TokenQuotaMonthly).
 		SetNillableImagePrice1k(groupIn.ImagePrice1K).
 		SetNillableImagePrice2k(groupIn.ImagePrice2K).
 		SetNillableImagePrice4k(groupIn.ImagePrice4K).

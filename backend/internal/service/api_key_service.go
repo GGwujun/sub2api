@@ -32,6 +32,9 @@ var (
 	// ErrAPIKeyQuotaExhausted = infraerrors.TooManyRequests("API_KEY_QUOTA_EXHAUSTED", "api key quota exhausted")
 	ErrAPIKeyQuotaExhausted = infraerrors.TooManyRequests("API_KEY_QUOTA_EXHAUSTED", "api key 额度已用完")
 
+	// Token quota errors
+	ErrAPIKeyTokenQuotaExhausted = infraerrors.TooManyRequests("API_KEY_TOKEN_QUOTA_EXHAUSTED", "api key Token 额度已用完")
+
 	// Rate limit errors
 	ErrAPIKeyRateLimit5hExceeded = infraerrors.TooManyRequests("API_KEY_RATE_5H_EXCEEDED", "api key 5小时限额已用完")
 	ErrAPIKeyRateLimit1dExceeded = infraerrors.TooManyRequests("API_KEY_RATE_1D_EXCEEDED", "api key 日限额已用完")
@@ -69,6 +72,7 @@ type APIKeyRepository interface {
 
 	// Quota methods
 	IncrementQuotaUsed(ctx context.Context, id int64, amount float64) (float64, error)
+	IncrementTokenQuotaUsed(ctx context.Context, id int64, tokens int64) (int64, error)
 	UpdateLastUsed(ctx context.Context, id int64, usedAt time.Time) error
 
 	// Rate limit methods
@@ -155,6 +159,7 @@ type CreateAPIKeyRequest struct {
 
 	// Quota fields
 	Quota         float64 `json:"quota"`           // Quota limit in USD (0 = unlimited)
+	TokenQuota    int64   `json:"token_quota"`     // Token quota limit (0 = unlimited)
 	ExpiresInDays *int    `json:"expires_in_days"` // Days until expiry (nil = never expires)
 
 	// Rate limit fields (0 = unlimited)
@@ -173,6 +178,7 @@ type UpdateAPIKeyRequest struct {
 
 	// Quota fields
 	Quota           *float64   `json:"quota"`       // Quota limit in USD (nil = no change, 0 = unlimited)
+	TokenQuota      *int64     `json:"token_quota"` // Token quota limit (nil = no change, 0 = unlimited)
 	ExpiresAt       *time.Time `json:"expires_at"`  // Expiration time (nil = no change)
 	ClearExpiration bool       `json:"-"`           // Clear expiration (internal use)
 	ResetQuota      *bool      `json:"reset_quota"` // Reset quota_used to 0
@@ -395,18 +401,20 @@ func (s *APIKeyService) Create(ctx context.Context, userID int64, req CreateAPIK
 
 	// 创建API Key记录
 	apiKey := &APIKey{
-		UserID:      userID,
-		Key:         key,
-		Name:        req.Name,
-		GroupID:     req.GroupID,
-		Status:      StatusActive,
-		IPWhitelist: req.IPWhitelist,
-		IPBlacklist: req.IPBlacklist,
-		Quota:       req.Quota,
-		QuotaUsed:   0,
-		RateLimit5h: req.RateLimit5h,
-		RateLimit1d: req.RateLimit1d,
-		RateLimit7d: req.RateLimit7d,
+		UserID:         userID,
+		Key:            key,
+		Name:           req.Name,
+		GroupID:        req.GroupID,
+		Status:         StatusActive,
+		IPWhitelist:    req.IPWhitelist,
+		IPBlacklist:    req.IPBlacklist,
+		Quota:          req.Quota,
+		QuotaUsed:      0,
+		TokenQuota:     req.TokenQuota,
+		TokenQuotaUsed: 0,
+		RateLimit5h:    req.RateLimit5h,
+		RateLimit1d:    req.RateLimit1d,
+		RateLimit7d:    req.RateLimit7d,
 	}
 
 	// Set expiration time if specified
@@ -569,15 +577,25 @@ func (s *APIKeyService) Update(ctx context.Context, id int64, userID int64, req 
 	// Update quota fields
 	if req.Quota != nil {
 		apiKey.Quota = *req.Quota
-		// If quota is increased and status was quota_exhausted, reactivate
-		if apiKey.Status == StatusAPIKeyQuotaExhausted && *req.Quota > apiKey.QuotaUsed {
+		// If quota is increased and status was quota_exhausted or disabled (from frontend 'inactive'), reactivate
+		if (apiKey.Status == StatusAPIKeyQuotaExhausted || apiKey.Status == StatusAPIKeyDisabled) && *req.Quota > apiKey.QuotaUsed {
 			apiKey.Status = StatusActive
 		}
 	}
+
+	// Update token quota fields
+	if req.TokenQuota != nil {
+		apiKey.TokenQuota = *req.TokenQuota
+		// If token quota is increased and status was quota_exhausted or disabled (from frontend 'inactive'), reactivate
+		if (apiKey.Status == StatusAPIKeyQuotaExhausted || apiKey.Status == StatusAPIKeyDisabled) && *req.TokenQuota > apiKey.TokenQuotaUsed {
+			apiKey.Status = StatusActive
+		}
+	}
+
 	if req.ResetQuota != nil && *req.ResetQuota {
 		apiKey.QuotaUsed = 0
-		// If resetting quota and status was quota_exhausted, reactivate
-		if apiKey.Status == StatusAPIKeyQuotaExhausted {
+		// If resetting quota and status was quota_exhausted or disabled, reactivate
+		if apiKey.Status == StatusAPIKeyQuotaExhausted || apiKey.Status == StatusAPIKeyDisabled {
 			apiKey.Status = StatusActive
 		}
 	}
@@ -806,14 +824,20 @@ func (s *APIKeyService) GetUserGroupRates(ctx context.Context, userID int64) (ma
 
 // CheckAPIKeyQuotaAndExpiry checks if the API key is valid for use (not expired, quota not exhausted)
 // Returns nil if valid, error if invalid
+// Checks both cost quota (quota) and token quota (token_quota)
 func (s *APIKeyService) CheckAPIKeyQuotaAndExpiry(apiKey *APIKey) error {
 	// Check expiration
 	if apiKey.IsExpired() {
 		return ErrAPIKeyExpired
 	}
 
-	// Check quota
+	// Check cost quota
 	if apiKey.IsQuotaExhausted() {
+		return ErrAPIKeyQuotaExhausted
+	}
+
+	// Check token quota
+	if apiKey.IsTokenQuotaExhausted() {
 		return ErrAPIKeyQuotaExhausted
 	}
 
@@ -878,4 +902,51 @@ func (s *APIKeyService) UpdateRateLimitUsage(ctx context.Context, apiKeyID int64
 		return nil
 	}
 	return s.apiKeyRepo.IncrementRateLimitUsage(ctx, apiKeyID, cost)
+}
+
+// UpdateTokenQuotaUsed updates the token_quota_used field after a request
+// Also checks if token quota is exhausted and updates status accordingly
+func (s *APIKeyService) UpdateTokenQuotaUsed(ctx context.Context, apiKeyID int64, tokens int64) error {
+	if tokens <= 0 {
+		return nil
+	}
+
+	type tokenQuotaStateReader interface {
+		IncrementTokenQuotaUsedAndGetState(ctx context.Context, id int64, tokens int64) (*APIKeyQuotaUsageState, error)
+	}
+
+	if repo, ok := s.apiKeyRepo.(tokenQuotaStateReader); ok {
+		state, err := repo.IncrementTokenQuotaUsedAndGetState(ctx, apiKeyID, tokens)
+		if err != nil {
+			return fmt.Errorf("increment token quota used: %w", err)
+		}
+		if state != nil && state.Status == StatusAPIKeyQuotaExhausted && strings.TrimSpace(state.Key) != "" {
+			s.InvalidateAuthCacheByKey(ctx, state.Key)
+		}
+		return nil
+	}
+
+	// Fallback: use simple increment
+	_, err := s.apiKeyRepo.IncrementTokenQuotaUsed(ctx, apiKeyID, tokens)
+	if err != nil {
+		return fmt.Errorf("increment token quota used: %w", err)
+	}
+
+	// Check if token quota is now exhausted and update status if needed
+	apiKey, err := s.apiKeyRepo.GetByID(ctx, apiKeyID)
+	if err != nil {
+		return nil // Don't fail the request, just log
+	}
+
+	// If token quota is set and now exhausted, update status
+	if apiKey.TokenQuota > 0 && apiKey.TokenQuotaUsed >= apiKey.TokenQuota {
+		apiKey.Status = StatusAPIKeyQuotaExhausted
+		if err := s.apiKeyRepo.Update(ctx, apiKey); err != nil {
+			return nil // Don't fail the request
+		}
+		// Invalidate cache so next request sees the new status
+		s.InvalidateAuthCacheByKey(ctx, apiKey.Key)
+	}
+
+	return nil
 }

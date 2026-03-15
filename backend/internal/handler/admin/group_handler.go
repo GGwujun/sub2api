@@ -30,10 +30,15 @@ type CreateGroupRequest struct {
 	Platform         string   `json:"platform" binding:"omitempty,oneof=anthropic openai gemini antigravity sora zai zhipu kimi minimaxCode"`
 	RateMultiplier   float64  `json:"rate_multiplier"`
 	IsExclusive      bool     `json:"is_exclusive"`
-	SubscriptionType string   `json:"subscription_type" binding:"omitempty,oneof=standard subscription"`
+	SubscriptionType string   `json:"subscription_type" binding:"omitempty,oneof=standard subscription token_quota"`
 	DailyLimitUSD    *float64 `json:"daily_limit_usd"`
 	WeeklyLimitUSD   *float64 `json:"weekly_limit_usd"`
 	MonthlyLimitUSD  *float64 `json:"monthly_limit_usd"`
+	// Token 配额配置（token_quota 类型使用）
+	TokenQuota        *int64 `json:"token_quota"`
+	TokenQuotaDaily   *int64 `json:"token_quota_daily"`
+	TokenQuotaWeekly  *int64 `json:"token_quota_weekly"`
+	TokenQuotaMonthly *int64 `json:"token_quota_monthly"`
 	// 图片生成计费配置（antigravity 和 gemini 平台使用，负数表示清除配置）
 	ImagePrice1K                    *float64 `json:"image_price_1k"`
 	ImagePrice2K                    *float64 `json:"image_price_2k"`
@@ -68,10 +73,15 @@ type UpdateGroupRequest struct {
 	RateMultiplier   *float64 `json:"rate_multiplier"`
 	IsExclusive      *bool    `json:"is_exclusive"`
 	Status           string   `json:"status" binding:"omitempty,oneof=active inactive"`
-	SubscriptionType string   `json:"subscription_type" binding:"omitempty,oneof=standard subscription"`
+	SubscriptionType string   `json:"subscription_type" binding:"omitempty,oneof=standard subscription token_quota"`
 	DailyLimitUSD    *float64 `json:"daily_limit_usd"`
 	WeeklyLimitUSD   *float64 `json:"weekly_limit_usd"`
 	MonthlyLimitUSD  *float64 `json:"monthly_limit_usd"`
+	// Token 配额配置（token_quota 类型使用）
+	TokenQuota        *int64 `json:"token_quota"`
+	TokenQuotaDaily   *int64 `json:"token_quota_daily"`
+	TokenQuotaWeekly  *int64 `json:"token_quota_weekly"`
+	TokenQuotaMonthly *int64 `json:"token_quota_monthly"`
 	// 图片生成计费配置（antigravity 和 gemini 平台使用，负数表示清除配置）
 	ImagePrice1K                    *float64 `json:"image_price_1k"`
 	ImagePrice2K                    *float64 `json:"image_price_2k"`
@@ -194,6 +204,10 @@ func (h *GroupHandler) Create(c *gin.Context) {
 		DailyLimitUSD:                   req.DailyLimitUSD,
 		WeeklyLimitUSD:                  req.WeeklyLimitUSD,
 		MonthlyLimitUSD:                 req.MonthlyLimitUSD,
+		TokenQuota:                      req.TokenQuota,
+		TokenQuotaDaily:                 req.TokenQuotaDaily,
+		TokenQuotaWeekly:                req.TokenQuotaWeekly,
+		TokenQuotaMonthly:               req.TokenQuotaMonthly,
 		ImagePrice1K:                    req.ImagePrice1K,
 		ImagePrice2K:                    req.ImagePrice2K,
 		ImagePrice4K:                    req.ImagePrice4K,
@@ -247,6 +261,10 @@ func (h *GroupHandler) Update(c *gin.Context) {
 		DailyLimitUSD:                   req.DailyLimitUSD,
 		WeeklyLimitUSD:                  req.WeeklyLimitUSD,
 		MonthlyLimitUSD:                 req.MonthlyLimitUSD,
+		TokenQuota:                      req.TokenQuota,
+		TokenQuotaDaily:                 req.TokenQuotaDaily,
+		TokenQuotaWeekly:                req.TokenQuotaWeekly,
+		TokenQuotaMonthly:               req.TokenQuotaMonthly,
 		ImagePrice1K:                    req.ImagePrice1K,
 		ImagePrice2K:                    req.ImagePrice2K,
 		ImagePrice4K:                    req.ImagePrice4K,

@@ -442,11 +442,11 @@ const currentFiles = computed((): FileConfig[] => {
     case 'gemini':
       return [generateGeminiCliContent(baseUrl, apiKey)]
     case 'zai':
-      return generateOpenAIFiles(zhipuBase, apiKey)
+      return generateAnthropicFiles(zhipuBase, apiKey)
     case 'kimi':
-      return generateOpenAIFiles(kimiBase, apiKey)
+      return generateAnthropicFiles(kimiBase, apiKey, { ENABLE_TOOL_SEARCH: 'false' })
     case 'minimaxCode':
-      return generateOpenAIFiles(minimaxBase, apiKey)
+      return generateAnthropicFiles(minimaxBase, apiKey)
     case 'antigravity':
       if (activeClientTab.value === 'gemini') {
         return [generateGeminiCliContent(`${baseUrl}/antigravity`, apiKey)]
@@ -457,7 +457,27 @@ const currentFiles = computed((): FileConfig[] => {
   }
 })
 
-function generateAnthropicFiles(baseUrl: string, apiKey: string): FileConfig[] {
+function generateAnthropicFiles(baseUrl: string, apiKey: string, extraEnvVars?: Record<string, string>): FileConfig[] {
+  // Build extra env vars string if provided
+  const extraEnvLine = extraEnvVars
+    ? Object.entries(extraEnvVars)
+        .map(([key, value]) => {
+          const line = `export ${key}="${value}"`
+          return line
+        })
+        .join('\n')
+    : ''
+  const extraEnvLineCmd = extraEnvVars
+    ? Object.entries(extraEnvVars)
+        .map(([key, value]) => `set ${key}=${value}`)
+        .join('\n')
+    : ''
+  const extraEnvLinePs = extraEnvVars
+    ? Object.entries(extraEnvVars)
+        .map(([key, value]) => `$env:${key}="${value}"`)
+        .join('\n')
+    : ''
+
   let path: string
   let content: string
 
@@ -465,17 +485,17 @@ function generateAnthropicFiles(baseUrl: string, apiKey: string): FileConfig[] {
     case 'unix':
       path = 'Terminal'
       content = `export ANTHROPIC_BASE_URL="${baseUrl}"
-export ANTHROPIC_AUTH_TOKEN="${apiKey}"`
+export ANTHROPIC_AUTH_TOKEN="${apiKey}"${extraEnvLine ? '\n' + extraEnvLine : ''}`
       break
     case 'cmd':
       path = 'Command Prompt'
       content = `set ANTHROPIC_BASE_URL=${baseUrl}
-set ANTHROPIC_AUTH_TOKEN=${apiKey}`
+set ANTHROPIC_AUTH_TOKEN=${apiKey}${extraEnvLineCmd ? '\n' + extraEnvLineCmd : ''}`
       break
     case 'powershell':
       path = 'PowerShell'
       content = `$env:ANTHROPIC_BASE_URL="${baseUrl}"
-$env:ANTHROPIC_AUTH_TOKEN="${apiKey}"`
+$env:ANTHROPIC_AUTH_TOKEN="${apiKey}"${extraEnvLinePs ? '\n' + extraEnvLinePs : ''}`
       break
     default:
       path = 'Terminal'
@@ -486,12 +506,16 @@ $env:ANTHROPIC_AUTH_TOKEN="${apiKey}"`
     ? '~/.claude/settings.json'
     : '%userprofile%\\.claude\\settings.json'
 
-  const vscodeContent = `{
-  "env": {
-    "ANTHROPIC_BASE_URL": "${baseUrl}",
-    "ANTHROPIC_AUTH_TOKEN": "${apiKey}",
-    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0"
+  // Build VSCode env vars
+  const vscodeEnvVars: Record<string, string> = {
+    ANTHROPIC_BASE_URL: baseUrl,
+    ANTHROPIC_AUTH_TOKEN: apiKey,
+    CLAUDE_CODE_ATTRIBUTION_HEADER: '0',
+    ...extraEnvVars
   }
+
+  const vscodeContent = `{
+  "env": ${JSON.stringify(vscodeEnvVars, null, 6).replace(/\n/g, '\n  ')}
 }`
 
   return [

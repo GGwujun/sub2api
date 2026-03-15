@@ -360,7 +360,7 @@ export interface PaginationConfig {
 
 export type GroupPlatform = 'anthropic' | 'openai' | 'gemini' | 'antigravity' | 'sora' | 'zai' | 'zhipu' | 'kimi' | 'minimaxCode'
 
-export type SubscriptionType = 'standard' | 'subscription'
+export type SubscriptionType = 'standard' | 'subscription' | 'token_quota'
 
 export interface Group {
   id: number
@@ -374,6 +374,11 @@ export interface Group {
   daily_limit_usd: number | null
   weekly_limit_usd: number | null
   monthly_limit_usd: number | null
+  // Token 配额配置（token_quota 类型使用）
+  token_quota: number | null
+  token_quota_daily: number | null
+  token_quota_weekly: number | null
+  token_quota_monthly: number | null
   // 图片生成计费配置（仅 antigravity 平台使用）
   image_price_1k: number | null
   image_price_2k: number | null
@@ -428,6 +433,8 @@ export interface ApiKey {
   last_used_at: string | null
   quota: number // Quota limit in USD (0 = unlimited)
   quota_used: number // Used quota amount in USD
+  token_quota: number // Token quota limit (0 = unlimited)
+  token_quota_used: number // Used token quota amount
   expires_at: string | null // Expiration time (null = never expires)
   created_at: string
   updated_at: string
@@ -453,6 +460,7 @@ export interface CreateApiKeyRequest {
   ip_whitelist?: string[]
   ip_blacklist?: string[]
   quota?: number // Quota limit in USD (0 = unlimited)
+  token_quota?: number // Token quota limit (0 = unlimited)
   expires_in_days?: number // Days until expiry (null = never expires)
   rate_limit_5h?: number
   rate_limit_1d?: number
@@ -466,6 +474,7 @@ export interface UpdateApiKeyRequest {
   ip_whitelist?: string[]
   ip_blacklist?: string[]
   quota?: number // Quota limit in USD (null = no change, 0 = unlimited)
+  token_quota?: number // Token quota limit (null = no change, 0 = unlimited)
   expires_at?: string | null // Expiration time (null = no change)
   reset_quota?: boolean // Reset quota_used to 0
   rate_limit_5h?: number

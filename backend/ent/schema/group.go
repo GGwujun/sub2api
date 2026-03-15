@@ -70,6 +70,21 @@ func (Group) Fields() []ent.Field {
 			Optional().
 			Nillable().
 			SchemaType(map[string]string{dialect.Postgres: "decimal(20,8)"}),
+
+		// Token 配额配置（token_quota 类型使用）
+		field.Int64("token_quota").
+			Optional().
+			Nillable(),
+		field.Int64("token_quota_daily").
+			Optional().
+			Nillable(),
+		field.Int64("token_quota_weekly").
+			Optional().
+			Nillable(),
+		field.Int64("token_quota_monthly").
+			Optional().
+			Nillable(),
+
 		field.Int("default_validity_days").
 			Default(30),
 

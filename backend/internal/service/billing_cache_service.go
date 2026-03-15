@@ -635,6 +635,7 @@ func (s *BillingCacheService) QueueUpdateAPIKeyRateLimitUsage(apiKeyID int64, co
 // CheckBillingEligibility 检查用户是否有资格发起请求
 // 余额模式：检查缓存余额 > 0
 // 订阅模式：检查缓存用量未超过限额（Group限额从参数传入）
+// Token 配额模式：检查 API Key Token 配额
 func (s *BillingCacheService) CheckBillingEligibility(ctx context.Context, user *User, apiKey *APIKey, group *Group, subscription *UserSubscription) error {
 	// 简易模式：跳过所有计费检查
 	if s.cfg.RunMode == config.RunModeSimple {
@@ -653,6 +654,13 @@ func (s *BillingCacheService) CheckBillingEligibility(ctx context.Context, user 
 		}
 	} else {
 		if err := s.checkBalanceEligibility(ctx, user.ID); err != nil {
+			return err
+		}
+	}
+
+	// 检查 API Key Token 配额（API Key 级别优先，Group 级别次之）
+	if apiKey != nil && apiKey.HasTokenQuota() {
+		if err := s.checkAPIKeyTokenQuotaEligibility(ctx, apiKey); err != nil {
 			return err
 		}
 	}
@@ -858,4 +866,13 @@ func circuitStateString(state billingCircuitBreakerState) string {
 	default:
 		return "unknown"
 	}
+}
+
+// checkAPIKeyTokenQuotaEligibility 检查 API Key Token 配额是否用尽
+func (s *BillingCacheService) checkAPIKeyTokenQuotaEligibility(ctx context.Context, apiKey *APIKey) error {
+	// 检查 API Key 级别的 Token 配额（总计）
+	if apiKey.TokenQuota > 0 && apiKey.TokenQuotaUsed >= apiKey.TokenQuota {
+		return ErrAPIKeyTokenQuotaExhausted
+	}
+	return nil
 }

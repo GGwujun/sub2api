@@ -202,6 +202,62 @@ func (_c *GroupCreate) SetNillableMonthlyLimitUsd(v *float64) *GroupCreate {
 	return _c
 }
 
+// SetTokenQuota sets the "token_quota" field.
+func (_c *GroupCreate) SetTokenQuota(v int64) *GroupCreate {
+	_c.mutation.SetTokenQuota(v)
+	return _c
+}
+
+// SetNillableTokenQuota sets the "token_quota" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableTokenQuota(v *int64) *GroupCreate {
+	if v != nil {
+		_c.SetTokenQuota(*v)
+	}
+	return _c
+}
+
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (_c *GroupCreate) SetTokenQuotaDaily(v int64) *GroupCreate {
+	_c.mutation.SetTokenQuotaDaily(v)
+	return _c
+}
+
+// SetNillableTokenQuotaDaily sets the "token_quota_daily" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableTokenQuotaDaily(v *int64) *GroupCreate {
+	if v != nil {
+		_c.SetTokenQuotaDaily(*v)
+	}
+	return _c
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (_c *GroupCreate) SetTokenQuotaWeekly(v int64) *GroupCreate {
+	_c.mutation.SetTokenQuotaWeekly(v)
+	return _c
+}
+
+// SetNillableTokenQuotaWeekly sets the "token_quota_weekly" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableTokenQuotaWeekly(v *int64) *GroupCreate {
+	if v != nil {
+		_c.SetTokenQuotaWeekly(*v)
+	}
+	return _c
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (_c *GroupCreate) SetTokenQuotaMonthly(v int64) *GroupCreate {
+	_c.mutation.SetTokenQuotaMonthly(v)
+	return _c
+}
+
+// SetNillableTokenQuotaMonthly sets the "token_quota_monthly" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableTokenQuotaMonthly(v *int64) *GroupCreate {
+	if v != nil {
+		_c.SetTokenQuotaMonthly(*v)
+	}
+	return _c
+}
+
 // SetDefaultValidityDays sets the "default_validity_days" field.
 func (_c *GroupCreate) SetDefaultValidityDays(v int) *GroupCreate {
 	_c.mutation.SetDefaultValidityDays(v)
@@ -809,6 +865,22 @@ func (_c *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 		_spec.SetField(group.FieldMonthlyLimitUsd, field.TypeFloat64, value)
 		_node.MonthlyLimitUsd = &value
 	}
+	if value, ok := _c.mutation.TokenQuota(); ok {
+		_spec.SetField(group.FieldTokenQuota, field.TypeInt64, value)
+		_node.TokenQuota = &value
+	}
+	if value, ok := _c.mutation.TokenQuotaDaily(); ok {
+		_spec.SetField(group.FieldTokenQuotaDaily, field.TypeInt64, value)
+		_node.TokenQuotaDaily = &value
+	}
+	if value, ok := _c.mutation.TokenQuotaWeekly(); ok {
+		_spec.SetField(group.FieldTokenQuotaWeekly, field.TypeInt64, value)
+		_node.TokenQuotaWeekly = &value
+	}
+	if value, ok := _c.mutation.TokenQuotaMonthly(); ok {
+		_spec.SetField(group.FieldTokenQuotaMonthly, field.TypeInt64, value)
+		_node.TokenQuotaMonthly = &value
+	}
 	if value, ok := _c.mutation.DefaultValidityDays(); ok {
 		_spec.SetField(group.FieldDefaultValidityDays, field.TypeInt, value)
 		_node.DefaultValidityDays = value
@@ -1236,6 +1308,102 @@ func (u *GroupUpsert) AddMonthlyLimitUsd(v float64) *GroupUpsert {
 // ClearMonthlyLimitUsd clears the value of the "monthly_limit_usd" field.
 func (u *GroupUpsert) ClearMonthlyLimitUsd() *GroupUpsert {
 	u.SetNull(group.FieldMonthlyLimitUsd)
+	return u
+}
+
+// SetTokenQuota sets the "token_quota" field.
+func (u *GroupUpsert) SetTokenQuota(v int64) *GroupUpsert {
+	u.Set(group.FieldTokenQuota, v)
+	return u
+}
+
+// UpdateTokenQuota sets the "token_quota" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateTokenQuota() *GroupUpsert {
+	u.SetExcluded(group.FieldTokenQuota)
+	return u
+}
+
+// AddTokenQuota adds v to the "token_quota" field.
+func (u *GroupUpsert) AddTokenQuota(v int64) *GroupUpsert {
+	u.Add(group.FieldTokenQuota, v)
+	return u
+}
+
+// ClearTokenQuota clears the value of the "token_quota" field.
+func (u *GroupUpsert) ClearTokenQuota() *GroupUpsert {
+	u.SetNull(group.FieldTokenQuota)
+	return u
+}
+
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (u *GroupUpsert) SetTokenQuotaDaily(v int64) *GroupUpsert {
+	u.Set(group.FieldTokenQuotaDaily, v)
+	return u
+}
+
+// UpdateTokenQuotaDaily sets the "token_quota_daily" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateTokenQuotaDaily() *GroupUpsert {
+	u.SetExcluded(group.FieldTokenQuotaDaily)
+	return u
+}
+
+// AddTokenQuotaDaily adds v to the "token_quota_daily" field.
+func (u *GroupUpsert) AddTokenQuotaDaily(v int64) *GroupUpsert {
+	u.Add(group.FieldTokenQuotaDaily, v)
+	return u
+}
+
+// ClearTokenQuotaDaily clears the value of the "token_quota_daily" field.
+func (u *GroupUpsert) ClearTokenQuotaDaily() *GroupUpsert {
+	u.SetNull(group.FieldTokenQuotaDaily)
+	return u
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (u *GroupUpsert) SetTokenQuotaWeekly(v int64) *GroupUpsert {
+	u.Set(group.FieldTokenQuotaWeekly, v)
+	return u
+}
+
+// UpdateTokenQuotaWeekly sets the "token_quota_weekly" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateTokenQuotaWeekly() *GroupUpsert {
+	u.SetExcluded(group.FieldTokenQuotaWeekly)
+	return u
+}
+
+// AddTokenQuotaWeekly adds v to the "token_quota_weekly" field.
+func (u *GroupUpsert) AddTokenQuotaWeekly(v int64) *GroupUpsert {
+	u.Add(group.FieldTokenQuotaWeekly, v)
+	return u
+}
+
+// ClearTokenQuotaWeekly clears the value of the "token_quota_weekly" field.
+func (u *GroupUpsert) ClearTokenQuotaWeekly() *GroupUpsert {
+	u.SetNull(group.FieldTokenQuotaWeekly)
+	return u
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (u *GroupUpsert) SetTokenQuotaMonthly(v int64) *GroupUpsert {
+	u.Set(group.FieldTokenQuotaMonthly, v)
+	return u
+}
+
+// UpdateTokenQuotaMonthly sets the "token_quota_monthly" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateTokenQuotaMonthly() *GroupUpsert {
+	u.SetExcluded(group.FieldTokenQuotaMonthly)
+	return u
+}
+
+// AddTokenQuotaMonthly adds v to the "token_quota_monthly" field.
+func (u *GroupUpsert) AddTokenQuotaMonthly(v int64) *GroupUpsert {
+	u.Add(group.FieldTokenQuotaMonthly, v)
+	return u
+}
+
+// ClearTokenQuotaMonthly clears the value of the "token_quota_monthly" field.
+func (u *GroupUpsert) ClearTokenQuotaMonthly() *GroupUpsert {
+	u.SetNull(group.FieldTokenQuotaMonthly)
 	return u
 }
 
@@ -1872,6 +2040,118 @@ func (u *GroupUpsertOne) UpdateMonthlyLimitUsd() *GroupUpsertOne {
 func (u *GroupUpsertOne) ClearMonthlyLimitUsd() *GroupUpsertOne {
 	return u.Update(func(s *GroupUpsert) {
 		s.ClearMonthlyLimitUsd()
+	})
+}
+
+// SetTokenQuota sets the "token_quota" field.
+func (u *GroupUpsertOne) SetTokenQuota(v int64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetTokenQuota(v)
+	})
+}
+
+// AddTokenQuota adds v to the "token_quota" field.
+func (u *GroupUpsertOne) AddTokenQuota(v int64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddTokenQuota(v)
+	})
+}
+
+// UpdateTokenQuota sets the "token_quota" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateTokenQuota() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateTokenQuota()
+	})
+}
+
+// ClearTokenQuota clears the value of the "token_quota" field.
+func (u *GroupUpsertOne) ClearTokenQuota() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearTokenQuota()
+	})
+}
+
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (u *GroupUpsertOne) SetTokenQuotaDaily(v int64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetTokenQuotaDaily(v)
+	})
+}
+
+// AddTokenQuotaDaily adds v to the "token_quota_daily" field.
+func (u *GroupUpsertOne) AddTokenQuotaDaily(v int64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddTokenQuotaDaily(v)
+	})
+}
+
+// UpdateTokenQuotaDaily sets the "token_quota_daily" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateTokenQuotaDaily() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateTokenQuotaDaily()
+	})
+}
+
+// ClearTokenQuotaDaily clears the value of the "token_quota_daily" field.
+func (u *GroupUpsertOne) ClearTokenQuotaDaily() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearTokenQuotaDaily()
+	})
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (u *GroupUpsertOne) SetTokenQuotaWeekly(v int64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetTokenQuotaWeekly(v)
+	})
+}
+
+// AddTokenQuotaWeekly adds v to the "token_quota_weekly" field.
+func (u *GroupUpsertOne) AddTokenQuotaWeekly(v int64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddTokenQuotaWeekly(v)
+	})
+}
+
+// UpdateTokenQuotaWeekly sets the "token_quota_weekly" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateTokenQuotaWeekly() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateTokenQuotaWeekly()
+	})
+}
+
+// ClearTokenQuotaWeekly clears the value of the "token_quota_weekly" field.
+func (u *GroupUpsertOne) ClearTokenQuotaWeekly() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearTokenQuotaWeekly()
+	})
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (u *GroupUpsertOne) SetTokenQuotaMonthly(v int64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetTokenQuotaMonthly(v)
+	})
+}
+
+// AddTokenQuotaMonthly adds v to the "token_quota_monthly" field.
+func (u *GroupUpsertOne) AddTokenQuotaMonthly(v int64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddTokenQuotaMonthly(v)
+	})
+}
+
+// UpdateTokenQuotaMonthly sets the "token_quota_monthly" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateTokenQuotaMonthly() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateTokenQuotaMonthly()
+	})
+}
+
+// ClearTokenQuotaMonthly clears the value of the "token_quota_monthly" field.
+func (u *GroupUpsertOne) ClearTokenQuotaMonthly() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearTokenQuotaMonthly()
 	})
 }
 
@@ -2734,6 +3014,118 @@ func (u *GroupUpsertBulk) UpdateMonthlyLimitUsd() *GroupUpsertBulk {
 func (u *GroupUpsertBulk) ClearMonthlyLimitUsd() *GroupUpsertBulk {
 	return u.Update(func(s *GroupUpsert) {
 		s.ClearMonthlyLimitUsd()
+	})
+}
+
+// SetTokenQuota sets the "token_quota" field.
+func (u *GroupUpsertBulk) SetTokenQuota(v int64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetTokenQuota(v)
+	})
+}
+
+// AddTokenQuota adds v to the "token_quota" field.
+func (u *GroupUpsertBulk) AddTokenQuota(v int64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddTokenQuota(v)
+	})
+}
+
+// UpdateTokenQuota sets the "token_quota" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateTokenQuota() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateTokenQuota()
+	})
+}
+
+// ClearTokenQuota clears the value of the "token_quota" field.
+func (u *GroupUpsertBulk) ClearTokenQuota() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearTokenQuota()
+	})
+}
+
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (u *GroupUpsertBulk) SetTokenQuotaDaily(v int64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetTokenQuotaDaily(v)
+	})
+}
+
+// AddTokenQuotaDaily adds v to the "token_quota_daily" field.
+func (u *GroupUpsertBulk) AddTokenQuotaDaily(v int64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddTokenQuotaDaily(v)
+	})
+}
+
+// UpdateTokenQuotaDaily sets the "token_quota_daily" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateTokenQuotaDaily() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateTokenQuotaDaily()
+	})
+}
+
+// ClearTokenQuotaDaily clears the value of the "token_quota_daily" field.
+func (u *GroupUpsertBulk) ClearTokenQuotaDaily() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearTokenQuotaDaily()
+	})
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (u *GroupUpsertBulk) SetTokenQuotaWeekly(v int64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetTokenQuotaWeekly(v)
+	})
+}
+
+// AddTokenQuotaWeekly adds v to the "token_quota_weekly" field.
+func (u *GroupUpsertBulk) AddTokenQuotaWeekly(v int64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddTokenQuotaWeekly(v)
+	})
+}
+
+// UpdateTokenQuotaWeekly sets the "token_quota_weekly" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateTokenQuotaWeekly() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateTokenQuotaWeekly()
+	})
+}
+
+// ClearTokenQuotaWeekly clears the value of the "token_quota_weekly" field.
+func (u *GroupUpsertBulk) ClearTokenQuotaWeekly() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearTokenQuotaWeekly()
+	})
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (u *GroupUpsertBulk) SetTokenQuotaMonthly(v int64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetTokenQuotaMonthly(v)
+	})
+}
+
+// AddTokenQuotaMonthly adds v to the "token_quota_monthly" field.
+func (u *GroupUpsertBulk) AddTokenQuotaMonthly(v int64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddTokenQuotaMonthly(v)
+	})
+}
+
+// UpdateTokenQuotaMonthly sets the "token_quota_monthly" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateTokenQuotaMonthly() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateTokenQuotaMonthly()
+	})
+}
+
+// ClearTokenQuotaMonthly clears the value of the "token_quota_monthly" field.
+func (u *GroupUpsertBulk) ClearTokenQuotaMonthly() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.ClearTokenQuotaMonthly()
 	})
 }
 

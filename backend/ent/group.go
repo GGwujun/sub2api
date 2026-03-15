@@ -44,6 +44,14 @@ type Group struct {
 	WeeklyLimitUsd *float64 `json:"weekly_limit_usd,omitempty"`
 	// MonthlyLimitUsd holds the value of the "monthly_limit_usd" field.
 	MonthlyLimitUsd *float64 `json:"monthly_limit_usd,omitempty"`
+	// TokenQuota holds the value of the "token_quota" field.
+	TokenQuota *int64 `json:"token_quota,omitempty"`
+	// TokenQuotaDaily holds the value of the "token_quota_daily" field.
+	TokenQuotaDaily *int64 `json:"token_quota_daily,omitempty"`
+	// TokenQuotaWeekly holds the value of the "token_quota_weekly" field.
+	TokenQuotaWeekly *int64 `json:"token_quota_weekly,omitempty"`
+	// TokenQuotaMonthly holds the value of the "token_quota_monthly" field.
+	TokenQuotaMonthly *int64 `json:"token_quota_monthly,omitempty"`
 	// DefaultValidityDays holds the value of the "default_validity_days" field.
 	DefaultValidityDays int `json:"default_validity_days,omitempty"`
 	// ImagePrice1k holds the value of the "image_price_1k" field.
@@ -194,7 +202,7 @@ func (*Group) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case group.FieldRateMultiplier, group.FieldDailyLimitUsd, group.FieldWeeklyLimitUsd, group.FieldMonthlyLimitUsd, group.FieldImagePrice1k, group.FieldImagePrice2k, group.FieldImagePrice4k, group.FieldSoraImagePrice360, group.FieldSoraImagePrice540, group.FieldSoraVideoPricePerRequest, group.FieldSoraVideoPricePerRequestHd:
 			values[i] = new(sql.NullFloat64)
-		case group.FieldID, group.FieldDefaultValidityDays, group.FieldSoraStorageQuotaBytes, group.FieldFallbackGroupID, group.FieldFallbackGroupIDOnInvalidRequest, group.FieldSortOrder:
+		case group.FieldID, group.FieldTokenQuota, group.FieldTokenQuotaDaily, group.FieldTokenQuotaWeekly, group.FieldTokenQuotaMonthly, group.FieldDefaultValidityDays, group.FieldSoraStorageQuotaBytes, group.FieldFallbackGroupID, group.FieldFallbackGroupIDOnInvalidRequest, group.FieldSortOrder:
 			values[i] = new(sql.NullInt64)
 		case group.FieldName, group.FieldDescription, group.FieldStatus, group.FieldPlatform, group.FieldSubscriptionType, group.FieldDefaultMappedModel:
 			values[i] = new(sql.NullString)
@@ -303,6 +311,34 @@ func (_m *Group) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.MonthlyLimitUsd = new(float64)
 				*_m.MonthlyLimitUsd = value.Float64
+			}
+		case group.FieldTokenQuota:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota", values[i])
+			} else if value.Valid {
+				_m.TokenQuota = new(int64)
+				*_m.TokenQuota = value.Int64
+			}
+		case group.FieldTokenQuotaDaily:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota_daily", values[i])
+			} else if value.Valid {
+				_m.TokenQuotaDaily = new(int64)
+				*_m.TokenQuotaDaily = value.Int64
+			}
+		case group.FieldTokenQuotaWeekly:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota_weekly", values[i])
+			} else if value.Valid {
+				_m.TokenQuotaWeekly = new(int64)
+				*_m.TokenQuotaWeekly = value.Int64
+			}
+		case group.FieldTokenQuotaMonthly:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota_monthly", values[i])
+			} else if value.Valid {
+				_m.TokenQuotaMonthly = new(int64)
+				*_m.TokenQuotaMonthly = value.Int64
 			}
 		case group.FieldDefaultValidityDays:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -553,6 +589,26 @@ func (_m *Group) String() string {
 	builder.WriteString(", ")
 	if v := _m.MonthlyLimitUsd; v != nil {
 		builder.WriteString("monthly_limit_usd=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenQuota; v != nil {
+		builder.WriteString("token_quota=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenQuotaDaily; v != nil {
+		builder.WriteString("token_quota_daily=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenQuotaWeekly; v != nil {
+		builder.WriteString("token_quota_weekly=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenQuotaMonthly; v != nil {
+		builder.WriteString("token_quota_monthly=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

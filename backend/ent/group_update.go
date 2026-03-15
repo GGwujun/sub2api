@@ -253,6 +253,114 @@ func (_u *GroupUpdate) ClearMonthlyLimitUsd() *GroupUpdate {
 	return _u
 }
 
+// SetTokenQuota sets the "token_quota" field.
+func (_u *GroupUpdate) SetTokenQuota(v int64) *GroupUpdate {
+	_u.mutation.ResetTokenQuota()
+	_u.mutation.SetTokenQuota(v)
+	return _u
+}
+
+// SetNillableTokenQuota sets the "token_quota" field if the given value is not nil.
+func (_u *GroupUpdate) SetNillableTokenQuota(v *int64) *GroupUpdate {
+	if v != nil {
+		_u.SetTokenQuota(*v)
+	}
+	return _u
+}
+
+// AddTokenQuota adds value to the "token_quota" field.
+func (_u *GroupUpdate) AddTokenQuota(v int64) *GroupUpdate {
+	_u.mutation.AddTokenQuota(v)
+	return _u
+}
+
+// ClearTokenQuota clears the value of the "token_quota" field.
+func (_u *GroupUpdate) ClearTokenQuota() *GroupUpdate {
+	_u.mutation.ClearTokenQuota()
+	return _u
+}
+
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (_u *GroupUpdate) SetTokenQuotaDaily(v int64) *GroupUpdate {
+	_u.mutation.ResetTokenQuotaDaily()
+	_u.mutation.SetTokenQuotaDaily(v)
+	return _u
+}
+
+// SetNillableTokenQuotaDaily sets the "token_quota_daily" field if the given value is not nil.
+func (_u *GroupUpdate) SetNillableTokenQuotaDaily(v *int64) *GroupUpdate {
+	if v != nil {
+		_u.SetTokenQuotaDaily(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaDaily adds value to the "token_quota_daily" field.
+func (_u *GroupUpdate) AddTokenQuotaDaily(v int64) *GroupUpdate {
+	_u.mutation.AddTokenQuotaDaily(v)
+	return _u
+}
+
+// ClearTokenQuotaDaily clears the value of the "token_quota_daily" field.
+func (_u *GroupUpdate) ClearTokenQuotaDaily() *GroupUpdate {
+	_u.mutation.ClearTokenQuotaDaily()
+	return _u
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (_u *GroupUpdate) SetTokenQuotaWeekly(v int64) *GroupUpdate {
+	_u.mutation.ResetTokenQuotaWeekly()
+	_u.mutation.SetTokenQuotaWeekly(v)
+	return _u
+}
+
+// SetNillableTokenQuotaWeekly sets the "token_quota_weekly" field if the given value is not nil.
+func (_u *GroupUpdate) SetNillableTokenQuotaWeekly(v *int64) *GroupUpdate {
+	if v != nil {
+		_u.SetTokenQuotaWeekly(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaWeekly adds value to the "token_quota_weekly" field.
+func (_u *GroupUpdate) AddTokenQuotaWeekly(v int64) *GroupUpdate {
+	_u.mutation.AddTokenQuotaWeekly(v)
+	return _u
+}
+
+// ClearTokenQuotaWeekly clears the value of the "token_quota_weekly" field.
+func (_u *GroupUpdate) ClearTokenQuotaWeekly() *GroupUpdate {
+	_u.mutation.ClearTokenQuotaWeekly()
+	return _u
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (_u *GroupUpdate) SetTokenQuotaMonthly(v int64) *GroupUpdate {
+	_u.mutation.ResetTokenQuotaMonthly()
+	_u.mutation.SetTokenQuotaMonthly(v)
+	return _u
+}
+
+// SetNillableTokenQuotaMonthly sets the "token_quota_monthly" field if the given value is not nil.
+func (_u *GroupUpdate) SetNillableTokenQuotaMonthly(v *int64) *GroupUpdate {
+	if v != nil {
+		_u.SetTokenQuotaMonthly(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaMonthly adds value to the "token_quota_monthly" field.
+func (_u *GroupUpdate) AddTokenQuotaMonthly(v int64) *GroupUpdate {
+	_u.mutation.AddTokenQuotaMonthly(v)
+	return _u
+}
+
+// ClearTokenQuotaMonthly clears the value of the "token_quota_monthly" field.
+func (_u *GroupUpdate) ClearTokenQuotaMonthly() *GroupUpdate {
+	_u.mutation.ClearTokenQuotaMonthly()
+	return _u
+}
+
 // SetDefaultValidityDays sets the "default_validity_days" field.
 func (_u *GroupUpdate) SetDefaultValidityDays(v int) *GroupUpdate {
 	_u.mutation.ResetDefaultValidityDays()
@@ -1021,6 +1129,42 @@ func (_u *GroupUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.MonthlyLimitUsdCleared() {
 		_spec.ClearField(group.FieldMonthlyLimitUsd, field.TypeFloat64)
 	}
+	if value, ok := _u.mutation.TokenQuota(); ok {
+		_spec.SetField(group.FieldTokenQuota, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuota(); ok {
+		_spec.AddField(group.FieldTokenQuota, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaCleared() {
+		_spec.ClearField(group.FieldTokenQuota, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaDaily(); ok {
+		_spec.SetField(group.FieldTokenQuotaDaily, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaDaily(); ok {
+		_spec.AddField(group.FieldTokenQuotaDaily, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaDailyCleared() {
+		_spec.ClearField(group.FieldTokenQuotaDaily, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaWeekly(); ok {
+		_spec.SetField(group.FieldTokenQuotaWeekly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaWeekly(); ok {
+		_spec.AddField(group.FieldTokenQuotaWeekly, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaWeeklyCleared() {
+		_spec.ClearField(group.FieldTokenQuotaWeekly, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaMonthly(); ok {
+		_spec.SetField(group.FieldTokenQuotaMonthly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaMonthly(); ok {
+		_spec.AddField(group.FieldTokenQuotaMonthly, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaMonthlyCleared() {
+		_spec.ClearField(group.FieldTokenQuotaMonthly, field.TypeInt64)
+	}
 	if value, ok := _u.mutation.DefaultValidityDays(); ok {
 		_spec.SetField(group.FieldDefaultValidityDays, field.TypeInt, value)
 	}
@@ -1678,6 +1822,114 @@ func (_u *GroupUpdateOne) AddMonthlyLimitUsd(v float64) *GroupUpdateOne {
 // ClearMonthlyLimitUsd clears the value of the "monthly_limit_usd" field.
 func (_u *GroupUpdateOne) ClearMonthlyLimitUsd() *GroupUpdateOne {
 	_u.mutation.ClearMonthlyLimitUsd()
+	return _u
+}
+
+// SetTokenQuota sets the "token_quota" field.
+func (_u *GroupUpdateOne) SetTokenQuota(v int64) *GroupUpdateOne {
+	_u.mutation.ResetTokenQuota()
+	_u.mutation.SetTokenQuota(v)
+	return _u
+}
+
+// SetNillableTokenQuota sets the "token_quota" field if the given value is not nil.
+func (_u *GroupUpdateOne) SetNillableTokenQuota(v *int64) *GroupUpdateOne {
+	if v != nil {
+		_u.SetTokenQuota(*v)
+	}
+	return _u
+}
+
+// AddTokenQuota adds value to the "token_quota" field.
+func (_u *GroupUpdateOne) AddTokenQuota(v int64) *GroupUpdateOne {
+	_u.mutation.AddTokenQuota(v)
+	return _u
+}
+
+// ClearTokenQuota clears the value of the "token_quota" field.
+func (_u *GroupUpdateOne) ClearTokenQuota() *GroupUpdateOne {
+	_u.mutation.ClearTokenQuota()
+	return _u
+}
+
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (_u *GroupUpdateOne) SetTokenQuotaDaily(v int64) *GroupUpdateOne {
+	_u.mutation.ResetTokenQuotaDaily()
+	_u.mutation.SetTokenQuotaDaily(v)
+	return _u
+}
+
+// SetNillableTokenQuotaDaily sets the "token_quota_daily" field if the given value is not nil.
+func (_u *GroupUpdateOne) SetNillableTokenQuotaDaily(v *int64) *GroupUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaDaily(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaDaily adds value to the "token_quota_daily" field.
+func (_u *GroupUpdateOne) AddTokenQuotaDaily(v int64) *GroupUpdateOne {
+	_u.mutation.AddTokenQuotaDaily(v)
+	return _u
+}
+
+// ClearTokenQuotaDaily clears the value of the "token_quota_daily" field.
+func (_u *GroupUpdateOne) ClearTokenQuotaDaily() *GroupUpdateOne {
+	_u.mutation.ClearTokenQuotaDaily()
+	return _u
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (_u *GroupUpdateOne) SetTokenQuotaWeekly(v int64) *GroupUpdateOne {
+	_u.mutation.ResetTokenQuotaWeekly()
+	_u.mutation.SetTokenQuotaWeekly(v)
+	return _u
+}
+
+// SetNillableTokenQuotaWeekly sets the "token_quota_weekly" field if the given value is not nil.
+func (_u *GroupUpdateOne) SetNillableTokenQuotaWeekly(v *int64) *GroupUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaWeekly(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaWeekly adds value to the "token_quota_weekly" field.
+func (_u *GroupUpdateOne) AddTokenQuotaWeekly(v int64) *GroupUpdateOne {
+	_u.mutation.AddTokenQuotaWeekly(v)
+	return _u
+}
+
+// ClearTokenQuotaWeekly clears the value of the "token_quota_weekly" field.
+func (_u *GroupUpdateOne) ClearTokenQuotaWeekly() *GroupUpdateOne {
+	_u.mutation.ClearTokenQuotaWeekly()
+	return _u
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (_u *GroupUpdateOne) SetTokenQuotaMonthly(v int64) *GroupUpdateOne {
+	_u.mutation.ResetTokenQuotaMonthly()
+	_u.mutation.SetTokenQuotaMonthly(v)
+	return _u
+}
+
+// SetNillableTokenQuotaMonthly sets the "token_quota_monthly" field if the given value is not nil.
+func (_u *GroupUpdateOne) SetNillableTokenQuotaMonthly(v *int64) *GroupUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaMonthly(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaMonthly adds value to the "token_quota_monthly" field.
+func (_u *GroupUpdateOne) AddTokenQuotaMonthly(v int64) *GroupUpdateOne {
+	_u.mutation.AddTokenQuotaMonthly(v)
+	return _u
+}
+
+// ClearTokenQuotaMonthly clears the value of the "token_quota_monthly" field.
+func (_u *GroupUpdateOne) ClearTokenQuotaMonthly() *GroupUpdateOne {
+	_u.mutation.ClearTokenQuotaMonthly()
 	return _u
 }
 
@@ -2478,6 +2730,42 @@ func (_u *GroupUpdateOne) sqlSave(ctx context.Context) (_node *Group, err error)
 	}
 	if _u.mutation.MonthlyLimitUsdCleared() {
 		_spec.ClearField(group.FieldMonthlyLimitUsd, field.TypeFloat64)
+	}
+	if value, ok := _u.mutation.TokenQuota(); ok {
+		_spec.SetField(group.FieldTokenQuota, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuota(); ok {
+		_spec.AddField(group.FieldTokenQuota, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaCleared() {
+		_spec.ClearField(group.FieldTokenQuota, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaDaily(); ok {
+		_spec.SetField(group.FieldTokenQuotaDaily, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaDaily(); ok {
+		_spec.AddField(group.FieldTokenQuotaDaily, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaDailyCleared() {
+		_spec.ClearField(group.FieldTokenQuotaDaily, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaWeekly(); ok {
+		_spec.SetField(group.FieldTokenQuotaWeekly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaWeekly(); ok {
+		_spec.AddField(group.FieldTokenQuotaWeekly, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaWeeklyCleared() {
+		_spec.ClearField(group.FieldTokenQuotaWeekly, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaMonthly(); ok {
+		_spec.SetField(group.FieldTokenQuotaMonthly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaMonthly(); ok {
+		_spec.AddField(group.FieldTokenQuotaMonthly, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaMonthlyCleared() {
+		_spec.ClearField(group.FieldTokenQuotaMonthly, field.TypeInt64)
 	}
 	if value, ok := _u.mutation.DefaultValidityDays(); ok {
 		_spec.SetField(group.FieldDefaultValidityDays, field.TypeInt, value)

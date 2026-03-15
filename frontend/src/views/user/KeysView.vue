@@ -21,26 +21,25 @@
             :options="statusFilterOptions"
             @update:model-value="onStatusFilterChange"
           />
-            </div>
-          </template>
+        </div>
+      </template>
 
-          <template #cell-tokens="{ row }">
-            <div class="text-xs">
-              <div class="flex items-center gap-1.5 mb-0.5">
-                <span class="text-gray-500 dark:text-gray-400">{{ t('keys.today') }}:</span>
-                <span class="font-medium text-gray-900 dark:text-white">
-                  {{ formatTokens(usageStats[row.id]?.today_total_tokens ?? 0) }}
-                </span>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <span class="text-gray-500 dark:text-gray-400">{{ t('keys.total') }}:</span>
-                <span class="font-medium text-gray-900 dark:text-white">
-                  {{ formatTokens(usageStats[row.id]?.total_total_tokens ?? 0) }}
-                </span>
-              </div>
-            </div>
-          </template>
-
+      <template #actions>
+        <div class="flex justify-end gap-3">
+          <button
+            @click="loadApiKeys"
+            :disabled="loading"
+            class="btn btn-secondary"
+            :title="t('common.refresh')"
+          >
+            <Icon name="refresh" size="md" :class="loading ? 'animate-spin' : ''" />
+          </button>
+          <button @click="showCreateModal = true" class="btn btn-primary" data-tour="keys-create-btn">
+            <Icon name="plus" size="md" class="mr-2" />
+            {{ t('keys.createKey') }}
+          </button>
+        </div>
+      </template>
 
       <template #table>
         <DataTable :columns="columns" :data="apiKeys" :loading="loading">
@@ -120,18 +119,61 @@
             </div>
           </template>
 
+          <template #cell-tokens="{ row }">
+            <div class="text-xs">
+              <!-- Token 使用量 -->
+              <div class="flex items-center gap-1.5 mb-0.5">
+                <span class="text-gray-500 dark:text-gray-400">{{ t('keys.today') }}:</span>
+                <span class="font-medium text-gray-900 dark:text-white">
+                  {{ formatTokens(usageStats[String(row.id)]?.today_total_tokens ?? 0) }}
+                </span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-gray-500 dark:text-gray-400">{{ t('keys.total') }}:</span>
+                <span class="font-medium text-gray-900 dark:text-white">
+                  {{ formatTokens(usageStats[String(row.id)]?.total_total_tokens ?? 0) }}
+                </span>
+              </div>
+              <!-- Token 额度进度条 (if token_quota is set) -->
+              <div v-if="row.token_quota > 0" class="mt-1">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-gray-500 dark:text-gray-400">{{ t('keys.tokenQuota') }}:</span>
+                  <span :class="[
+                    'font-medium',
+                    (row.token_quota_used || 0) >= row.token_quota ? 'text-red-500' :
+                    (row.token_quota_used || 0) >= row.token_quota * 0.8 ? 'text-yellow-500' :
+                    'text-gray-900 dark:text-white'
+                  ]">
+                    {{ formatTokens(row.token_quota_used || 0) }} / {{ formatTokens(row.token_quota) }}
+                  </span>
+                </div>
+                <div class="mt-0.5 h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
+                  <div
+                    :class="[
+                      'h-full rounded-full transition-all',
+                      (row.token_quota_used || 0) >= row.token_quota ? 'bg-red-500' :
+                      (row.token_quota_used || 0) >= row.token_quota * 0.8 ? 'bg-yellow-500' :
+                      'bg-primary-500'
+                    ]"
+                    :style="{ width: Math.min(((row.token_quota_used || 0) / row.token_quota) * 100, 100) + '%' }"
+                  />
+                </div>
+              </div>
+            </div>
+          </template>
+
           <template #cell-usage="{ row }">
             <div class="text-sm">
               <div class="flex items-center gap-1.5">
                 <span class="text-gray-500 dark:text-gray-400">{{ t('keys.today') }}:</span>
                 <span class="font-medium text-gray-900 dark:text-white">
-                  ${{ (usageStats[row.id]?.today_actual_cost ?? 0).toFixed(4) }}
+                  ${{ (usageStats[String(row.id)]?.today_actual_cost ?? 0).toFixed(4) }}
                 </span>
               </div>
               <div class="mt-0.5 flex items-center gap-1.5">
                 <span class="text-gray-500 dark:text-gray-400">{{ t('keys.total') }}:</span>
                 <span class="font-medium text-gray-900 dark:text-white">
-                  ${{ (usageStats[row.id]?.total_actual_cost ?? 0).toFixed(4) }}
+                  ${{ (usageStats[String(row.id)]?.total_actual_cost ?? 0).toFixed(4) }}
                 </span>
               </div>
               <!-- Quota progress (if quota is set) -->
@@ -551,6 +593,22 @@
                 />
               </div>
               <p class="input-hint">{{ t('keys.quotaAmountHint') }}</p>
+            </div>
+
+            <!-- Token Quota Limit Section -->
+            <div>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">T</span>
+                <input
+                  v-model.number="formData.token_quota"
+                  type="number"
+                  step="1"
+                  min="0"
+                  class="input pl-7"
+                  :placeholder="t('keys.tokenQuotaAmountPlaceholder')"
+                />
+              </div>
+              <p class="input-hint">{{ t('keys.tokenQuotaAmountHint') }}</p>
             </div>
 
             <!-- Quota used display (only in edit mode) -->
@@ -1163,6 +1221,7 @@ const formData = ref({
   // Quota settings (empty = unlimited)
   enable_quota: false,
   quota: null as number | null,
+  token_quota: null as number | null,
   // Rate limit settings
   enable_rate_limit: false,
   rate_limit_5h: null as number | null,
@@ -1375,6 +1434,7 @@ const editKey = (key: ApiKey) => {
     ip_blacklist: (key.ip_blacklist || []).join('\n'),
     enable_quota: key.quota > 0,
     quota: key.quota > 0 ? key.quota : null,
+    token_quota: key.token_quota > 0 ? key.token_quota : null,
     enable_rate_limit: (key.rate_limit_5h > 0) || (key.rate_limit_1d > 0) || (key.rate_limit_7d > 0),
     rate_limit_5h: key.rate_limit_5h || null,
     rate_limit_1d: key.rate_limit_1d || null,
@@ -1486,6 +1546,9 @@ const handleSubmit = async () => {
   // Calculate quota value (null/empty/0 = unlimited, stored as 0)
   const quota = formData.value.quota && formData.value.quota > 0 ? formData.value.quota : 0
 
+  // Calculate token quota value (null/empty = unlimited/unset, only send if > 0)
+  const tokenQuota = formData.value.token_quota && formData.value.token_quota > 0 ? formData.value.token_quota : undefined
+
   // Calculate expiration
   let expiresInDays: number | undefined
   let expiresAt: string | null | undefined
@@ -1522,12 +1585,14 @@ const handleSubmit = async () => {
         ip_whitelist: ipWhitelist,
         ip_blacklist: ipBlacklist,
         quota: quota,
+        token_quota: tokenQuota,
         expires_at: expiresAt,
         rate_limit_5h: rateLimitData.rate_limit_5h,
         rate_limit_1d: rateLimitData.rate_limit_1d,
         rate_limit_7d: rateLimitData.rate_limit_7d,
       })
       appStore.showSuccess(t('keys.keyUpdatedSuccess'))
+      loadApiKeys()
     } else {
       const customKey = formData.value.use_custom_key ? formData.value.custom_key : undefined
       await keysAPI.create(
@@ -1537,6 +1602,7 @@ const handleSubmit = async () => {
         ipWhitelist,
         ipBlacklist,
         quota,
+        formData.value.token_quota && formData.value.token_quota > 0 ? formData.value.token_quota : undefined,
         expiresInDays,
         rateLimitData
       )
@@ -1592,6 +1658,7 @@ const closeModals = () => {
     ip_blacklist: '',
     enable_quota: false,
     quota: null,
+    token_quota: null,
     enable_rate_limit: false,
     rate_limit_5h: null,
     rate_limit_1d: null,

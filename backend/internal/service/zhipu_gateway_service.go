@@ -1086,7 +1086,8 @@ func (s *ZhipuGatewayService) RecordUsage(ctx context.Context, input *ZhipuRecor
 
 	// Determine billing type (subscription vs balance)
 	var subscription *UserSubscription
-	isSubscriptionBilling := apiKey.GroupID != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
+	isTokenQuotaBill := (apiKey.Group != nil && apiKey.Group.IsTokenQuotaType()) || apiKey.HasTokenQuota()
+	isSubscriptionBilling := !isTokenQuotaBill && apiKey.GroupID != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
 	if isSubscriptionBilling && s.userSubRepo != nil {
 		sub, subErr := s.userSubRepo.GetActiveByUserIDAndGroupID(ctx, user.ID, *apiKey.GroupID)
 		if subErr != nil {
@@ -1102,7 +1103,9 @@ func (s *ZhipuGatewayService) RecordUsage(ctx context.Context, input *ZhipuRecor
 	}
 
 	billingType := BillingTypeBalance
-	if isSubscriptionBilling {
+	if isTokenQuotaBill {
+		billingType = BillingTypeTokenQuota
+	} else if isSubscriptionBilling {
 		billingType = BillingTypeSubscription
 	}
 
@@ -1181,11 +1184,13 @@ func (s *ZhipuGatewayService) RecordUsage(ctx context.Context, input *ZhipuRecor
 				TotalCost:     totalCost,
 				ActualCost:    totalCost,
 			},
+			TotalTokens:           int64(usageLog.TotalTokens()),
 			User:                  user,
 			APIKey:                apiKey,
 			Account:               account,
 			Subscription:          subscription,
 			IsSubscriptionBill:    isSubscriptionBilling,
+			IsTokenQuotaBill:      isTokenQuotaBill,
 			AccountRateMultiplier: accountRateMultiplier,
 			APIKeyService:         input.APIKeyService,
 		}, s.billingDeps())

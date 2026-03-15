@@ -43,6 +43,8 @@ func (r *apiKeyRepository) Create(ctx context.Context, key *service.APIKey) erro
 		SetNillableLastUsedAt(key.LastUsedAt).
 		SetQuota(key.Quota).
 		SetQuotaUsed(key.QuotaUsed).
+		SetTokenQuota(key.TokenQuota).
+		SetTokenQuotaUsed(key.TokenQuotaUsed).
 		SetNillableExpiresAt(key.ExpiresAt).
 		SetRateLimit5h(key.RateLimit5h).
 		SetRateLimit1d(key.RateLimit1d).
@@ -126,6 +128,8 @@ func (r *apiKeyRepository) GetByKeyForAuth(ctx context.Context, key string) (*se
 			apikey.FieldIPBlacklist,
 			apikey.FieldQuota,
 			apikey.FieldQuotaUsed,
+			apikey.FieldTokenQuota,
+			apikey.FieldTokenQuotaUsed,
 			apikey.FieldExpiresAt,
 			apikey.FieldRateLimit5h,
 			apikey.FieldRateLimit1d,
@@ -193,6 +197,8 @@ func (r *apiKeyRepository) Update(ctx context.Context, key *service.APIKey) erro
 		SetStatus(key.Status).
 		SetQuota(key.Quota).
 		SetQuotaUsed(key.QuotaUsed).
+		SetTokenQuota(key.TokenQuota).
+		SetTokenQuotaUsed(key.TokenQuotaUsed).
 		SetRateLimit5h(key.RateLimit5h).
 		SetRateLimit1d(key.RateLimit1d).
 		SetRateLimit7d(key.RateLimit7d).
@@ -478,6 +484,47 @@ func (r *apiKeyRepository) IncrementQuotaUsedAndGetState(ctx context.Context, id
 	return state, nil
 }
 
+// IncrementTokenQuotaUsed atomically increments token_quota_used field and returns new value
+func (r *apiKeyRepository) IncrementTokenQuotaUsed(ctx context.Context, id int64, tokens int64) (int64, error) {
+	updated, err := r.client.APIKey.UpdateOneID(id).
+		Where(apikey.DeletedAtIsNil()).
+		AddTokenQuotaUsed(tokens).
+		Save(ctx)
+	if err != nil {
+		if dbent.IsNotFound(err) {
+			return 0, service.ErrAPIKeyNotFound
+		}
+		return 0, err
+	}
+	return updated.TokenQuotaUsed, nil
+}
+
+// IncrementTokenQuotaUsedAndGetState atomically increments token_quota_used, conditionally marks the key
+// as quota_exhausted, and returns the latest token quota state in one round trip.
+func (r *apiKeyRepository) IncrementTokenQuotaUsedAndGetState(ctx context.Context, id int64, tokens int64) (*service.APIKeyQuotaUsageState, error) {
+	query := `
+		UPDATE api_keys
+		SET
+			token_quota_used = token_quota_used + $1,
+			status = CASE
+				WHEN token_quota > 0 AND token_quota_used + $1 >= token_quota THEN $2
+				ELSE status
+			END,
+			updated_at = NOW()
+		WHERE id = $3 AND deleted_at IS NULL
+		RETURNING token_quota_used, token_quota, key, status
+	`
+
+	state := &service.APIKeyQuotaUsageState{}
+	if err := scanSingleRow(ctx, r.sql, query, []any{tokens, service.StatusAPIKeyQuotaExhausted, id}, &state.QuotaUsed, &state.Quota, &state.Key, &state.Status); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, service.ErrAPIKeyNotFound
+		}
+		return nil, err
+	}
+	return state, nil
+}
+
 func (r *apiKeyRepository) UpdateLastUsed(ctx context.Context, id int64, usedAt time.Time) error {
 	affected, err := r.client.APIKey.Update().
 		Where(apikey.IDEQ(id), apikey.DeletedAtIsNil()).
@@ -556,29 +603,31 @@ func apiKeyEntityToService(m *dbent.APIKey) *service.APIKey {
 		return nil
 	}
 	out := &service.APIKey{
-		ID:            m.ID,
-		UserID:        m.UserID,
-		Key:           m.Key,
-		Name:          m.Name,
-		Status:        m.Status,
-		IPWhitelist:   m.IPWhitelist,
-		IPBlacklist:   m.IPBlacklist,
-		LastUsedAt:    m.LastUsedAt,
-		CreatedAt:     m.CreatedAt,
-		UpdatedAt:     m.UpdatedAt,
-		GroupID:       m.GroupID,
-		Quota:         m.Quota,
-		QuotaUsed:     m.QuotaUsed,
-		ExpiresAt:     m.ExpiresAt,
-		RateLimit5h:   m.RateLimit5h,
-		RateLimit1d:   m.RateLimit1d,
-		RateLimit7d:   m.RateLimit7d,
-		Usage5h:       m.Usage5h,
-		Usage1d:       m.Usage1d,
-		Usage7d:       m.Usage7d,
-		Window5hStart: m.Window5hStart,
-		Window1dStart: m.Window1dStart,
-		Window7dStart: m.Window7dStart,
+		ID:             m.ID,
+		UserID:         m.UserID,
+		Key:            m.Key,
+		Name:           m.Name,
+		Status:         m.Status,
+		IPWhitelist:    m.IPWhitelist,
+		IPBlacklist:    m.IPBlacklist,
+		LastUsedAt:     m.LastUsedAt,
+		CreatedAt:      m.CreatedAt,
+		UpdatedAt:      m.UpdatedAt,
+		GroupID:        m.GroupID,
+		Quota:          m.Quota,
+		QuotaUsed:      m.QuotaUsed,
+		TokenQuota:     m.TokenQuota,
+		TokenQuotaUsed: m.TokenQuotaUsed,
+		ExpiresAt:      m.ExpiresAt,
+		RateLimit5h:    m.RateLimit5h,
+		RateLimit1d:    m.RateLimit1d,
+		RateLimit7d:    m.RateLimit7d,
+		Usage5h:        m.Usage5h,
+		Usage1d:        m.Usage1d,
+		Usage7d:        m.Usage7d,
+		Window5hStart:  m.Window5hStart,
+		Window1dStart:  m.Window1dStart,
+		Window7dStart:  m.Window7dStart,
 	}
 	if m.Edges.User != nil {
 		out.User = userEntityToService(m.Edges.User)
@@ -630,6 +679,10 @@ func groupEntityToService(g *dbent.Group) *service.Group {
 		DailyLimitUSD:                   g.DailyLimitUsd,
 		WeeklyLimitUSD:                  g.WeeklyLimitUsd,
 		MonthlyLimitUSD:                 g.MonthlyLimitUsd,
+		TokenQuota:                      g.TokenQuota,
+		TokenQuotaDaily:                 g.TokenQuotaDaily,
+		TokenQuotaWeekly:                g.TokenQuotaWeekly,
+		TokenQuotaMonthly:               g.TokenQuotaMonthly,
 		ImagePrice1K:                    g.ImagePrice1k,
 		ImagePrice2K:                    g.ImagePrice2k,
 		ImagePrice4K:                    g.ImagePrice4k,

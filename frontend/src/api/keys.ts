@@ -40,13 +40,14 @@ export async function getById(id: number): Promise<ApiKey> {
 }
 
 /**
- * Create new API key
- * @param name - Key name
- * @param groupId - Optional group ID
- * @param customKey - Optional custom key value
+ * Create a new API key
+ * @param name - API key name
+ * @param groupId - Optional group ID to assign the key to
+ * @param customKey - Optional custom API key string
  * @param ipWhitelist - Optional IP whitelist
  * @param ipBlacklist - Optional IP blacklist
  * @param quota - Optional quota limit in USD (0 = unlimited)
+ * @param tokenQuota - Optional token quota limit (0 = unlimited)
  * @param expiresInDays - Optional days until expiry (undefined = never expires)
  * @param rateLimitData - Optional rate limit fields
  * @returns Created API key
@@ -58,12 +59,31 @@ export async function create(
   ipWhitelist?: string[],
   ipBlacklist?: string[],
   quota?: number,
+  tokenQuota?: number,
   expiresInDays?: number,
   rateLimitData?: { rate_limit_5h?: number; rate_limit_1d?: number; rate_limit_7d?: number }
 ): Promise<ApiKey> {
   const payload: CreateApiKeyRequest = { name }
   if (groupId !== undefined) {
     payload.group_id = groupId
+  }
+  if (customKey) {
+    payload.custom_key = customKey
+  }
+  if (ipWhitelist && ipWhitelist.length > 0) {
+    payload.ip_whitelist = ipWhitelist
+  }
+  if (ipBlacklist && ipBlacklist.length > 0) {
+    payload.ip_blacklist = ipBlacklist
+  }
+  if (quota !== undefined && quota > 0) {
+    payload.quota = quota
+  }
+  if (tokenQuota !== undefined && tokenQuota > 0) {
+    payload.token_quota = tokenQuota
+  }
+  if (expiresInDays !== undefined && expiresInDays > 0) {
+    payload.expires_in_days = expiresInDays
   }
   if (customKey) {
     payload.custom_key = customKey

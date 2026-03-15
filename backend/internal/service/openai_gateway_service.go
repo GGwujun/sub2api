@@ -3917,9 +3917,12 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 	}
 
 	// Determine billing type
-	isSubscriptionBilling := subscription != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
+	isTokenQuotaBill := (apiKey.Group != nil && apiKey.Group.IsTokenQuotaType()) || apiKey.HasTokenQuota()
+	isSubscriptionBilling := !isTokenQuotaBill && subscription != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
 	billingType := BillingTypeBalance
-	if isSubscriptionBilling {
+	if isTokenQuotaBill {
+		billingType = BillingTypeTokenQuota
+	} else if isSubscriptionBilling {
 		billingType = BillingTypeSubscription
 	}
 
@@ -3983,11 +3986,13 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 	if shouldBill {
 		postUsageBilling(ctx, &postUsageBillingParams{
 			Cost:                  cost,
+			TotalTokens:           int64(usageLog.TotalTokens()),
 			User:                  user,
 			APIKey:                apiKey,
 			Account:               account,
 			Subscription:          subscription,
 			IsSubscriptionBill:    isSubscriptionBilling,
+			IsTokenQuotaBill:      isTokenQuotaBill,
 			AccountRateMultiplier: accountRateMultiplier,
 			APIKeyService:         input.APIKeyService,
 		}, s.billingDeps())

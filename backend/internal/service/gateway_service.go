@@ -6604,31 +6604,40 @@ type RecordUsageInput struct {
 // APIKeyQuotaUpdater defines the interface for updating API Key quota and rate limit usage
 type APIKeyQuotaUpdater interface {
 	UpdateQuotaUsed(ctx context.Context, apiKeyID int64, cost float64) error
+	UpdateTokenQuotaUsed(ctx context.Context, apiKeyID int64, tokens int64) error
 	UpdateRateLimitUsage(ctx context.Context, apiKeyID int64, cost float64) error
 }
 
 // postUsageBillingParams 统一扣费所需的参数
 type postUsageBillingParams struct {
 	Cost                  *CostBreakdown
+	TotalTokens           int64 // Total tokens used (input + output)
 	User                  *User
 	APIKey                *APIKey
 	Account               *Account
 	Subscription          *UserSubscription
-	IsSubscriptionBill    bool
+	IsSubscriptionBill    bool // 是否订阅计费（费用限额）
+	IsTokenQuotaBill      bool // 是否 Token 配额计费
 	AccountRateMultiplier float64
 	APIKeyService         APIKeyQuotaUpdater
 }
 
 // postUsageBilling 统一处理使用量记录后的扣费逻辑：
-//   - 订阅/余额扣费
-//   - API Key 配额更新
+//   - Token 配额模式：只扣 Token 配额，不扣余额/订阅
+//   - 订阅模式：扣订阅费用
+//   - 标准模式：扣用户余额
+//   - API Key 费用配额更新
+//   - API Key Token 配额更新
 //   - API Key 限速用量更新
-//   - 账号配额用量更新（账号口径：TotalCost × 账号计费倍率）
+//   - 账号配额用量更新
 func postUsageBilling(ctx context.Context, p *postUsageBillingParams, deps *billingDeps) {
 	cost := p.Cost
 
-	// 1. 订阅 / 余额扣费
-	if p.IsSubscriptionBill {
+	// Token 配额模式：只扣 Token 配额，不扣余额也不扣订阅
+	if p.IsTokenQuotaBill {
+		// 只更新 API Key Token 配额（在后面处理）
+	} else if p.IsSubscriptionBill {
+		// 1. 订阅扣费
 		if cost.TotalCost > 0 {
 			if err := deps.userSubRepo.IncrementUsage(ctx, p.Subscription.ID, cost.TotalCost); err != nil {
 				slog.Error("increment subscription usage failed", "subscription_id", p.Subscription.ID, "error", err)
@@ -6636,6 +6645,7 @@ func postUsageBilling(ctx context.Context, p *postUsageBillingParams, deps *bill
 			deps.billingCacheService.QueueUpdateSubscriptionUsage(p.User.ID, *p.APIKey.GroupID, cost.TotalCost)
 		}
 	} else {
+		// 1. 余额扣费
 		if cost.ActualCost > 0 {
 			if err := deps.userRepo.DeductBalance(ctx, p.User.ID, cost.ActualCost); err != nil {
 				slog.Error("deduct balance failed", "user_id", p.User.ID, "error", err)
@@ -6644,10 +6654,19 @@ func postUsageBilling(ctx context.Context, p *postUsageBillingParams, deps *bill
 		}
 	}
 
-	// 2. API Key 配额
-	if cost.ActualCost > 0 && p.APIKey.Quota > 0 && p.APIKeyService != nil {
+	// 2. API Key 费用配额（只有非 Token 配额模式才处理）
+	if !p.IsTokenQuotaBill && cost.ActualCost > 0 && p.APIKey.Quota > 0 && p.APIKeyService != nil {
 		if err := p.APIKeyService.UpdateQuotaUsed(ctx, p.APIKey.ID, cost.ActualCost); err != nil {
 			slog.Error("update api key quota failed", "api_key_id", p.APIKey.ID, "error", err)
+		}
+	}
+
+	// 2.1 API Key Token 配额（API Key > Group > 无限制）
+	// Token 配额模式：只有 API Key 或 Group 配置了 Token 配额时才生效
+	hasTokenQuota := p.APIKey.HasTokenQuota()
+	if p.TotalTokens > 0 && hasTokenQuota && p.APIKeyService != nil {
+		if err := p.APIKeyService.UpdateTokenQuotaUsed(ctx, p.APIKey.ID, p.TotalTokens); err != nil {
+			slog.Error("update api key token quota failed", "api_key_id", p.APIKey.ID, "tokens", p.TotalTokens, "error", err)
 		}
 	}
 
@@ -6773,10 +6792,13 @@ func (s *GatewayService) RecordUsage(ctx context.Context, input *RecordUsageInpu
 		}
 	}
 
-	// 判断计费方式：订阅模式 vs 余额模式
-	isSubscriptionBilling := subscription != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
+	// 判断计费方式：Token 配额模式 vs 订阅模式 vs 余额模式
+	isTokenQuotaBill := (apiKey.Group != nil && apiKey.Group.IsTokenQuotaType()) || apiKey.HasTokenQuota()
+	isSubscriptionBilling := !isTokenQuotaBill && subscription != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
 	billingType := BillingTypeBalance
-	if isSubscriptionBilling {
+	if isTokenQuotaBill {
+		billingType = BillingTypeTokenQuota
+	} else if isSubscriptionBilling {
 		billingType = BillingTypeSubscription
 	}
 
@@ -6856,11 +6878,13 @@ func (s *GatewayService) RecordUsage(ctx context.Context, input *RecordUsageInpu
 	if shouldBill {
 		postUsageBilling(ctx, &postUsageBillingParams{
 			Cost:                  cost,
+			TotalTokens:           int64(usageLog.TotalTokens()),
 			User:                  user,
 			APIKey:                apiKey,
 			Account:               account,
 			Subscription:          subscription,
 			IsSubscriptionBill:    isSubscriptionBilling,
+			IsTokenQuotaBill:      isTokenQuotaBill,
 			AccountRateMultiplier: accountRateMultiplier,
 			APIKeyService:         input.APIKeyService,
 		}, s.billingDeps())
@@ -6952,10 +6976,13 @@ func (s *GatewayService) RecordUsageWithLongContext(ctx context.Context, input *
 		}
 	}
 
-	// 判断计费方式：订阅模式 vs 余额模式
-	isSubscriptionBilling := subscription != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
+	// 判断计费方式：Token 配额模式 vs 订阅模式 vs 余额模式
+	isTokenQuotaBill := (apiKey.Group != nil && apiKey.Group.IsTokenQuotaType()) || apiKey.HasTokenQuota()
+	isSubscriptionBilling := !isTokenQuotaBill && subscription != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
 	billingType := BillingTypeBalance
-	if isSubscriptionBilling {
+	if isTokenQuotaBill {
+		billingType = BillingTypeTokenQuota
+	} else if isSubscriptionBilling {
 		billingType = BillingTypeSubscription
 	}
 
@@ -7030,11 +7057,13 @@ func (s *GatewayService) RecordUsageWithLongContext(ctx context.Context, input *
 	if shouldBill {
 		postUsageBilling(ctx, &postUsageBillingParams{
 			Cost:                  cost,
+			TotalTokens:           int64(usageLog.TotalTokens()),
 			User:                  user,
 			APIKey:                apiKey,
 			Account:               account,
 			Subscription:          subscription,
 			IsSubscriptionBill:    isSubscriptionBilling,
+			IsTokenQuotaBill:      isTokenQuotaBill,
 			AccountRateMultiplier: accountRateMultiplier,
 			APIKeyService:         input.APIKeyService,
 		}, s.billingDeps())
