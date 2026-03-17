@@ -50,6 +50,24 @@ type APIKey struct {
 	TokenQuota int64 `json:"token_quota,omitempty"`
 	// Used token quota amount
 	TokenQuotaUsed int64 `json:"token_quota_used,omitempty"`
+	// Daily token quota limit (0 = unlimited)
+	TokenQuotaDaily *int64 `json:"token_quota_daily,omitempty"`
+	// Used daily token quota amount
+	TokenQuotaDailyUsed *int64 `json:"token_quota_daily_used,omitempty"`
+	// Daily token quota window start time
+	TokenQuotaDailyStart *time.Time `json:"token_quota_daily_start,omitempty"`
+	// Weekly token quota limit (0 = unlimited)
+	TokenQuotaWeekly *int64 `json:"token_quota_weekly,omitempty"`
+	// Used weekly token quota amount
+	TokenQuotaWeeklyUsed *int64 `json:"token_quota_weekly_used,omitempty"`
+	// Weekly token quota window start time
+	TokenQuotaWeeklyStart *time.Time `json:"token_quota_weekly_start,omitempty"`
+	// Monthly token quota limit (0 = unlimited)
+	TokenQuotaMonthly *int64 `json:"token_quota_monthly,omitempty"`
+	// Used monthly token quota amount
+	TokenQuotaMonthlyUsed *int64 `json:"token_quota_monthly_used,omitempty"`
+	// Monthly token quota window start time
+	TokenQuotaMonthlyStart *time.Time `json:"token_quota_monthly_start,omitempty"`
 	// Expiration time for this API key (null = never expires)
 	ExpiresAt *time.Time `json:"expires_at,omitempty"`
 	// Rate limit in USD per 5 hours (0 = unlimited)
@@ -129,11 +147,11 @@ func (*APIKey) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case apikey.FieldQuota, apikey.FieldQuotaUsed, apikey.FieldRateLimit5h, apikey.FieldRateLimit1d, apikey.FieldRateLimit7d, apikey.FieldUsage5h, apikey.FieldUsage1d, apikey.FieldUsage7d:
 			values[i] = new(sql.NullFloat64)
-		case apikey.FieldID, apikey.FieldUserID, apikey.FieldGroupID, apikey.FieldTokenQuota, apikey.FieldTokenQuotaUsed:
+		case apikey.FieldID, apikey.FieldUserID, apikey.FieldGroupID, apikey.FieldTokenQuota, apikey.FieldTokenQuotaUsed, apikey.FieldTokenQuotaDaily, apikey.FieldTokenQuotaDailyUsed, apikey.FieldTokenQuotaWeekly, apikey.FieldTokenQuotaWeeklyUsed, apikey.FieldTokenQuotaMonthly, apikey.FieldTokenQuotaMonthlyUsed:
 			values[i] = new(sql.NullInt64)
 		case apikey.FieldKey, apikey.FieldName, apikey.FieldStatus:
 			values[i] = new(sql.NullString)
-		case apikey.FieldCreatedAt, apikey.FieldUpdatedAt, apikey.FieldDeletedAt, apikey.FieldLastUsedAt, apikey.FieldExpiresAt, apikey.FieldWindow5hStart, apikey.FieldWindow1dStart, apikey.FieldWindow7dStart:
+		case apikey.FieldCreatedAt, apikey.FieldUpdatedAt, apikey.FieldDeletedAt, apikey.FieldLastUsedAt, apikey.FieldTokenQuotaDailyStart, apikey.FieldTokenQuotaWeeklyStart, apikey.FieldTokenQuotaMonthlyStart, apikey.FieldExpiresAt, apikey.FieldWindow5hStart, apikey.FieldWindow1dStart, apikey.FieldWindow7dStart:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -252,6 +270,69 @@ func (_m *APIKey) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field token_quota_used", values[i])
 			} else if value.Valid {
 				_m.TokenQuotaUsed = value.Int64
+			}
+		case apikey.FieldTokenQuotaDaily:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota_daily", values[i])
+			} else if value.Valid {
+				_m.TokenQuotaDaily = new(int64)
+				*_m.TokenQuotaDaily = value.Int64
+			}
+		case apikey.FieldTokenQuotaDailyUsed:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota_daily_used", values[i])
+			} else if value.Valid {
+				_m.TokenQuotaDailyUsed = new(int64)
+				*_m.TokenQuotaDailyUsed = value.Int64
+			}
+		case apikey.FieldTokenQuotaDailyStart:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota_daily_start", values[i])
+			} else if value.Valid {
+				_m.TokenQuotaDailyStart = new(time.Time)
+				*_m.TokenQuotaDailyStart = value.Time
+			}
+		case apikey.FieldTokenQuotaWeekly:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota_weekly", values[i])
+			} else if value.Valid {
+				_m.TokenQuotaWeekly = new(int64)
+				*_m.TokenQuotaWeekly = value.Int64
+			}
+		case apikey.FieldTokenQuotaWeeklyUsed:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota_weekly_used", values[i])
+			} else if value.Valid {
+				_m.TokenQuotaWeeklyUsed = new(int64)
+				*_m.TokenQuotaWeeklyUsed = value.Int64
+			}
+		case apikey.FieldTokenQuotaWeeklyStart:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota_weekly_start", values[i])
+			} else if value.Valid {
+				_m.TokenQuotaWeeklyStart = new(time.Time)
+				*_m.TokenQuotaWeeklyStart = value.Time
+			}
+		case apikey.FieldTokenQuotaMonthly:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota_monthly", values[i])
+			} else if value.Valid {
+				_m.TokenQuotaMonthly = new(int64)
+				*_m.TokenQuotaMonthly = value.Int64
+			}
+		case apikey.FieldTokenQuotaMonthlyUsed:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota_monthly_used", values[i])
+			} else if value.Valid {
+				_m.TokenQuotaMonthlyUsed = new(int64)
+				*_m.TokenQuotaMonthlyUsed = value.Int64
+			}
+		case apikey.FieldTokenQuotaMonthlyStart:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota_monthly_start", values[i])
+			} else if value.Valid {
+				_m.TokenQuotaMonthlyStart = new(time.Time)
+				*_m.TokenQuotaMonthlyStart = value.Time
 			}
 		case apikey.FieldExpiresAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -418,6 +499,51 @@ func (_m *APIKey) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("token_quota_used=")
 	builder.WriteString(fmt.Sprintf("%v", _m.TokenQuotaUsed))
+	builder.WriteString(", ")
+	if v := _m.TokenQuotaDaily; v != nil {
+		builder.WriteString("token_quota_daily=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenQuotaDailyUsed; v != nil {
+		builder.WriteString("token_quota_daily_used=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenQuotaDailyStart; v != nil {
+		builder.WriteString("token_quota_daily_start=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenQuotaWeekly; v != nil {
+		builder.WriteString("token_quota_weekly=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenQuotaWeeklyUsed; v != nil {
+		builder.WriteString("token_quota_weekly_used=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenQuotaWeeklyStart; v != nil {
+		builder.WriteString("token_quota_weekly_start=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenQuotaMonthly; v != nil {
+		builder.WriteString("token_quota_monthly=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenQuotaMonthlyUsed; v != nil {
+		builder.WriteString("token_quota_monthly_used=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenQuotaMonthlyStart; v != nil {
+		builder.WriteString("token_quota_monthly_start=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
 	if v := _m.ExpiresAt; v != nil {
 		builder.WriteString("expires_at=")

@@ -83,8 +83,170 @@
               }}</span>
             </div>
 
+            <!-- Token Quota Limits -->
+            <div v-if="isTokenQuotaSubscription(subscription)">
+              <div v-if="hasTokenQuotaLimits(subscription)" class="space-y-4">
+                <div
+                  v-if="subscription.group?.token_quota && subscription.group.token_quota > 0"
+                  class="space-y-2"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {{ t('userSubscriptions.tokenTotal') }}
+                    </span>
+                    <span class="text-sm text-gray-500 dark:text-dark-400">
+                      {{
+                        formatTokenUsage(
+                          getTokenUsageTotal(subscription),
+                          subscription.group.token_quota
+                        )
+                      }}
+                    </span>
+                  </div>
+                  <div class="relative h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
+                    <div
+                      class="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
+                      :class="
+                        getProgressBarClass(
+                          getTokenUsageTotal(subscription),
+                          subscription.group.token_quota
+                        )
+                      "
+                      :style="{
+                        width: getProgressWidth(
+                          getTokenUsageTotal(subscription),
+                          subscription.group.token_quota
+                        )
+                      }"
+                    ></div>
+                  </div>
+                </div>
+                <div
+                  v-if="subscription.group?.token_quota_daily && subscription.group.token_quota_daily > 0"
+                  class="space-y-2"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {{ t('userSubscriptions.tokenDaily') }}
+                    </span>
+                    <span class="text-sm text-gray-500 dark:text-dark-400">
+                      {{
+                        formatTokenUsage(
+                          getTokenUsageDaily(subscription),
+                          subscription.group.token_quota_daily
+                        )
+                      }}
+                    </span>
+                  </div>
+                  <div class="relative h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
+                    <div
+                      class="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
+                      :class="
+                        getProgressBarClass(
+                          getTokenUsageDaily(subscription),
+                          subscription.group.token_quota_daily
+                        )
+                      "
+                      :style="{
+                        width: getProgressWidth(
+                          getTokenUsageDaily(subscription),
+                          subscription.group.token_quota_daily
+                        )
+                      }"
+                    ></div>
+                  </div>
+                </div>
+                <div
+                  v-if="subscription.group?.token_quota_weekly && subscription.group.token_quota_weekly > 0"
+                  class="space-y-2"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {{ t('userSubscriptions.tokenWeekly') }}
+                    </span>
+                    <span class="text-sm text-gray-500 dark:text-dark-400">
+                      {{
+                        formatTokenUsage(
+                          getTokenUsageWeekly(subscription),
+                          subscription.group.token_quota_weekly
+                        )
+                      }}
+                    </span>
+                  </div>
+                  <div class="relative h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
+                    <div
+                      class="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
+                      :class="
+                        getProgressBarClass(
+                          getTokenUsageWeekly(subscription),
+                          subscription.group.token_quota_weekly
+                        )
+                      "
+                      :style="{
+                        width: getProgressWidth(
+                          getTokenUsageWeekly(subscription),
+                          subscription.group.token_quota_weekly
+                        )
+                      }"
+                    ></div>
+                  </div>
+                </div>
+                <div
+                  v-if="subscription.group?.token_quota_monthly && subscription.group.token_quota_monthly > 0"
+                  class="space-y-2"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {{ t('userSubscriptions.tokenMonthly') }}
+                    </span>
+                    <span class="text-sm text-gray-500 dark:text-dark-400">
+                      {{
+                        formatTokenUsage(
+                          getTokenUsageMonthly(subscription),
+                          subscription.group.token_quota_monthly
+                        )
+                      }}
+                    </span>
+                  </div>
+                  <div class="relative h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-dark-600">
+                    <div
+                      class="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
+                      :class="
+                        getProgressBarClass(
+                          getTokenUsageMonthly(subscription),
+                          subscription.group.token_quota_monthly
+                        )
+                      "
+                      :style="{
+                        width: getProgressWidth(
+                          getTokenUsageMonthly(subscription),
+                          subscription.group.token_quota_monthly
+                        )
+                      }"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div
+                v-else
+                class="flex items-center justify-center rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 py-6 dark:from-emerald-900/20 dark:to-teal-900/20"
+              >
+                <div class="flex items-center gap-3">
+                  <span class="text-4xl text-emerald-600 dark:text-emerald-400">∞</span>
+                  <div>
+                    <p class="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+                      {{ t('userSubscriptions.unlimited') }}
+                    </p>
+                    <p class="text-xs text-emerald-600/70 dark:text-emerald-400/70">
+                      {{ t('userSubscriptions.unlimitedDesc') }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Daily Usage -->
-            <div v-if="subscription.group?.daily_limit_usd" class="space-y-2">
+            <div v-if="!isTokenQuotaSubscription(subscription) && subscription.group?.daily_limit_usd" class="space-y-2">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('userSubscriptions.daily') }}
@@ -125,7 +287,7 @@
             </div>
 
             <!-- Weekly Usage -->
-            <div v-if="subscription.group?.weekly_limit_usd" class="space-y-2">
+            <div v-if="!isTokenQuotaSubscription(subscription) && subscription.group?.weekly_limit_usd" class="space-y-2">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('userSubscriptions.weekly') }}
@@ -166,7 +328,7 @@
             </div>
 
             <!-- Monthly Usage -->
-            <div v-if="subscription.group?.monthly_limit_usd" class="space-y-2">
+            <div v-if="!isTokenQuotaSubscription(subscription) && subscription.group?.monthly_limit_usd" class="space-y-2">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {{ t('userSubscriptions.monthly') }}
@@ -209,6 +371,7 @@
             <!-- No limits configured - Unlimited badge -->
             <div
               v-if="
+                !isTokenQuotaSubscription(subscription) &&
                 !subscription.group?.daily_limit_usd &&
                 !subscription.group?.weekly_limit_usd &&
                 !subscription.group?.monthly_limit_usd
@@ -242,7 +405,7 @@ import subscriptionsAPI from '@/api/subscriptions'
 import type { UserSubscription } from '@/types'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Icon from '@/components/icons/Icon.vue'
-import { formatDateOnly } from '@/utils/format'
+import { formatDateOnly, formatTokensK } from '@/utils/format'
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -274,6 +437,56 @@ function getProgressBarClass(used: number | undefined, limit: number | null | un
   if (percentage >= 90) return 'bg-red-500'
   if (percentage >= 70) return 'bg-orange-500'
   return 'bg-green-500'
+}
+
+function isTokenQuotaSubscription(subscription: UserSubscription): boolean {
+  return subscription.group?.subscription_type === 'token_quota'
+}
+
+function hasTokenQuotaLimits(subscription: UserSubscription): boolean {
+  const group = subscription.group
+  return !!(group?.token_quota && group.token_quota > 0) ||
+    !!(group?.token_quota_daily && group.token_quota_daily > 0) ||
+    !!(group?.token_quota_weekly && group.token_quota_weekly > 0) ||
+    !!(group?.token_quota_monthly && group.token_quota_monthly > 0)
+}
+
+function getTokenUsageTotal(subscription: UserSubscription): number {
+  // Token 配额订阅：使用订阅层的 token 使用量
+  if (isTokenQuotaSubscription(subscription)) {
+    return subscription.token_usage_total || 0
+  }
+  return 0
+}
+
+function getTokenUsageDaily(subscription: UserSubscription): number {
+  // Token 配额订阅：使用订阅层的 token 使用量
+  if (isTokenQuotaSubscription(subscription)) {
+    return subscription.token_usage_daily || 0
+  }
+  return subscription.daily_usage_usd || 0
+}
+
+function getTokenUsageWeekly(subscription: UserSubscription): number {
+  // Token 配额订阅：使用订阅层的 token 使用量
+  if (isTokenQuotaSubscription(subscription)) {
+    return subscription.token_usage_weekly || 0
+  }
+  return subscription.weekly_usage_usd || 0
+}
+
+function getTokenUsageMonthly(subscription: UserSubscription): number {
+  // Token 配额订阅：使用订阅层的 token 使用量
+  if (isTokenQuotaSubscription(subscription)) {
+    return subscription.token_usage_monthly || 0
+  }
+  return subscription.monthly_usage_usd || 0
+}
+
+function formatTokenUsage(used: number | undefined, limit: number | null | undefined): string {
+  const usedValue = formatTokensK(Math.max(0, Math.round(used || 0)))
+  const limitValue = limit && limit > 0 ? formatTokensK(limit) : '∞'
+  return `${usedValue} / ${limitValue}`
 }
 
 function formatExpirationDate(expiresAt: string): string {

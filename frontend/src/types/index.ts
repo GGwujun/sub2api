@@ -493,6 +493,11 @@ export interface CreateGroupRequest {
   daily_limit_usd?: number | null
   weekly_limit_usd?: number | null
   monthly_limit_usd?: number | null
+  // Token 配额配置（token_quota 类型使用）
+  token_quota?: number | null
+  token_quota_daily?: number | null
+  token_quota_weekly?: number | null
+  token_quota_monthly?: number | null
   image_price_1k?: number | null
   image_price_2k?: number | null
   image_price_4k?: number | null
@@ -521,6 +526,11 @@ export interface UpdateGroupRequest {
   daily_limit_usd?: number | null
   weekly_limit_usd?: number | null
   monthly_limit_usd?: number | null
+  // Token 配额配置（token_quota 类型使用）
+  token_quota?: number | null
+  token_quota_daily?: number | null
+  token_quota_weekly?: number | null
+  token_quota_monthly?: number | null
   image_price_1k?: number | null
   image_price_2k?: number | null
   image_price_4k?: number | null
@@ -1213,6 +1223,14 @@ export interface UserSubscription {
   daily_window_start: string | null
   weekly_window_start: string | null
   monthly_window_start: string | null
+  // Token 配额使用量
+  token_usage_total: number
+  token_usage_daily: number
+  token_usage_weekly: number
+  token_usage_monthly: number
+  token_daily_window_start: string | null
+  token_weekly_window_start: string | null
+  token_monthly_window_start: string | null
   created_at: string
   updated_at: string
   expires_at: string | null

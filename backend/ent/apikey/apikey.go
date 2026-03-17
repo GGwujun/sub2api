@@ -45,6 +45,24 @@ const (
 	FieldTokenQuota = "token_quota"
 	// FieldTokenQuotaUsed holds the string denoting the token_quota_used field in the database.
 	FieldTokenQuotaUsed = "token_quota_used"
+	// FieldTokenQuotaDaily holds the string denoting the token_quota_daily field in the database.
+	FieldTokenQuotaDaily = "token_quota_daily"
+	// FieldTokenQuotaDailyUsed holds the string denoting the token_quota_daily_used field in the database.
+	FieldTokenQuotaDailyUsed = "token_quota_daily_used"
+	// FieldTokenQuotaDailyStart holds the string denoting the token_quota_daily_start field in the database.
+	FieldTokenQuotaDailyStart = "token_quota_daily_start"
+	// FieldTokenQuotaWeekly holds the string denoting the token_quota_weekly field in the database.
+	FieldTokenQuotaWeekly = "token_quota_weekly"
+	// FieldTokenQuotaWeeklyUsed holds the string denoting the token_quota_weekly_used field in the database.
+	FieldTokenQuotaWeeklyUsed = "token_quota_weekly_used"
+	// FieldTokenQuotaWeeklyStart holds the string denoting the token_quota_weekly_start field in the database.
+	FieldTokenQuotaWeeklyStart = "token_quota_weekly_start"
+	// FieldTokenQuotaMonthly holds the string denoting the token_quota_monthly field in the database.
+	FieldTokenQuotaMonthly = "token_quota_monthly"
+	// FieldTokenQuotaMonthlyUsed holds the string denoting the token_quota_monthly_used field in the database.
+	FieldTokenQuotaMonthlyUsed = "token_quota_monthly_used"
+	// FieldTokenQuotaMonthlyStart holds the string denoting the token_quota_monthly_start field in the database.
+	FieldTokenQuotaMonthlyStart = "token_quota_monthly_start"
 	// FieldExpiresAt holds the string denoting the expires_at field in the database.
 	FieldExpiresAt = "expires_at"
 	// FieldRateLimit5h holds the string denoting the rate_limit_5h field in the database.
@@ -114,6 +132,15 @@ var Columns = []string{
 	FieldQuotaUsed,
 	FieldTokenQuota,
 	FieldTokenQuotaUsed,
+	FieldTokenQuotaDaily,
+	FieldTokenQuotaDailyUsed,
+	FieldTokenQuotaDailyStart,
+	FieldTokenQuotaWeekly,
+	FieldTokenQuotaWeeklyUsed,
+	FieldTokenQuotaWeeklyStart,
+	FieldTokenQuotaMonthly,
+	FieldTokenQuotaMonthlyUsed,
+	FieldTokenQuotaMonthlyStart,
 	FieldExpiresAt,
 	FieldRateLimit5h,
 	FieldRateLimit1d,
@@ -166,6 +193,12 @@ var (
 	DefaultTokenQuota int64
 	// DefaultTokenQuotaUsed holds the default value on creation for the "token_quota_used" field.
 	DefaultTokenQuotaUsed int64
+	// DefaultTokenQuotaDailyUsed holds the default value on creation for the "token_quota_daily_used" field.
+	DefaultTokenQuotaDailyUsed int64
+	// DefaultTokenQuotaWeeklyUsed holds the default value on creation for the "token_quota_weekly_used" field.
+	DefaultTokenQuotaWeeklyUsed int64
+	// DefaultTokenQuotaMonthlyUsed holds the default value on creation for the "token_quota_monthly_used" field.
+	DefaultTokenQuotaMonthlyUsed int64
 	// DefaultRateLimit5h holds the default value on creation for the "rate_limit_5h" field.
 	DefaultRateLimit5h float64
 	// DefaultRateLimit1d holds the default value on creation for the "rate_limit_1d" field.
@@ -251,6 +284,51 @@ func ByTokenQuota(opts ...sql.OrderTermOption) OrderOption {
 // ByTokenQuotaUsed orders the results by the token_quota_used field.
 func ByTokenQuotaUsed(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTokenQuotaUsed, opts...).ToFunc()
+}
+
+// ByTokenQuotaDaily orders the results by the token_quota_daily field.
+func ByTokenQuotaDaily(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaDaily, opts...).ToFunc()
+}
+
+// ByTokenQuotaDailyUsed orders the results by the token_quota_daily_used field.
+func ByTokenQuotaDailyUsed(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaDailyUsed, opts...).ToFunc()
+}
+
+// ByTokenQuotaDailyStart orders the results by the token_quota_daily_start field.
+func ByTokenQuotaDailyStart(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaDailyStart, opts...).ToFunc()
+}
+
+// ByTokenQuotaWeekly orders the results by the token_quota_weekly field.
+func ByTokenQuotaWeekly(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaWeekly, opts...).ToFunc()
+}
+
+// ByTokenQuotaWeeklyUsed orders the results by the token_quota_weekly_used field.
+func ByTokenQuotaWeeklyUsed(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaWeeklyUsed, opts...).ToFunc()
+}
+
+// ByTokenQuotaWeeklyStart orders the results by the token_quota_weekly_start field.
+func ByTokenQuotaWeeklyStart(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaWeeklyStart, opts...).ToFunc()
+}
+
+// ByTokenQuotaMonthly orders the results by the token_quota_monthly field.
+func ByTokenQuotaMonthly(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaMonthly, opts...).ToFunc()
+}
+
+// ByTokenQuotaMonthlyUsed orders the results by the token_quota_monthly_used field.
+func ByTokenQuotaMonthlyUsed(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaMonthlyUsed, opts...).ToFunc()
+}
+
+// ByTokenQuotaMonthlyStart orders the results by the token_quota_monthly_start field.
+func ByTokenQuotaMonthlyStart(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaMonthlyStart, opts...).ToFunc()
 }
 
 // ByExpiresAt orders the results by the expires_at field.

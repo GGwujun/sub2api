@@ -130,7 +130,8 @@ func apiKeyAuthWithSubscription(apiKeyService *service.APIKeyService, subscripti
 		skipBilling := c.Request.URL.Path == "/v1/usage"
 
 		var subscription *service.UserSubscription
-		isSubscriptionType := apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
+		// 订阅类型或 Token 配额类型都需要加载订阅
+		isSubscriptionType := apiKey.Group != nil && (apiKey.Group.IsSubscriptionType() || apiKey.Group.IsTokenQuotaType())
 
 		if isSubscriptionType && subscriptionService != nil {
 			sub, subErr := subscriptionService.GetActiveSubscription(
@@ -171,6 +172,10 @@ func apiKeyAuthWithSubscription(apiKeyService *service.APIKeyService, subscripti
 				AbortWithError(c, 429, "API_KEY_QUOTA_EXHAUSTED", "API key 额度已用完")
 				return
 			}
+			if apiKey.IsTokenQuotaExhausted() {
+				AbortWithError(c, 429, "API_KEY_TOKEN_QUOTA_EXHAUSTED", "API key Token 额度已用完")
+				return
+			}
 
 			// 订阅模式：验证订阅限额
 			if subscription != nil {
@@ -180,7 +185,11 @@ func apiKeyAuthWithSubscription(apiKeyService *service.APIKeyService, subscripti
 					status := 403
 					if errors.Is(validateErr, service.ErrDailyLimitExceeded) ||
 						errors.Is(validateErr, service.ErrWeeklyLimitExceeded) ||
-						errors.Is(validateErr, service.ErrMonthlyLimitExceeded) {
+						errors.Is(validateErr, service.ErrMonthlyLimitExceeded) ||
+						errors.Is(validateErr, service.ErrTokenQuotaExceeded) ||
+						errors.Is(validateErr, service.ErrTokenQuotaDailyExceeded) ||
+						errors.Is(validateErr, service.ErrTokenQuotaWeeklyExceeded) ||
+						errors.Is(validateErr, service.ErrTokenQuotaMonthlyExceeded) {
 						code = "USAGE_LIMIT_EXCEEDED"
 						status = 429
 					}

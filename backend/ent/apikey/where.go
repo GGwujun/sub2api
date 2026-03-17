@@ -120,6 +120,51 @@ func TokenQuotaUsed(v int64) predicate.APIKey {
 	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaUsed, v))
 }
 
+// TokenQuotaDaily applies equality check predicate on the "token_quota_daily" field. It's identical to TokenQuotaDailyEQ.
+func TokenQuotaDaily(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaDailyUsed applies equality check predicate on the "token_quota_daily_used" field. It's identical to TokenQuotaDailyUsedEQ.
+func TokenQuotaDailyUsed(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaDailyUsed, v))
+}
+
+// TokenQuotaDailyStart applies equality check predicate on the "token_quota_daily_start" field. It's identical to TokenQuotaDailyStartEQ.
+func TokenQuotaDailyStart(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaDailyStart, v))
+}
+
+// TokenQuotaWeekly applies equality check predicate on the "token_quota_weekly" field. It's identical to TokenQuotaWeeklyEQ.
+func TokenQuotaWeekly(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaWeeklyUsed applies equality check predicate on the "token_quota_weekly_used" field. It's identical to TokenQuotaWeeklyUsedEQ.
+func TokenQuotaWeeklyUsed(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaWeeklyUsed, v))
+}
+
+// TokenQuotaWeeklyStart applies equality check predicate on the "token_quota_weekly_start" field. It's identical to TokenQuotaWeeklyStartEQ.
+func TokenQuotaWeeklyStart(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaWeeklyStart, v))
+}
+
+// TokenQuotaMonthly applies equality check predicate on the "token_quota_monthly" field. It's identical to TokenQuotaMonthlyEQ.
+func TokenQuotaMonthly(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaMonthly, v))
+}
+
+// TokenQuotaMonthlyUsed applies equality check predicate on the "token_quota_monthly_used" field. It's identical to TokenQuotaMonthlyUsedEQ.
+func TokenQuotaMonthlyUsed(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaMonthlyUsed, v))
+}
+
+// TokenQuotaMonthlyStart applies equality check predicate on the "token_quota_monthly_start" field. It's identical to TokenQuotaMonthlyStartEQ.
+func TokenQuotaMonthlyStart(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaMonthlyStart, v))
+}
+
 // ExpiresAt applies equality check predicate on the "expires_at" field. It's identical to ExpiresAtEQ.
 func ExpiresAt(v time.Time) predicate.APIKey {
 	return predicate.APIKey(sql.FieldEQ(FieldExpiresAt, v))
@@ -773,6 +818,456 @@ func TokenQuotaUsedLT(v int64) predicate.APIKey {
 // TokenQuotaUsedLTE applies the LTE predicate on the "token_quota_used" field.
 func TokenQuotaUsedLTE(v int64) predicate.APIKey {
 	return predicate.APIKey(sql.FieldLTE(FieldTokenQuotaUsed, v))
+}
+
+// TokenQuotaDailyEQ applies the EQ predicate on the "token_quota_daily" field.
+func TokenQuotaDailyEQ(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaDailyNEQ applies the NEQ predicate on the "token_quota_daily" field.
+func TokenQuotaDailyNEQ(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNEQ(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaDailyIn applies the In predicate on the "token_quota_daily" field.
+func TokenQuotaDailyIn(vs ...int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldIn(FieldTokenQuotaDaily, vs...))
+}
+
+// TokenQuotaDailyNotIn applies the NotIn predicate on the "token_quota_daily" field.
+func TokenQuotaDailyNotIn(vs ...int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotIn(FieldTokenQuotaDaily, vs...))
+}
+
+// TokenQuotaDailyGT applies the GT predicate on the "token_quota_daily" field.
+func TokenQuotaDailyGT(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGT(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaDailyGTE applies the GTE predicate on the "token_quota_daily" field.
+func TokenQuotaDailyGTE(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGTE(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaDailyLT applies the LT predicate on the "token_quota_daily" field.
+func TokenQuotaDailyLT(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLT(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaDailyLTE applies the LTE predicate on the "token_quota_daily" field.
+func TokenQuotaDailyLTE(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLTE(FieldTokenQuotaDaily, v))
+}
+
+// TokenQuotaDailyIsNil applies the IsNil predicate on the "token_quota_daily" field.
+func TokenQuotaDailyIsNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldIsNull(FieldTokenQuotaDaily))
+}
+
+// TokenQuotaDailyNotNil applies the NotNil predicate on the "token_quota_daily" field.
+func TokenQuotaDailyNotNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotNull(FieldTokenQuotaDaily))
+}
+
+// TokenQuotaDailyUsedEQ applies the EQ predicate on the "token_quota_daily_used" field.
+func TokenQuotaDailyUsedEQ(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaDailyUsed, v))
+}
+
+// TokenQuotaDailyUsedNEQ applies the NEQ predicate on the "token_quota_daily_used" field.
+func TokenQuotaDailyUsedNEQ(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNEQ(FieldTokenQuotaDailyUsed, v))
+}
+
+// TokenQuotaDailyUsedIn applies the In predicate on the "token_quota_daily_used" field.
+func TokenQuotaDailyUsedIn(vs ...int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldIn(FieldTokenQuotaDailyUsed, vs...))
+}
+
+// TokenQuotaDailyUsedNotIn applies the NotIn predicate on the "token_quota_daily_used" field.
+func TokenQuotaDailyUsedNotIn(vs ...int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotIn(FieldTokenQuotaDailyUsed, vs...))
+}
+
+// TokenQuotaDailyUsedGT applies the GT predicate on the "token_quota_daily_used" field.
+func TokenQuotaDailyUsedGT(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGT(FieldTokenQuotaDailyUsed, v))
+}
+
+// TokenQuotaDailyUsedGTE applies the GTE predicate on the "token_quota_daily_used" field.
+func TokenQuotaDailyUsedGTE(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGTE(FieldTokenQuotaDailyUsed, v))
+}
+
+// TokenQuotaDailyUsedLT applies the LT predicate on the "token_quota_daily_used" field.
+func TokenQuotaDailyUsedLT(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLT(FieldTokenQuotaDailyUsed, v))
+}
+
+// TokenQuotaDailyUsedLTE applies the LTE predicate on the "token_quota_daily_used" field.
+func TokenQuotaDailyUsedLTE(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLTE(FieldTokenQuotaDailyUsed, v))
+}
+
+// TokenQuotaDailyUsedIsNil applies the IsNil predicate on the "token_quota_daily_used" field.
+func TokenQuotaDailyUsedIsNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldIsNull(FieldTokenQuotaDailyUsed))
+}
+
+// TokenQuotaDailyUsedNotNil applies the NotNil predicate on the "token_quota_daily_used" field.
+func TokenQuotaDailyUsedNotNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotNull(FieldTokenQuotaDailyUsed))
+}
+
+// TokenQuotaDailyStartEQ applies the EQ predicate on the "token_quota_daily_start" field.
+func TokenQuotaDailyStartEQ(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaDailyStart, v))
+}
+
+// TokenQuotaDailyStartNEQ applies the NEQ predicate on the "token_quota_daily_start" field.
+func TokenQuotaDailyStartNEQ(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNEQ(FieldTokenQuotaDailyStart, v))
+}
+
+// TokenQuotaDailyStartIn applies the In predicate on the "token_quota_daily_start" field.
+func TokenQuotaDailyStartIn(vs ...time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldIn(FieldTokenQuotaDailyStart, vs...))
+}
+
+// TokenQuotaDailyStartNotIn applies the NotIn predicate on the "token_quota_daily_start" field.
+func TokenQuotaDailyStartNotIn(vs ...time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotIn(FieldTokenQuotaDailyStart, vs...))
+}
+
+// TokenQuotaDailyStartGT applies the GT predicate on the "token_quota_daily_start" field.
+func TokenQuotaDailyStartGT(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGT(FieldTokenQuotaDailyStart, v))
+}
+
+// TokenQuotaDailyStartGTE applies the GTE predicate on the "token_quota_daily_start" field.
+func TokenQuotaDailyStartGTE(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGTE(FieldTokenQuotaDailyStart, v))
+}
+
+// TokenQuotaDailyStartLT applies the LT predicate on the "token_quota_daily_start" field.
+func TokenQuotaDailyStartLT(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLT(FieldTokenQuotaDailyStart, v))
+}
+
+// TokenQuotaDailyStartLTE applies the LTE predicate on the "token_quota_daily_start" field.
+func TokenQuotaDailyStartLTE(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLTE(FieldTokenQuotaDailyStart, v))
+}
+
+// TokenQuotaDailyStartIsNil applies the IsNil predicate on the "token_quota_daily_start" field.
+func TokenQuotaDailyStartIsNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldIsNull(FieldTokenQuotaDailyStart))
+}
+
+// TokenQuotaDailyStartNotNil applies the NotNil predicate on the "token_quota_daily_start" field.
+func TokenQuotaDailyStartNotNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotNull(FieldTokenQuotaDailyStart))
+}
+
+// TokenQuotaWeeklyEQ applies the EQ predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyEQ(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaWeeklyNEQ applies the NEQ predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyNEQ(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNEQ(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaWeeklyIn applies the In predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyIn(vs ...int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldIn(FieldTokenQuotaWeekly, vs...))
+}
+
+// TokenQuotaWeeklyNotIn applies the NotIn predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyNotIn(vs ...int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotIn(FieldTokenQuotaWeekly, vs...))
+}
+
+// TokenQuotaWeeklyGT applies the GT predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyGT(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGT(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaWeeklyGTE applies the GTE predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyGTE(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGTE(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaWeeklyLT applies the LT predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyLT(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLT(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaWeeklyLTE applies the LTE predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyLTE(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLTE(FieldTokenQuotaWeekly, v))
+}
+
+// TokenQuotaWeeklyIsNil applies the IsNil predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyIsNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldIsNull(FieldTokenQuotaWeekly))
+}
+
+// TokenQuotaWeeklyNotNil applies the NotNil predicate on the "token_quota_weekly" field.
+func TokenQuotaWeeklyNotNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotNull(FieldTokenQuotaWeekly))
+}
+
+// TokenQuotaWeeklyUsedEQ applies the EQ predicate on the "token_quota_weekly_used" field.
+func TokenQuotaWeeklyUsedEQ(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaWeeklyUsed, v))
+}
+
+// TokenQuotaWeeklyUsedNEQ applies the NEQ predicate on the "token_quota_weekly_used" field.
+func TokenQuotaWeeklyUsedNEQ(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNEQ(FieldTokenQuotaWeeklyUsed, v))
+}
+
+// TokenQuotaWeeklyUsedIn applies the In predicate on the "token_quota_weekly_used" field.
+func TokenQuotaWeeklyUsedIn(vs ...int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldIn(FieldTokenQuotaWeeklyUsed, vs...))
+}
+
+// TokenQuotaWeeklyUsedNotIn applies the NotIn predicate on the "token_quota_weekly_used" field.
+func TokenQuotaWeeklyUsedNotIn(vs ...int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotIn(FieldTokenQuotaWeeklyUsed, vs...))
+}
+
+// TokenQuotaWeeklyUsedGT applies the GT predicate on the "token_quota_weekly_used" field.
+func TokenQuotaWeeklyUsedGT(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGT(FieldTokenQuotaWeeklyUsed, v))
+}
+
+// TokenQuotaWeeklyUsedGTE applies the GTE predicate on the "token_quota_weekly_used" field.
+func TokenQuotaWeeklyUsedGTE(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGTE(FieldTokenQuotaWeeklyUsed, v))
+}
+
+// TokenQuotaWeeklyUsedLT applies the LT predicate on the "token_quota_weekly_used" field.
+func TokenQuotaWeeklyUsedLT(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLT(FieldTokenQuotaWeeklyUsed, v))
+}
+
+// TokenQuotaWeeklyUsedLTE applies the LTE predicate on the "token_quota_weekly_used" field.
+func TokenQuotaWeeklyUsedLTE(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLTE(FieldTokenQuotaWeeklyUsed, v))
+}
+
+// TokenQuotaWeeklyUsedIsNil applies the IsNil predicate on the "token_quota_weekly_used" field.
+func TokenQuotaWeeklyUsedIsNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldIsNull(FieldTokenQuotaWeeklyUsed))
+}
+
+// TokenQuotaWeeklyUsedNotNil applies the NotNil predicate on the "token_quota_weekly_used" field.
+func TokenQuotaWeeklyUsedNotNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotNull(FieldTokenQuotaWeeklyUsed))
+}
+
+// TokenQuotaWeeklyStartEQ applies the EQ predicate on the "token_quota_weekly_start" field.
+func TokenQuotaWeeklyStartEQ(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaWeeklyStart, v))
+}
+
+// TokenQuotaWeeklyStartNEQ applies the NEQ predicate on the "token_quota_weekly_start" field.
+func TokenQuotaWeeklyStartNEQ(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNEQ(FieldTokenQuotaWeeklyStart, v))
+}
+
+// TokenQuotaWeeklyStartIn applies the In predicate on the "token_quota_weekly_start" field.
+func TokenQuotaWeeklyStartIn(vs ...time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldIn(FieldTokenQuotaWeeklyStart, vs...))
+}
+
+// TokenQuotaWeeklyStartNotIn applies the NotIn predicate on the "token_quota_weekly_start" field.
+func TokenQuotaWeeklyStartNotIn(vs ...time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotIn(FieldTokenQuotaWeeklyStart, vs...))
+}
+
+// TokenQuotaWeeklyStartGT applies the GT predicate on the "token_quota_weekly_start" field.
+func TokenQuotaWeeklyStartGT(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGT(FieldTokenQuotaWeeklyStart, v))
+}
+
+// TokenQuotaWeeklyStartGTE applies the GTE predicate on the "token_quota_weekly_start" field.
+func TokenQuotaWeeklyStartGTE(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGTE(FieldTokenQuotaWeeklyStart, v))
+}
+
+// TokenQuotaWeeklyStartLT applies the LT predicate on the "token_quota_weekly_start" field.
+func TokenQuotaWeeklyStartLT(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLT(FieldTokenQuotaWeeklyStart, v))
+}
+
+// TokenQuotaWeeklyStartLTE applies the LTE predicate on the "token_quota_weekly_start" field.
+func TokenQuotaWeeklyStartLTE(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLTE(FieldTokenQuotaWeeklyStart, v))
+}
+
+// TokenQuotaWeeklyStartIsNil applies the IsNil predicate on the "token_quota_weekly_start" field.
+func TokenQuotaWeeklyStartIsNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldIsNull(FieldTokenQuotaWeeklyStart))
+}
+
+// TokenQuotaWeeklyStartNotNil applies the NotNil predicate on the "token_quota_weekly_start" field.
+func TokenQuotaWeeklyStartNotNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotNull(FieldTokenQuotaWeeklyStart))
+}
+
+// TokenQuotaMonthlyEQ applies the EQ predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyEQ(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaMonthly, v))
+}
+
+// TokenQuotaMonthlyNEQ applies the NEQ predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyNEQ(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNEQ(FieldTokenQuotaMonthly, v))
+}
+
+// TokenQuotaMonthlyIn applies the In predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyIn(vs ...int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldIn(FieldTokenQuotaMonthly, vs...))
+}
+
+// TokenQuotaMonthlyNotIn applies the NotIn predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyNotIn(vs ...int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotIn(FieldTokenQuotaMonthly, vs...))
+}
+
+// TokenQuotaMonthlyGT applies the GT predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyGT(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGT(FieldTokenQuotaMonthly, v))
+}
+
+// TokenQuotaMonthlyGTE applies the GTE predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyGTE(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGTE(FieldTokenQuotaMonthly, v))
+}
+
+// TokenQuotaMonthlyLT applies the LT predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyLT(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLT(FieldTokenQuotaMonthly, v))
+}
+
+// TokenQuotaMonthlyLTE applies the LTE predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyLTE(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLTE(FieldTokenQuotaMonthly, v))
+}
+
+// TokenQuotaMonthlyIsNil applies the IsNil predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyIsNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldIsNull(FieldTokenQuotaMonthly))
+}
+
+// TokenQuotaMonthlyNotNil applies the NotNil predicate on the "token_quota_monthly" field.
+func TokenQuotaMonthlyNotNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotNull(FieldTokenQuotaMonthly))
+}
+
+// TokenQuotaMonthlyUsedEQ applies the EQ predicate on the "token_quota_monthly_used" field.
+func TokenQuotaMonthlyUsedEQ(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaMonthlyUsed, v))
+}
+
+// TokenQuotaMonthlyUsedNEQ applies the NEQ predicate on the "token_quota_monthly_used" field.
+func TokenQuotaMonthlyUsedNEQ(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNEQ(FieldTokenQuotaMonthlyUsed, v))
+}
+
+// TokenQuotaMonthlyUsedIn applies the In predicate on the "token_quota_monthly_used" field.
+func TokenQuotaMonthlyUsedIn(vs ...int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldIn(FieldTokenQuotaMonthlyUsed, vs...))
+}
+
+// TokenQuotaMonthlyUsedNotIn applies the NotIn predicate on the "token_quota_monthly_used" field.
+func TokenQuotaMonthlyUsedNotIn(vs ...int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotIn(FieldTokenQuotaMonthlyUsed, vs...))
+}
+
+// TokenQuotaMonthlyUsedGT applies the GT predicate on the "token_quota_monthly_used" field.
+func TokenQuotaMonthlyUsedGT(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGT(FieldTokenQuotaMonthlyUsed, v))
+}
+
+// TokenQuotaMonthlyUsedGTE applies the GTE predicate on the "token_quota_monthly_used" field.
+func TokenQuotaMonthlyUsedGTE(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGTE(FieldTokenQuotaMonthlyUsed, v))
+}
+
+// TokenQuotaMonthlyUsedLT applies the LT predicate on the "token_quota_monthly_used" field.
+func TokenQuotaMonthlyUsedLT(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLT(FieldTokenQuotaMonthlyUsed, v))
+}
+
+// TokenQuotaMonthlyUsedLTE applies the LTE predicate on the "token_quota_monthly_used" field.
+func TokenQuotaMonthlyUsedLTE(v int64) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLTE(FieldTokenQuotaMonthlyUsed, v))
+}
+
+// TokenQuotaMonthlyUsedIsNil applies the IsNil predicate on the "token_quota_monthly_used" field.
+func TokenQuotaMonthlyUsedIsNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldIsNull(FieldTokenQuotaMonthlyUsed))
+}
+
+// TokenQuotaMonthlyUsedNotNil applies the NotNil predicate on the "token_quota_monthly_used" field.
+func TokenQuotaMonthlyUsedNotNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotNull(FieldTokenQuotaMonthlyUsed))
+}
+
+// TokenQuotaMonthlyStartEQ applies the EQ predicate on the "token_quota_monthly_start" field.
+func TokenQuotaMonthlyStartEQ(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldEQ(FieldTokenQuotaMonthlyStart, v))
+}
+
+// TokenQuotaMonthlyStartNEQ applies the NEQ predicate on the "token_quota_monthly_start" field.
+func TokenQuotaMonthlyStartNEQ(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNEQ(FieldTokenQuotaMonthlyStart, v))
+}
+
+// TokenQuotaMonthlyStartIn applies the In predicate on the "token_quota_monthly_start" field.
+func TokenQuotaMonthlyStartIn(vs ...time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldIn(FieldTokenQuotaMonthlyStart, vs...))
+}
+
+// TokenQuotaMonthlyStartNotIn applies the NotIn predicate on the "token_quota_monthly_start" field.
+func TokenQuotaMonthlyStartNotIn(vs ...time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotIn(FieldTokenQuotaMonthlyStart, vs...))
+}
+
+// TokenQuotaMonthlyStartGT applies the GT predicate on the "token_quota_monthly_start" field.
+func TokenQuotaMonthlyStartGT(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGT(FieldTokenQuotaMonthlyStart, v))
+}
+
+// TokenQuotaMonthlyStartGTE applies the GTE predicate on the "token_quota_monthly_start" field.
+func TokenQuotaMonthlyStartGTE(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldGTE(FieldTokenQuotaMonthlyStart, v))
+}
+
+// TokenQuotaMonthlyStartLT applies the LT predicate on the "token_quota_monthly_start" field.
+func TokenQuotaMonthlyStartLT(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLT(FieldTokenQuotaMonthlyStart, v))
+}
+
+// TokenQuotaMonthlyStartLTE applies the LTE predicate on the "token_quota_monthly_start" field.
+func TokenQuotaMonthlyStartLTE(v time.Time) predicate.APIKey {
+	return predicate.APIKey(sql.FieldLTE(FieldTokenQuotaMonthlyStart, v))
+}
+
+// TokenQuotaMonthlyStartIsNil applies the IsNil predicate on the "token_quota_monthly_start" field.
+func TokenQuotaMonthlyStartIsNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldIsNull(FieldTokenQuotaMonthlyStart))
+}
+
+// TokenQuotaMonthlyStartNotNil applies the NotNil predicate on the "token_quota_monthly_start" field.
+func TokenQuotaMonthlyStartNotNil() predicate.APIKey {
+	return predicate.APIKey(sql.FieldNotNull(FieldTokenQuotaMonthlyStart))
 }
 
 // ExpiresAtEQ applies the EQ predicate on the "expires_at" field.

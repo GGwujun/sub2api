@@ -69,6 +69,9 @@ func (h *MiniMaxGatewayHandler) ChatCompletions(c *gin.Context) {
 		return
 	}
 
+	// 获取订阅信息
+	subscription, _ := middleware2.GetSubscriptionFromContext(c)
+
 	ctx := c.Request.Context()
 	logger.FromContext(ctx).Info("minimax.chat_completions",
 		zap.Int64("user_id", subject.UserID),
@@ -77,7 +80,7 @@ func (h *MiniMaxGatewayHandler) ChatCompletions(c *gin.Context) {
 	)
 
 	// Check billing eligibility
-	if err := h.billingCacheService.CheckBillingEligibility(ctx, apiKey.User, apiKey, apiKey.Group, nil); err != nil {
+	if err := h.billingCacheService.CheckBillingEligibility(ctx, apiKey.User, apiKey, apiKey.Group, subscription); err != nil {
 		logger.FromContext(ctx).Warn("minimax.billing_eligibility_check_failed", zap.Error(err))
 		h.handleBillingError(c, err)
 		return
@@ -157,7 +160,7 @@ func (h *MiniMaxGatewayHandler) ChatCompletions(c *gin.Context) {
 		if err == nil {
 			// Success - record usage if available
 			if result != nil && result.Usage != nil && result.StatusCode == http.StatusOK {
-				h.recordUsage(c, apiKey, account, model, result)
+				h.recordUsage(c, apiKey, account, model, result, subscription)
 			}
 			return
 		}
@@ -301,22 +304,27 @@ func (h *MiniMaxGatewayHandler) isRetryableError(err error) bool {
 func (h *MiniMaxGatewayHandler) handleBillingError(c *gin.Context, err error) {
 	status := http.StatusForbidden
 	code := "billing_error"
-	message := "Billing check failed"
+	message := "计费检查失败"
 
 	if err != nil {
 		errStr := err.Error()
+		message = errStr
 		switch {
+		case strings.Contains(strings.ToLower(errStr), "token") && strings.Contains(strings.ToLower(errStr), "quota"):
+			code = "token_quota_exceeded"
+			message = "令牌额度已用完，请联系管理员续费"
+			status = http.StatusTooManyRequests
 		case strings.Contains(errStr, "insufficient"):
 			code = "insufficient_balance"
-			message = "Insufficient balance"
+			message = "余额不足"
 			status = http.StatusPaymentRequired
 		case strings.Contains(errStr, "quota"):
 			code = "quota_exceeded"
-			message = "Quota exceeded"
+			message = "额度已用完，请联系管理员续费"
 			status = http.StatusTooManyRequests
 		case strings.Contains(errStr, "concurrent"):
 			code = "concurrency_limit"
-			message = "Concurrency limit reached"
+			message = "并发限制已达上限"
 			status = http.StatusTooManyRequests
 		}
 	}
@@ -398,7 +406,7 @@ func (h *MiniMaxGatewayHandler) submitUsageRecordTask(task service.UsageRecordTa
 }
 
 // recordUsage records the token usage for a successful request
-func (h *MiniMaxGatewayHandler) recordUsage(c *gin.Context, apiKey *service.APIKey, account *service.Account, model string, result *service.MiniMaxForwardResult) {
+func (h *MiniMaxGatewayHandler) recordUsage(c *gin.Context, apiKey *service.APIKey, account *service.Account, model string, result *service.MiniMaxForwardResult, subscription *service.UserSubscription) {
 	if result.Usage == nil {
 		logger.FromContext(c.Request.Context()).Warn("minimax.record_usage_nil",
 			zap.Int64("api_key_id", apiKey.ID),
@@ -424,6 +432,7 @@ func (h *MiniMaxGatewayHandler) recordUsage(c *gin.Context, apiKey *service.APIK
 		// Delegate to gateway service for usage recording
 		if err := h.minimaxGatewayService.RecordUsage(ctx, &service.MiniMaxRecordUsageInput{
 			APIKey:        apiKey,
+			Subscription:  subscription,
 			Account:       account,
 			Model:         model,
 			Usage:         result.Usage,

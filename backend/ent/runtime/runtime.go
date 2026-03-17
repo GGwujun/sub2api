@@ -110,28 +110,40 @@ func init() {
 	apikeyDescTokenQuotaUsed := apikeyFields[11].Descriptor()
 	// apikey.DefaultTokenQuotaUsed holds the default value on creation for the token_quota_used field.
 	apikey.DefaultTokenQuotaUsed = apikeyDescTokenQuotaUsed.Default.(int64)
+	// apikeyDescTokenQuotaDailyUsed is the schema descriptor for token_quota_daily_used field.
+	apikeyDescTokenQuotaDailyUsed := apikeyFields[13].Descriptor()
+	// apikey.DefaultTokenQuotaDailyUsed holds the default value on creation for the token_quota_daily_used field.
+	apikey.DefaultTokenQuotaDailyUsed = apikeyDescTokenQuotaDailyUsed.Default.(int64)
+	// apikeyDescTokenQuotaWeeklyUsed is the schema descriptor for token_quota_weekly_used field.
+	apikeyDescTokenQuotaWeeklyUsed := apikeyFields[16].Descriptor()
+	// apikey.DefaultTokenQuotaWeeklyUsed holds the default value on creation for the token_quota_weekly_used field.
+	apikey.DefaultTokenQuotaWeeklyUsed = apikeyDescTokenQuotaWeeklyUsed.Default.(int64)
+	// apikeyDescTokenQuotaMonthlyUsed is the schema descriptor for token_quota_monthly_used field.
+	apikeyDescTokenQuotaMonthlyUsed := apikeyFields[19].Descriptor()
+	// apikey.DefaultTokenQuotaMonthlyUsed holds the default value on creation for the token_quota_monthly_used field.
+	apikey.DefaultTokenQuotaMonthlyUsed = apikeyDescTokenQuotaMonthlyUsed.Default.(int64)
 	// apikeyDescRateLimit5h is the schema descriptor for rate_limit_5h field.
-	apikeyDescRateLimit5h := apikeyFields[13].Descriptor()
+	apikeyDescRateLimit5h := apikeyFields[22].Descriptor()
 	// apikey.DefaultRateLimit5h holds the default value on creation for the rate_limit_5h field.
 	apikey.DefaultRateLimit5h = apikeyDescRateLimit5h.Default.(float64)
 	// apikeyDescRateLimit1d is the schema descriptor for rate_limit_1d field.
-	apikeyDescRateLimit1d := apikeyFields[14].Descriptor()
+	apikeyDescRateLimit1d := apikeyFields[23].Descriptor()
 	// apikey.DefaultRateLimit1d holds the default value on creation for the rate_limit_1d field.
 	apikey.DefaultRateLimit1d = apikeyDescRateLimit1d.Default.(float64)
 	// apikeyDescRateLimit7d is the schema descriptor for rate_limit_7d field.
-	apikeyDescRateLimit7d := apikeyFields[15].Descriptor()
+	apikeyDescRateLimit7d := apikeyFields[24].Descriptor()
 	// apikey.DefaultRateLimit7d holds the default value on creation for the rate_limit_7d field.
 	apikey.DefaultRateLimit7d = apikeyDescRateLimit7d.Default.(float64)
 	// apikeyDescUsage5h is the schema descriptor for usage_5h field.
-	apikeyDescUsage5h := apikeyFields[16].Descriptor()
+	apikeyDescUsage5h := apikeyFields[25].Descriptor()
 	// apikey.DefaultUsage5h holds the default value on creation for the usage_5h field.
 	apikey.DefaultUsage5h = apikeyDescUsage5h.Default.(float64)
 	// apikeyDescUsage1d is the schema descriptor for usage_1d field.
-	apikeyDescUsage1d := apikeyFields[17].Descriptor()
+	apikeyDescUsage1d := apikeyFields[26].Descriptor()
 	// apikey.DefaultUsage1d holds the default value on creation for the usage_1d field.
 	apikey.DefaultUsage1d = apikeyDescUsage1d.Default.(float64)
 	// apikeyDescUsage7d is the schema descriptor for usage_7d field.
-	apikeyDescUsage7d := apikeyFields[18].Descriptor()
+	apikeyDescUsage7d := apikeyFields[27].Descriptor()
 	// apikey.DefaultUsage7d holds the default value on creation for the usage_7d field.
 	apikey.DefaultUsage7d = apikeyDescUsage7d.Default.(float64)
 	accountMixin := schema.Account{}.Mixin()
@@ -1179,8 +1191,24 @@ func init() {
 	usersubscriptionDescMonthlyUsageUsd := usersubscriptionFields[10].Descriptor()
 	// usersubscription.DefaultMonthlyUsageUsd holds the default value on creation for the monthly_usage_usd field.
 	usersubscription.DefaultMonthlyUsageUsd = usersubscriptionDescMonthlyUsageUsd.Default.(float64)
+	// usersubscriptionDescTokenUsageTotal is the schema descriptor for token_usage_total field.
+	usersubscriptionDescTokenUsageTotal := usersubscriptionFields[11].Descriptor()
+	// usersubscription.DefaultTokenUsageTotal holds the default value on creation for the token_usage_total field.
+	usersubscription.DefaultTokenUsageTotal = usersubscriptionDescTokenUsageTotal.Default.(int64)
+	// usersubscriptionDescTokenUsageDaily is the schema descriptor for token_usage_daily field.
+	usersubscriptionDescTokenUsageDaily := usersubscriptionFields[12].Descriptor()
+	// usersubscription.DefaultTokenUsageDaily holds the default value on creation for the token_usage_daily field.
+	usersubscription.DefaultTokenUsageDaily = usersubscriptionDescTokenUsageDaily.Default.(int64)
+	// usersubscriptionDescTokenUsageWeekly is the schema descriptor for token_usage_weekly field.
+	usersubscriptionDescTokenUsageWeekly := usersubscriptionFields[13].Descriptor()
+	// usersubscription.DefaultTokenUsageWeekly holds the default value on creation for the token_usage_weekly field.
+	usersubscription.DefaultTokenUsageWeekly = usersubscriptionDescTokenUsageWeekly.Default.(int64)
+	// usersubscriptionDescTokenUsageMonthly is the schema descriptor for token_usage_monthly field.
+	usersubscriptionDescTokenUsageMonthly := usersubscriptionFields[14].Descriptor()
+	// usersubscription.DefaultTokenUsageMonthly holds the default value on creation for the token_usage_monthly field.
+	usersubscription.DefaultTokenUsageMonthly = usersubscriptionDescTokenUsageMonthly.Default.(int64)
 	// usersubscriptionDescAssignedAt is the schema descriptor for assigned_at field.
-	usersubscriptionDescAssignedAt := usersubscriptionFields[12].Descriptor()
+	usersubscriptionDescAssignedAt := usersubscriptionFields[19].Descriptor()
 	// usersubscription.DefaultAssignedAt holds the default value on creation for the assigned_at field.
 	usersubscription.DefaultAssignedAt = usersubscriptionDescAssignedAt.Default.(func() time.Time)
 }

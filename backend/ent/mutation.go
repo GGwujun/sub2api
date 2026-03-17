@@ -72,55 +72,70 @@ const (
 // APIKeyMutation represents an operation that mutates the APIKey nodes in the graph.
 type APIKeyMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *int64
-	created_at          *time.Time
-	updated_at          *time.Time
-	deleted_at          *time.Time
-	key                 *string
-	name                *string
-	status              *string
-	last_used_at        *time.Time
-	ip_whitelist        *[]string
-	appendip_whitelist  []string
-	ip_blacklist        *[]string
-	appendip_blacklist  []string
-	quota               *float64
-	addquota            *float64
-	quota_used          *float64
-	addquota_used       *float64
-	token_quota         *int64
-	addtoken_quota      *int64
-	token_quota_used    *int64
-	addtoken_quota_used *int64
-	expires_at          *time.Time
-	rate_limit_5h       *float64
-	addrate_limit_5h    *float64
-	rate_limit_1d       *float64
-	addrate_limit_1d    *float64
-	rate_limit_7d       *float64
-	addrate_limit_7d    *float64
-	usage_5h            *float64
-	addusage_5h         *float64
-	usage_1d            *float64
-	addusage_1d         *float64
-	usage_7d            *float64
-	addusage_7d         *float64
-	window_5h_start     *time.Time
-	window_1d_start     *time.Time
-	window_7d_start     *time.Time
-	clearedFields       map[string]struct{}
-	user                *int64
-	cleareduser         bool
-	group               *int64
-	clearedgroup        bool
-	usage_logs          map[int64]struct{}
-	removedusage_logs   map[int64]struct{}
-	clearedusage_logs   bool
-	done                bool
-	oldValue            func(context.Context) (*APIKey, error)
-	predicates          []predicate.APIKey
+	op                          Op
+	typ                         string
+	id                          *int64
+	created_at                  *time.Time
+	updated_at                  *time.Time
+	deleted_at                  *time.Time
+	key                         *string
+	name                        *string
+	status                      *string
+	last_used_at                *time.Time
+	ip_whitelist                *[]string
+	appendip_whitelist          []string
+	ip_blacklist                *[]string
+	appendip_blacklist          []string
+	quota                       *float64
+	addquota                    *float64
+	quota_used                  *float64
+	addquota_used               *float64
+	token_quota                 *int64
+	addtoken_quota              *int64
+	token_quota_used            *int64
+	addtoken_quota_used         *int64
+	token_quota_daily           *int64
+	addtoken_quota_daily        *int64
+	token_quota_daily_used      *int64
+	addtoken_quota_daily_used   *int64
+	token_quota_daily_start     *time.Time
+	token_quota_weekly          *int64
+	addtoken_quota_weekly       *int64
+	token_quota_weekly_used     *int64
+	addtoken_quota_weekly_used  *int64
+	token_quota_weekly_start    *time.Time
+	token_quota_monthly         *int64
+	addtoken_quota_monthly      *int64
+	token_quota_monthly_used    *int64
+	addtoken_quota_monthly_used *int64
+	token_quota_monthly_start   *time.Time
+	expires_at                  *time.Time
+	rate_limit_5h               *float64
+	addrate_limit_5h            *float64
+	rate_limit_1d               *float64
+	addrate_limit_1d            *float64
+	rate_limit_7d               *float64
+	addrate_limit_7d            *float64
+	usage_5h                    *float64
+	addusage_5h                 *float64
+	usage_1d                    *float64
+	addusage_1d                 *float64
+	usage_7d                    *float64
+	addusage_7d                 *float64
+	window_5h_start             *time.Time
+	window_1d_start             *time.Time
+	window_7d_start             *time.Time
+	clearedFields               map[string]struct{}
+	user                        *int64
+	cleareduser                 bool
+	group                       *int64
+	clearedgroup                bool
+	usage_logs                  map[int64]struct{}
+	removedusage_logs           map[int64]struct{}
+	clearedusage_logs           bool
+	done                        bool
+	oldValue                    func(context.Context) (*APIKey, error)
+	predicates                  []predicate.APIKey
 }
 
 var _ ent.Mutation = (*APIKeyMutation)(nil)
@@ -938,6 +953,573 @@ func (m *APIKeyMutation) ResetTokenQuotaUsed() {
 	m.addtoken_quota_used = nil
 }
 
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (m *APIKeyMutation) SetTokenQuotaDaily(i int64) {
+	m.token_quota_daily = &i
+	m.addtoken_quota_daily = nil
+}
+
+// TokenQuotaDaily returns the value of the "token_quota_daily" field in the mutation.
+func (m *APIKeyMutation) TokenQuotaDaily() (r int64, exists bool) {
+	v := m.token_quota_daily
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaDaily returns the old "token_quota_daily" field's value of the APIKey entity.
+// If the APIKey object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIKeyMutation) OldTokenQuotaDaily(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaDaily is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaDaily requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaDaily: %w", err)
+	}
+	return oldValue.TokenQuotaDaily, nil
+}
+
+// AddTokenQuotaDaily adds i to the "token_quota_daily" field.
+func (m *APIKeyMutation) AddTokenQuotaDaily(i int64) {
+	if m.addtoken_quota_daily != nil {
+		*m.addtoken_quota_daily += i
+	} else {
+		m.addtoken_quota_daily = &i
+	}
+}
+
+// AddedTokenQuotaDaily returns the value that was added to the "token_quota_daily" field in this mutation.
+func (m *APIKeyMutation) AddedTokenQuotaDaily() (r int64, exists bool) {
+	v := m.addtoken_quota_daily
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTokenQuotaDaily clears the value of the "token_quota_daily" field.
+func (m *APIKeyMutation) ClearTokenQuotaDaily() {
+	m.token_quota_daily = nil
+	m.addtoken_quota_daily = nil
+	m.clearedFields[apikey.FieldTokenQuotaDaily] = struct{}{}
+}
+
+// TokenQuotaDailyCleared returns if the "token_quota_daily" field was cleared in this mutation.
+func (m *APIKeyMutation) TokenQuotaDailyCleared() bool {
+	_, ok := m.clearedFields[apikey.FieldTokenQuotaDaily]
+	return ok
+}
+
+// ResetTokenQuotaDaily resets all changes to the "token_quota_daily" field.
+func (m *APIKeyMutation) ResetTokenQuotaDaily() {
+	m.token_quota_daily = nil
+	m.addtoken_quota_daily = nil
+	delete(m.clearedFields, apikey.FieldTokenQuotaDaily)
+}
+
+// SetTokenQuotaDailyUsed sets the "token_quota_daily_used" field.
+func (m *APIKeyMutation) SetTokenQuotaDailyUsed(i int64) {
+	m.token_quota_daily_used = &i
+	m.addtoken_quota_daily_used = nil
+}
+
+// TokenQuotaDailyUsed returns the value of the "token_quota_daily_used" field in the mutation.
+func (m *APIKeyMutation) TokenQuotaDailyUsed() (r int64, exists bool) {
+	v := m.token_quota_daily_used
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaDailyUsed returns the old "token_quota_daily_used" field's value of the APIKey entity.
+// If the APIKey object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIKeyMutation) OldTokenQuotaDailyUsed(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaDailyUsed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaDailyUsed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaDailyUsed: %w", err)
+	}
+	return oldValue.TokenQuotaDailyUsed, nil
+}
+
+// AddTokenQuotaDailyUsed adds i to the "token_quota_daily_used" field.
+func (m *APIKeyMutation) AddTokenQuotaDailyUsed(i int64) {
+	if m.addtoken_quota_daily_used != nil {
+		*m.addtoken_quota_daily_used += i
+	} else {
+		m.addtoken_quota_daily_used = &i
+	}
+}
+
+// AddedTokenQuotaDailyUsed returns the value that was added to the "token_quota_daily_used" field in this mutation.
+func (m *APIKeyMutation) AddedTokenQuotaDailyUsed() (r int64, exists bool) {
+	v := m.addtoken_quota_daily_used
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTokenQuotaDailyUsed clears the value of the "token_quota_daily_used" field.
+func (m *APIKeyMutation) ClearTokenQuotaDailyUsed() {
+	m.token_quota_daily_used = nil
+	m.addtoken_quota_daily_used = nil
+	m.clearedFields[apikey.FieldTokenQuotaDailyUsed] = struct{}{}
+}
+
+// TokenQuotaDailyUsedCleared returns if the "token_quota_daily_used" field was cleared in this mutation.
+func (m *APIKeyMutation) TokenQuotaDailyUsedCleared() bool {
+	_, ok := m.clearedFields[apikey.FieldTokenQuotaDailyUsed]
+	return ok
+}
+
+// ResetTokenQuotaDailyUsed resets all changes to the "token_quota_daily_used" field.
+func (m *APIKeyMutation) ResetTokenQuotaDailyUsed() {
+	m.token_quota_daily_used = nil
+	m.addtoken_quota_daily_used = nil
+	delete(m.clearedFields, apikey.FieldTokenQuotaDailyUsed)
+}
+
+// SetTokenQuotaDailyStart sets the "token_quota_daily_start" field.
+func (m *APIKeyMutation) SetTokenQuotaDailyStart(t time.Time) {
+	m.token_quota_daily_start = &t
+}
+
+// TokenQuotaDailyStart returns the value of the "token_quota_daily_start" field in the mutation.
+func (m *APIKeyMutation) TokenQuotaDailyStart() (r time.Time, exists bool) {
+	v := m.token_quota_daily_start
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaDailyStart returns the old "token_quota_daily_start" field's value of the APIKey entity.
+// If the APIKey object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIKeyMutation) OldTokenQuotaDailyStart(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaDailyStart is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaDailyStart requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaDailyStart: %w", err)
+	}
+	return oldValue.TokenQuotaDailyStart, nil
+}
+
+// ClearTokenQuotaDailyStart clears the value of the "token_quota_daily_start" field.
+func (m *APIKeyMutation) ClearTokenQuotaDailyStart() {
+	m.token_quota_daily_start = nil
+	m.clearedFields[apikey.FieldTokenQuotaDailyStart] = struct{}{}
+}
+
+// TokenQuotaDailyStartCleared returns if the "token_quota_daily_start" field was cleared in this mutation.
+func (m *APIKeyMutation) TokenQuotaDailyStartCleared() bool {
+	_, ok := m.clearedFields[apikey.FieldTokenQuotaDailyStart]
+	return ok
+}
+
+// ResetTokenQuotaDailyStart resets all changes to the "token_quota_daily_start" field.
+func (m *APIKeyMutation) ResetTokenQuotaDailyStart() {
+	m.token_quota_daily_start = nil
+	delete(m.clearedFields, apikey.FieldTokenQuotaDailyStart)
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (m *APIKeyMutation) SetTokenQuotaWeekly(i int64) {
+	m.token_quota_weekly = &i
+	m.addtoken_quota_weekly = nil
+}
+
+// TokenQuotaWeekly returns the value of the "token_quota_weekly" field in the mutation.
+func (m *APIKeyMutation) TokenQuotaWeekly() (r int64, exists bool) {
+	v := m.token_quota_weekly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaWeekly returns the old "token_quota_weekly" field's value of the APIKey entity.
+// If the APIKey object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIKeyMutation) OldTokenQuotaWeekly(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaWeekly is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaWeekly requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaWeekly: %w", err)
+	}
+	return oldValue.TokenQuotaWeekly, nil
+}
+
+// AddTokenQuotaWeekly adds i to the "token_quota_weekly" field.
+func (m *APIKeyMutation) AddTokenQuotaWeekly(i int64) {
+	if m.addtoken_quota_weekly != nil {
+		*m.addtoken_quota_weekly += i
+	} else {
+		m.addtoken_quota_weekly = &i
+	}
+}
+
+// AddedTokenQuotaWeekly returns the value that was added to the "token_quota_weekly" field in this mutation.
+func (m *APIKeyMutation) AddedTokenQuotaWeekly() (r int64, exists bool) {
+	v := m.addtoken_quota_weekly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTokenQuotaWeekly clears the value of the "token_quota_weekly" field.
+func (m *APIKeyMutation) ClearTokenQuotaWeekly() {
+	m.token_quota_weekly = nil
+	m.addtoken_quota_weekly = nil
+	m.clearedFields[apikey.FieldTokenQuotaWeekly] = struct{}{}
+}
+
+// TokenQuotaWeeklyCleared returns if the "token_quota_weekly" field was cleared in this mutation.
+func (m *APIKeyMutation) TokenQuotaWeeklyCleared() bool {
+	_, ok := m.clearedFields[apikey.FieldTokenQuotaWeekly]
+	return ok
+}
+
+// ResetTokenQuotaWeekly resets all changes to the "token_quota_weekly" field.
+func (m *APIKeyMutation) ResetTokenQuotaWeekly() {
+	m.token_quota_weekly = nil
+	m.addtoken_quota_weekly = nil
+	delete(m.clearedFields, apikey.FieldTokenQuotaWeekly)
+}
+
+// SetTokenQuotaWeeklyUsed sets the "token_quota_weekly_used" field.
+func (m *APIKeyMutation) SetTokenQuotaWeeklyUsed(i int64) {
+	m.token_quota_weekly_used = &i
+	m.addtoken_quota_weekly_used = nil
+}
+
+// TokenQuotaWeeklyUsed returns the value of the "token_quota_weekly_used" field in the mutation.
+func (m *APIKeyMutation) TokenQuotaWeeklyUsed() (r int64, exists bool) {
+	v := m.token_quota_weekly_used
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaWeeklyUsed returns the old "token_quota_weekly_used" field's value of the APIKey entity.
+// If the APIKey object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIKeyMutation) OldTokenQuotaWeeklyUsed(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaWeeklyUsed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaWeeklyUsed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaWeeklyUsed: %w", err)
+	}
+	return oldValue.TokenQuotaWeeklyUsed, nil
+}
+
+// AddTokenQuotaWeeklyUsed adds i to the "token_quota_weekly_used" field.
+func (m *APIKeyMutation) AddTokenQuotaWeeklyUsed(i int64) {
+	if m.addtoken_quota_weekly_used != nil {
+		*m.addtoken_quota_weekly_used += i
+	} else {
+		m.addtoken_quota_weekly_used = &i
+	}
+}
+
+// AddedTokenQuotaWeeklyUsed returns the value that was added to the "token_quota_weekly_used" field in this mutation.
+func (m *APIKeyMutation) AddedTokenQuotaWeeklyUsed() (r int64, exists bool) {
+	v := m.addtoken_quota_weekly_used
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTokenQuotaWeeklyUsed clears the value of the "token_quota_weekly_used" field.
+func (m *APIKeyMutation) ClearTokenQuotaWeeklyUsed() {
+	m.token_quota_weekly_used = nil
+	m.addtoken_quota_weekly_used = nil
+	m.clearedFields[apikey.FieldTokenQuotaWeeklyUsed] = struct{}{}
+}
+
+// TokenQuotaWeeklyUsedCleared returns if the "token_quota_weekly_used" field was cleared in this mutation.
+func (m *APIKeyMutation) TokenQuotaWeeklyUsedCleared() bool {
+	_, ok := m.clearedFields[apikey.FieldTokenQuotaWeeklyUsed]
+	return ok
+}
+
+// ResetTokenQuotaWeeklyUsed resets all changes to the "token_quota_weekly_used" field.
+func (m *APIKeyMutation) ResetTokenQuotaWeeklyUsed() {
+	m.token_quota_weekly_used = nil
+	m.addtoken_quota_weekly_used = nil
+	delete(m.clearedFields, apikey.FieldTokenQuotaWeeklyUsed)
+}
+
+// SetTokenQuotaWeeklyStart sets the "token_quota_weekly_start" field.
+func (m *APIKeyMutation) SetTokenQuotaWeeklyStart(t time.Time) {
+	m.token_quota_weekly_start = &t
+}
+
+// TokenQuotaWeeklyStart returns the value of the "token_quota_weekly_start" field in the mutation.
+func (m *APIKeyMutation) TokenQuotaWeeklyStart() (r time.Time, exists bool) {
+	v := m.token_quota_weekly_start
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaWeeklyStart returns the old "token_quota_weekly_start" field's value of the APIKey entity.
+// If the APIKey object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIKeyMutation) OldTokenQuotaWeeklyStart(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaWeeklyStart is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaWeeklyStart requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaWeeklyStart: %w", err)
+	}
+	return oldValue.TokenQuotaWeeklyStart, nil
+}
+
+// ClearTokenQuotaWeeklyStart clears the value of the "token_quota_weekly_start" field.
+func (m *APIKeyMutation) ClearTokenQuotaWeeklyStart() {
+	m.token_quota_weekly_start = nil
+	m.clearedFields[apikey.FieldTokenQuotaWeeklyStart] = struct{}{}
+}
+
+// TokenQuotaWeeklyStartCleared returns if the "token_quota_weekly_start" field was cleared in this mutation.
+func (m *APIKeyMutation) TokenQuotaWeeklyStartCleared() bool {
+	_, ok := m.clearedFields[apikey.FieldTokenQuotaWeeklyStart]
+	return ok
+}
+
+// ResetTokenQuotaWeeklyStart resets all changes to the "token_quota_weekly_start" field.
+func (m *APIKeyMutation) ResetTokenQuotaWeeklyStart() {
+	m.token_quota_weekly_start = nil
+	delete(m.clearedFields, apikey.FieldTokenQuotaWeeklyStart)
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (m *APIKeyMutation) SetTokenQuotaMonthly(i int64) {
+	m.token_quota_monthly = &i
+	m.addtoken_quota_monthly = nil
+}
+
+// TokenQuotaMonthly returns the value of the "token_quota_monthly" field in the mutation.
+func (m *APIKeyMutation) TokenQuotaMonthly() (r int64, exists bool) {
+	v := m.token_quota_monthly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaMonthly returns the old "token_quota_monthly" field's value of the APIKey entity.
+// If the APIKey object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIKeyMutation) OldTokenQuotaMonthly(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaMonthly is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaMonthly requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaMonthly: %w", err)
+	}
+	return oldValue.TokenQuotaMonthly, nil
+}
+
+// AddTokenQuotaMonthly adds i to the "token_quota_monthly" field.
+func (m *APIKeyMutation) AddTokenQuotaMonthly(i int64) {
+	if m.addtoken_quota_monthly != nil {
+		*m.addtoken_quota_monthly += i
+	} else {
+		m.addtoken_quota_monthly = &i
+	}
+}
+
+// AddedTokenQuotaMonthly returns the value that was added to the "token_quota_monthly" field in this mutation.
+func (m *APIKeyMutation) AddedTokenQuotaMonthly() (r int64, exists bool) {
+	v := m.addtoken_quota_monthly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTokenQuotaMonthly clears the value of the "token_quota_monthly" field.
+func (m *APIKeyMutation) ClearTokenQuotaMonthly() {
+	m.token_quota_monthly = nil
+	m.addtoken_quota_monthly = nil
+	m.clearedFields[apikey.FieldTokenQuotaMonthly] = struct{}{}
+}
+
+// TokenQuotaMonthlyCleared returns if the "token_quota_monthly" field was cleared in this mutation.
+func (m *APIKeyMutation) TokenQuotaMonthlyCleared() bool {
+	_, ok := m.clearedFields[apikey.FieldTokenQuotaMonthly]
+	return ok
+}
+
+// ResetTokenQuotaMonthly resets all changes to the "token_quota_monthly" field.
+func (m *APIKeyMutation) ResetTokenQuotaMonthly() {
+	m.token_quota_monthly = nil
+	m.addtoken_quota_monthly = nil
+	delete(m.clearedFields, apikey.FieldTokenQuotaMonthly)
+}
+
+// SetTokenQuotaMonthlyUsed sets the "token_quota_monthly_used" field.
+func (m *APIKeyMutation) SetTokenQuotaMonthlyUsed(i int64) {
+	m.token_quota_monthly_used = &i
+	m.addtoken_quota_monthly_used = nil
+}
+
+// TokenQuotaMonthlyUsed returns the value of the "token_quota_monthly_used" field in the mutation.
+func (m *APIKeyMutation) TokenQuotaMonthlyUsed() (r int64, exists bool) {
+	v := m.token_quota_monthly_used
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaMonthlyUsed returns the old "token_quota_monthly_used" field's value of the APIKey entity.
+// If the APIKey object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIKeyMutation) OldTokenQuotaMonthlyUsed(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaMonthlyUsed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaMonthlyUsed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaMonthlyUsed: %w", err)
+	}
+	return oldValue.TokenQuotaMonthlyUsed, nil
+}
+
+// AddTokenQuotaMonthlyUsed adds i to the "token_quota_monthly_used" field.
+func (m *APIKeyMutation) AddTokenQuotaMonthlyUsed(i int64) {
+	if m.addtoken_quota_monthly_used != nil {
+		*m.addtoken_quota_monthly_used += i
+	} else {
+		m.addtoken_quota_monthly_used = &i
+	}
+}
+
+// AddedTokenQuotaMonthlyUsed returns the value that was added to the "token_quota_monthly_used" field in this mutation.
+func (m *APIKeyMutation) AddedTokenQuotaMonthlyUsed() (r int64, exists bool) {
+	v := m.addtoken_quota_monthly_used
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTokenQuotaMonthlyUsed clears the value of the "token_quota_monthly_used" field.
+func (m *APIKeyMutation) ClearTokenQuotaMonthlyUsed() {
+	m.token_quota_monthly_used = nil
+	m.addtoken_quota_monthly_used = nil
+	m.clearedFields[apikey.FieldTokenQuotaMonthlyUsed] = struct{}{}
+}
+
+// TokenQuotaMonthlyUsedCleared returns if the "token_quota_monthly_used" field was cleared in this mutation.
+func (m *APIKeyMutation) TokenQuotaMonthlyUsedCleared() bool {
+	_, ok := m.clearedFields[apikey.FieldTokenQuotaMonthlyUsed]
+	return ok
+}
+
+// ResetTokenQuotaMonthlyUsed resets all changes to the "token_quota_monthly_used" field.
+func (m *APIKeyMutation) ResetTokenQuotaMonthlyUsed() {
+	m.token_quota_monthly_used = nil
+	m.addtoken_quota_monthly_used = nil
+	delete(m.clearedFields, apikey.FieldTokenQuotaMonthlyUsed)
+}
+
+// SetTokenQuotaMonthlyStart sets the "token_quota_monthly_start" field.
+func (m *APIKeyMutation) SetTokenQuotaMonthlyStart(t time.Time) {
+	m.token_quota_monthly_start = &t
+}
+
+// TokenQuotaMonthlyStart returns the value of the "token_quota_monthly_start" field in the mutation.
+func (m *APIKeyMutation) TokenQuotaMonthlyStart() (r time.Time, exists bool) {
+	v := m.token_quota_monthly_start
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaMonthlyStart returns the old "token_quota_monthly_start" field's value of the APIKey entity.
+// If the APIKey object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *APIKeyMutation) OldTokenQuotaMonthlyStart(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaMonthlyStart is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaMonthlyStart requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaMonthlyStart: %w", err)
+	}
+	return oldValue.TokenQuotaMonthlyStart, nil
+}
+
+// ClearTokenQuotaMonthlyStart clears the value of the "token_quota_monthly_start" field.
+func (m *APIKeyMutation) ClearTokenQuotaMonthlyStart() {
+	m.token_quota_monthly_start = nil
+	m.clearedFields[apikey.FieldTokenQuotaMonthlyStart] = struct{}{}
+}
+
+// TokenQuotaMonthlyStartCleared returns if the "token_quota_monthly_start" field was cleared in this mutation.
+func (m *APIKeyMutation) TokenQuotaMonthlyStartCleared() bool {
+	_, ok := m.clearedFields[apikey.FieldTokenQuotaMonthlyStart]
+	return ok
+}
+
+// ResetTokenQuotaMonthlyStart resets all changes to the "token_quota_monthly_start" field.
+func (m *APIKeyMutation) ResetTokenQuotaMonthlyStart() {
+	m.token_quota_monthly_start = nil
+	delete(m.clearedFields, apikey.FieldTokenQuotaMonthlyStart)
+}
+
 // SetExpiresAt sets the "expires_at" field.
 func (m *APIKeyMutation) SetExpiresAt(t time.Time) {
 	m.expires_at = &t
@@ -1612,7 +2194,7 @@ func (m *APIKeyMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *APIKeyMutation) Fields() []string {
-	fields := make([]string, 0, 25)
+	fields := make([]string, 0, 34)
 	if m.created_at != nil {
 		fields = append(fields, apikey.FieldCreatedAt)
 	}
@@ -1657,6 +2239,33 @@ func (m *APIKeyMutation) Fields() []string {
 	}
 	if m.token_quota_used != nil {
 		fields = append(fields, apikey.FieldTokenQuotaUsed)
+	}
+	if m.token_quota_daily != nil {
+		fields = append(fields, apikey.FieldTokenQuotaDaily)
+	}
+	if m.token_quota_daily_used != nil {
+		fields = append(fields, apikey.FieldTokenQuotaDailyUsed)
+	}
+	if m.token_quota_daily_start != nil {
+		fields = append(fields, apikey.FieldTokenQuotaDailyStart)
+	}
+	if m.token_quota_weekly != nil {
+		fields = append(fields, apikey.FieldTokenQuotaWeekly)
+	}
+	if m.token_quota_weekly_used != nil {
+		fields = append(fields, apikey.FieldTokenQuotaWeeklyUsed)
+	}
+	if m.token_quota_weekly_start != nil {
+		fields = append(fields, apikey.FieldTokenQuotaWeeklyStart)
+	}
+	if m.token_quota_monthly != nil {
+		fields = append(fields, apikey.FieldTokenQuotaMonthly)
+	}
+	if m.token_quota_monthly_used != nil {
+		fields = append(fields, apikey.FieldTokenQuotaMonthlyUsed)
+	}
+	if m.token_quota_monthly_start != nil {
+		fields = append(fields, apikey.FieldTokenQuotaMonthlyStart)
 	}
 	if m.expires_at != nil {
 		fields = append(fields, apikey.FieldExpiresAt)
@@ -1726,6 +2335,24 @@ func (m *APIKeyMutation) Field(name string) (ent.Value, bool) {
 		return m.TokenQuota()
 	case apikey.FieldTokenQuotaUsed:
 		return m.TokenQuotaUsed()
+	case apikey.FieldTokenQuotaDaily:
+		return m.TokenQuotaDaily()
+	case apikey.FieldTokenQuotaDailyUsed:
+		return m.TokenQuotaDailyUsed()
+	case apikey.FieldTokenQuotaDailyStart:
+		return m.TokenQuotaDailyStart()
+	case apikey.FieldTokenQuotaWeekly:
+		return m.TokenQuotaWeekly()
+	case apikey.FieldTokenQuotaWeeklyUsed:
+		return m.TokenQuotaWeeklyUsed()
+	case apikey.FieldTokenQuotaWeeklyStart:
+		return m.TokenQuotaWeeklyStart()
+	case apikey.FieldTokenQuotaMonthly:
+		return m.TokenQuotaMonthly()
+	case apikey.FieldTokenQuotaMonthlyUsed:
+		return m.TokenQuotaMonthlyUsed()
+	case apikey.FieldTokenQuotaMonthlyStart:
+		return m.TokenQuotaMonthlyStart()
 	case apikey.FieldExpiresAt:
 		return m.ExpiresAt()
 	case apikey.FieldRateLimit5h:
@@ -1785,6 +2412,24 @@ func (m *APIKeyMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldTokenQuota(ctx)
 	case apikey.FieldTokenQuotaUsed:
 		return m.OldTokenQuotaUsed(ctx)
+	case apikey.FieldTokenQuotaDaily:
+		return m.OldTokenQuotaDaily(ctx)
+	case apikey.FieldTokenQuotaDailyUsed:
+		return m.OldTokenQuotaDailyUsed(ctx)
+	case apikey.FieldTokenQuotaDailyStart:
+		return m.OldTokenQuotaDailyStart(ctx)
+	case apikey.FieldTokenQuotaWeekly:
+		return m.OldTokenQuotaWeekly(ctx)
+	case apikey.FieldTokenQuotaWeeklyUsed:
+		return m.OldTokenQuotaWeeklyUsed(ctx)
+	case apikey.FieldTokenQuotaWeeklyStart:
+		return m.OldTokenQuotaWeeklyStart(ctx)
+	case apikey.FieldTokenQuotaMonthly:
+		return m.OldTokenQuotaMonthly(ctx)
+	case apikey.FieldTokenQuotaMonthlyUsed:
+		return m.OldTokenQuotaMonthlyUsed(ctx)
+	case apikey.FieldTokenQuotaMonthlyStart:
+		return m.OldTokenQuotaMonthlyStart(ctx)
 	case apikey.FieldExpiresAt:
 		return m.OldExpiresAt(ctx)
 	case apikey.FieldRateLimit5h:
@@ -1919,6 +2564,69 @@ func (m *APIKeyMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTokenQuotaUsed(v)
 		return nil
+	case apikey.FieldTokenQuotaDaily:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaDaily(v)
+		return nil
+	case apikey.FieldTokenQuotaDailyUsed:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaDailyUsed(v)
+		return nil
+	case apikey.FieldTokenQuotaDailyStart:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaDailyStart(v)
+		return nil
+	case apikey.FieldTokenQuotaWeekly:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaWeekly(v)
+		return nil
+	case apikey.FieldTokenQuotaWeeklyUsed:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaWeeklyUsed(v)
+		return nil
+	case apikey.FieldTokenQuotaWeeklyStart:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaWeeklyStart(v)
+		return nil
+	case apikey.FieldTokenQuotaMonthly:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaMonthly(v)
+		return nil
+	case apikey.FieldTokenQuotaMonthlyUsed:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaMonthlyUsed(v)
+		return nil
+	case apikey.FieldTokenQuotaMonthlyStart:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaMonthlyStart(v)
+		return nil
 	case apikey.FieldExpiresAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -2009,6 +2717,24 @@ func (m *APIKeyMutation) AddedFields() []string {
 	if m.addtoken_quota_used != nil {
 		fields = append(fields, apikey.FieldTokenQuotaUsed)
 	}
+	if m.addtoken_quota_daily != nil {
+		fields = append(fields, apikey.FieldTokenQuotaDaily)
+	}
+	if m.addtoken_quota_daily_used != nil {
+		fields = append(fields, apikey.FieldTokenQuotaDailyUsed)
+	}
+	if m.addtoken_quota_weekly != nil {
+		fields = append(fields, apikey.FieldTokenQuotaWeekly)
+	}
+	if m.addtoken_quota_weekly_used != nil {
+		fields = append(fields, apikey.FieldTokenQuotaWeeklyUsed)
+	}
+	if m.addtoken_quota_monthly != nil {
+		fields = append(fields, apikey.FieldTokenQuotaMonthly)
+	}
+	if m.addtoken_quota_monthly_used != nil {
+		fields = append(fields, apikey.FieldTokenQuotaMonthlyUsed)
+	}
 	if m.addrate_limit_5h != nil {
 		fields = append(fields, apikey.FieldRateLimit5h)
 	}
@@ -2043,6 +2769,18 @@ func (m *APIKeyMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedTokenQuota()
 	case apikey.FieldTokenQuotaUsed:
 		return m.AddedTokenQuotaUsed()
+	case apikey.FieldTokenQuotaDaily:
+		return m.AddedTokenQuotaDaily()
+	case apikey.FieldTokenQuotaDailyUsed:
+		return m.AddedTokenQuotaDailyUsed()
+	case apikey.FieldTokenQuotaWeekly:
+		return m.AddedTokenQuotaWeekly()
+	case apikey.FieldTokenQuotaWeeklyUsed:
+		return m.AddedTokenQuotaWeeklyUsed()
+	case apikey.FieldTokenQuotaMonthly:
+		return m.AddedTokenQuotaMonthly()
+	case apikey.FieldTokenQuotaMonthlyUsed:
+		return m.AddedTokenQuotaMonthlyUsed()
 	case apikey.FieldRateLimit5h:
 		return m.AddedRateLimit5h()
 	case apikey.FieldRateLimit1d:
@@ -2091,6 +2829,48 @@ func (m *APIKeyMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddTokenQuotaUsed(v)
+		return nil
+	case apikey.FieldTokenQuotaDaily:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenQuotaDaily(v)
+		return nil
+	case apikey.FieldTokenQuotaDailyUsed:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenQuotaDailyUsed(v)
+		return nil
+	case apikey.FieldTokenQuotaWeekly:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenQuotaWeekly(v)
+		return nil
+	case apikey.FieldTokenQuotaWeeklyUsed:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenQuotaWeeklyUsed(v)
+		return nil
+	case apikey.FieldTokenQuotaMonthly:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenQuotaMonthly(v)
+		return nil
+	case apikey.FieldTokenQuotaMonthlyUsed:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenQuotaMonthlyUsed(v)
 		return nil
 	case apikey.FieldRateLimit5h:
 		v, ok := value.(float64)
@@ -2157,6 +2937,33 @@ func (m *APIKeyMutation) ClearedFields() []string {
 	if m.FieldCleared(apikey.FieldIPBlacklist) {
 		fields = append(fields, apikey.FieldIPBlacklist)
 	}
+	if m.FieldCleared(apikey.FieldTokenQuotaDaily) {
+		fields = append(fields, apikey.FieldTokenQuotaDaily)
+	}
+	if m.FieldCleared(apikey.FieldTokenQuotaDailyUsed) {
+		fields = append(fields, apikey.FieldTokenQuotaDailyUsed)
+	}
+	if m.FieldCleared(apikey.FieldTokenQuotaDailyStart) {
+		fields = append(fields, apikey.FieldTokenQuotaDailyStart)
+	}
+	if m.FieldCleared(apikey.FieldTokenQuotaWeekly) {
+		fields = append(fields, apikey.FieldTokenQuotaWeekly)
+	}
+	if m.FieldCleared(apikey.FieldTokenQuotaWeeklyUsed) {
+		fields = append(fields, apikey.FieldTokenQuotaWeeklyUsed)
+	}
+	if m.FieldCleared(apikey.FieldTokenQuotaWeeklyStart) {
+		fields = append(fields, apikey.FieldTokenQuotaWeeklyStart)
+	}
+	if m.FieldCleared(apikey.FieldTokenQuotaMonthly) {
+		fields = append(fields, apikey.FieldTokenQuotaMonthly)
+	}
+	if m.FieldCleared(apikey.FieldTokenQuotaMonthlyUsed) {
+		fields = append(fields, apikey.FieldTokenQuotaMonthlyUsed)
+	}
+	if m.FieldCleared(apikey.FieldTokenQuotaMonthlyStart) {
+		fields = append(fields, apikey.FieldTokenQuotaMonthlyStart)
+	}
 	if m.FieldCleared(apikey.FieldExpiresAt) {
 		fields = append(fields, apikey.FieldExpiresAt)
 	}
@@ -2197,6 +3004,33 @@ func (m *APIKeyMutation) ClearField(name string) error {
 		return nil
 	case apikey.FieldIPBlacklist:
 		m.ClearIPBlacklist()
+		return nil
+	case apikey.FieldTokenQuotaDaily:
+		m.ClearTokenQuotaDaily()
+		return nil
+	case apikey.FieldTokenQuotaDailyUsed:
+		m.ClearTokenQuotaDailyUsed()
+		return nil
+	case apikey.FieldTokenQuotaDailyStart:
+		m.ClearTokenQuotaDailyStart()
+		return nil
+	case apikey.FieldTokenQuotaWeekly:
+		m.ClearTokenQuotaWeekly()
+		return nil
+	case apikey.FieldTokenQuotaWeeklyUsed:
+		m.ClearTokenQuotaWeeklyUsed()
+		return nil
+	case apikey.FieldTokenQuotaWeeklyStart:
+		m.ClearTokenQuotaWeeklyStart()
+		return nil
+	case apikey.FieldTokenQuotaMonthly:
+		m.ClearTokenQuotaMonthly()
+		return nil
+	case apikey.FieldTokenQuotaMonthlyUsed:
+		m.ClearTokenQuotaMonthlyUsed()
+		return nil
+	case apikey.FieldTokenQuotaMonthlyStart:
+		m.ClearTokenQuotaMonthlyStart()
 		return nil
 	case apikey.FieldExpiresAt:
 		m.ClearExpiresAt()
@@ -2262,6 +3096,33 @@ func (m *APIKeyMutation) ResetField(name string) error {
 		return nil
 	case apikey.FieldTokenQuotaUsed:
 		m.ResetTokenQuotaUsed()
+		return nil
+	case apikey.FieldTokenQuotaDaily:
+		m.ResetTokenQuotaDaily()
+		return nil
+	case apikey.FieldTokenQuotaDailyUsed:
+		m.ResetTokenQuotaDailyUsed()
+		return nil
+	case apikey.FieldTokenQuotaDailyStart:
+		m.ResetTokenQuotaDailyStart()
+		return nil
+	case apikey.FieldTokenQuotaWeekly:
+		m.ResetTokenQuotaWeekly()
+		return nil
+	case apikey.FieldTokenQuotaWeeklyUsed:
+		m.ResetTokenQuotaWeeklyUsed()
+		return nil
+	case apikey.FieldTokenQuotaWeeklyStart:
+		m.ResetTokenQuotaWeeklyStart()
+		return nil
+	case apikey.FieldTokenQuotaMonthly:
+		m.ResetTokenQuotaMonthly()
+		return nil
+	case apikey.FieldTokenQuotaMonthlyUsed:
+		m.ResetTokenQuotaMonthlyUsed()
+		return nil
+	case apikey.FieldTokenQuotaMonthlyStart:
+		m.ResetTokenQuotaMonthlyStart()
 		return nil
 	case apikey.FieldExpiresAt:
 		m.ResetExpiresAt()
@@ -26152,39 +27013,50 @@ func (m *UserAttributeValueMutation) ResetEdge(name string) error {
 // UserSubscriptionMutation represents an operation that mutates the UserSubscription nodes in the graph.
 type UserSubscriptionMutation struct {
 	config
-	op                      Op
-	typ                     string
-	id                      *int64
-	created_at              *time.Time
-	updated_at              *time.Time
-	deleted_at              *time.Time
-	starts_at               *time.Time
-	expires_at              *time.Time
-	status                  *string
-	daily_window_start      *time.Time
-	weekly_window_start     *time.Time
-	monthly_window_start    *time.Time
-	daily_usage_usd         *float64
-	adddaily_usage_usd      *float64
-	weekly_usage_usd        *float64
-	addweekly_usage_usd     *float64
-	monthly_usage_usd       *float64
-	addmonthly_usage_usd    *float64
-	assigned_at             *time.Time
-	notes                   *string
-	clearedFields           map[string]struct{}
-	user                    *int64
-	cleareduser             bool
-	group                   *int64
-	clearedgroup            bool
-	assigned_by_user        *int64
-	clearedassigned_by_user bool
-	usage_logs              map[int64]struct{}
-	removedusage_logs       map[int64]struct{}
-	clearedusage_logs       bool
-	done                    bool
-	oldValue                func(context.Context) (*UserSubscription, error)
-	predicates              []predicate.UserSubscription
+	op                         Op
+	typ                        string
+	id                         *int64
+	created_at                 *time.Time
+	updated_at                 *time.Time
+	deleted_at                 *time.Time
+	starts_at                  *time.Time
+	expires_at                 *time.Time
+	status                     *string
+	daily_window_start         *time.Time
+	weekly_window_start        *time.Time
+	monthly_window_start       *time.Time
+	daily_usage_usd            *float64
+	adddaily_usage_usd         *float64
+	weekly_usage_usd           *float64
+	addweekly_usage_usd        *float64
+	monthly_usage_usd          *float64
+	addmonthly_usage_usd       *float64
+	token_usage_total          *int64
+	addtoken_usage_total       *int64
+	token_usage_daily          *int64
+	addtoken_usage_daily       *int64
+	token_usage_weekly         *int64
+	addtoken_usage_weekly      *int64
+	token_usage_monthly        *int64
+	addtoken_usage_monthly     *int64
+	token_daily_window_start   *time.Time
+	token_weekly_window_start  *time.Time
+	token_monthly_window_start *time.Time
+	assigned_at                *time.Time
+	notes                      *string
+	clearedFields              map[string]struct{}
+	user                       *int64
+	cleareduser                bool
+	group                      *int64
+	clearedgroup               bool
+	assigned_by_user           *int64
+	clearedassigned_by_user    bool
+	usage_logs                 map[int64]struct{}
+	removedusage_logs          map[int64]struct{}
+	clearedusage_logs          bool
+	done                       bool
+	oldValue                   func(context.Context) (*UserSubscription, error)
+	predicates                 []predicate.UserSubscription
 }
 
 var _ ent.Mutation = (*UserSubscriptionMutation)(nil)
@@ -26901,6 +27773,377 @@ func (m *UserSubscriptionMutation) ResetMonthlyUsageUsd() {
 	m.addmonthly_usage_usd = nil
 }
 
+// SetTokenUsageTotal sets the "token_usage_total" field.
+func (m *UserSubscriptionMutation) SetTokenUsageTotal(i int64) {
+	m.token_usage_total = &i
+	m.addtoken_usage_total = nil
+}
+
+// TokenUsageTotal returns the value of the "token_usage_total" field in the mutation.
+func (m *UserSubscriptionMutation) TokenUsageTotal() (r int64, exists bool) {
+	v := m.token_usage_total
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenUsageTotal returns the old "token_usage_total" field's value of the UserSubscription entity.
+// If the UserSubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserSubscriptionMutation) OldTokenUsageTotal(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenUsageTotal is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenUsageTotal requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenUsageTotal: %w", err)
+	}
+	return oldValue.TokenUsageTotal, nil
+}
+
+// AddTokenUsageTotal adds i to the "token_usage_total" field.
+func (m *UserSubscriptionMutation) AddTokenUsageTotal(i int64) {
+	if m.addtoken_usage_total != nil {
+		*m.addtoken_usage_total += i
+	} else {
+		m.addtoken_usage_total = &i
+	}
+}
+
+// AddedTokenUsageTotal returns the value that was added to the "token_usage_total" field in this mutation.
+func (m *UserSubscriptionMutation) AddedTokenUsageTotal() (r int64, exists bool) {
+	v := m.addtoken_usage_total
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTokenUsageTotal resets all changes to the "token_usage_total" field.
+func (m *UserSubscriptionMutation) ResetTokenUsageTotal() {
+	m.token_usage_total = nil
+	m.addtoken_usage_total = nil
+}
+
+// SetTokenUsageDaily sets the "token_usage_daily" field.
+func (m *UserSubscriptionMutation) SetTokenUsageDaily(i int64) {
+	m.token_usage_daily = &i
+	m.addtoken_usage_daily = nil
+}
+
+// TokenUsageDaily returns the value of the "token_usage_daily" field in the mutation.
+func (m *UserSubscriptionMutation) TokenUsageDaily() (r int64, exists bool) {
+	v := m.token_usage_daily
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenUsageDaily returns the old "token_usage_daily" field's value of the UserSubscription entity.
+// If the UserSubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserSubscriptionMutation) OldTokenUsageDaily(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenUsageDaily is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenUsageDaily requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenUsageDaily: %w", err)
+	}
+	return oldValue.TokenUsageDaily, nil
+}
+
+// AddTokenUsageDaily adds i to the "token_usage_daily" field.
+func (m *UserSubscriptionMutation) AddTokenUsageDaily(i int64) {
+	if m.addtoken_usage_daily != nil {
+		*m.addtoken_usage_daily += i
+	} else {
+		m.addtoken_usage_daily = &i
+	}
+}
+
+// AddedTokenUsageDaily returns the value that was added to the "token_usage_daily" field in this mutation.
+func (m *UserSubscriptionMutation) AddedTokenUsageDaily() (r int64, exists bool) {
+	v := m.addtoken_usage_daily
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTokenUsageDaily resets all changes to the "token_usage_daily" field.
+func (m *UserSubscriptionMutation) ResetTokenUsageDaily() {
+	m.token_usage_daily = nil
+	m.addtoken_usage_daily = nil
+}
+
+// SetTokenUsageWeekly sets the "token_usage_weekly" field.
+func (m *UserSubscriptionMutation) SetTokenUsageWeekly(i int64) {
+	m.token_usage_weekly = &i
+	m.addtoken_usage_weekly = nil
+}
+
+// TokenUsageWeekly returns the value of the "token_usage_weekly" field in the mutation.
+func (m *UserSubscriptionMutation) TokenUsageWeekly() (r int64, exists bool) {
+	v := m.token_usage_weekly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenUsageWeekly returns the old "token_usage_weekly" field's value of the UserSubscription entity.
+// If the UserSubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserSubscriptionMutation) OldTokenUsageWeekly(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenUsageWeekly is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenUsageWeekly requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenUsageWeekly: %w", err)
+	}
+	return oldValue.TokenUsageWeekly, nil
+}
+
+// AddTokenUsageWeekly adds i to the "token_usage_weekly" field.
+func (m *UserSubscriptionMutation) AddTokenUsageWeekly(i int64) {
+	if m.addtoken_usage_weekly != nil {
+		*m.addtoken_usage_weekly += i
+	} else {
+		m.addtoken_usage_weekly = &i
+	}
+}
+
+// AddedTokenUsageWeekly returns the value that was added to the "token_usage_weekly" field in this mutation.
+func (m *UserSubscriptionMutation) AddedTokenUsageWeekly() (r int64, exists bool) {
+	v := m.addtoken_usage_weekly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTokenUsageWeekly resets all changes to the "token_usage_weekly" field.
+func (m *UserSubscriptionMutation) ResetTokenUsageWeekly() {
+	m.token_usage_weekly = nil
+	m.addtoken_usage_weekly = nil
+}
+
+// SetTokenUsageMonthly sets the "token_usage_monthly" field.
+func (m *UserSubscriptionMutation) SetTokenUsageMonthly(i int64) {
+	m.token_usage_monthly = &i
+	m.addtoken_usage_monthly = nil
+}
+
+// TokenUsageMonthly returns the value of the "token_usage_monthly" field in the mutation.
+func (m *UserSubscriptionMutation) TokenUsageMonthly() (r int64, exists bool) {
+	v := m.token_usage_monthly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenUsageMonthly returns the old "token_usage_monthly" field's value of the UserSubscription entity.
+// If the UserSubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserSubscriptionMutation) OldTokenUsageMonthly(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenUsageMonthly is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenUsageMonthly requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenUsageMonthly: %w", err)
+	}
+	return oldValue.TokenUsageMonthly, nil
+}
+
+// AddTokenUsageMonthly adds i to the "token_usage_monthly" field.
+func (m *UserSubscriptionMutation) AddTokenUsageMonthly(i int64) {
+	if m.addtoken_usage_monthly != nil {
+		*m.addtoken_usage_monthly += i
+	} else {
+		m.addtoken_usage_monthly = &i
+	}
+}
+
+// AddedTokenUsageMonthly returns the value that was added to the "token_usage_monthly" field in this mutation.
+func (m *UserSubscriptionMutation) AddedTokenUsageMonthly() (r int64, exists bool) {
+	v := m.addtoken_usage_monthly
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTokenUsageMonthly resets all changes to the "token_usage_monthly" field.
+func (m *UserSubscriptionMutation) ResetTokenUsageMonthly() {
+	m.token_usage_monthly = nil
+	m.addtoken_usage_monthly = nil
+}
+
+// SetTokenDailyWindowStart sets the "token_daily_window_start" field.
+func (m *UserSubscriptionMutation) SetTokenDailyWindowStart(t time.Time) {
+	m.token_daily_window_start = &t
+}
+
+// TokenDailyWindowStart returns the value of the "token_daily_window_start" field in the mutation.
+func (m *UserSubscriptionMutation) TokenDailyWindowStart() (r time.Time, exists bool) {
+	v := m.token_daily_window_start
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenDailyWindowStart returns the old "token_daily_window_start" field's value of the UserSubscription entity.
+// If the UserSubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserSubscriptionMutation) OldTokenDailyWindowStart(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenDailyWindowStart is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenDailyWindowStart requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenDailyWindowStart: %w", err)
+	}
+	return oldValue.TokenDailyWindowStart, nil
+}
+
+// ClearTokenDailyWindowStart clears the value of the "token_daily_window_start" field.
+func (m *UserSubscriptionMutation) ClearTokenDailyWindowStart() {
+	m.token_daily_window_start = nil
+	m.clearedFields[usersubscription.FieldTokenDailyWindowStart] = struct{}{}
+}
+
+// TokenDailyWindowStartCleared returns if the "token_daily_window_start" field was cleared in this mutation.
+func (m *UserSubscriptionMutation) TokenDailyWindowStartCleared() bool {
+	_, ok := m.clearedFields[usersubscription.FieldTokenDailyWindowStart]
+	return ok
+}
+
+// ResetTokenDailyWindowStart resets all changes to the "token_daily_window_start" field.
+func (m *UserSubscriptionMutation) ResetTokenDailyWindowStart() {
+	m.token_daily_window_start = nil
+	delete(m.clearedFields, usersubscription.FieldTokenDailyWindowStart)
+}
+
+// SetTokenWeeklyWindowStart sets the "token_weekly_window_start" field.
+func (m *UserSubscriptionMutation) SetTokenWeeklyWindowStart(t time.Time) {
+	m.token_weekly_window_start = &t
+}
+
+// TokenWeeklyWindowStart returns the value of the "token_weekly_window_start" field in the mutation.
+func (m *UserSubscriptionMutation) TokenWeeklyWindowStart() (r time.Time, exists bool) {
+	v := m.token_weekly_window_start
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenWeeklyWindowStart returns the old "token_weekly_window_start" field's value of the UserSubscription entity.
+// If the UserSubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserSubscriptionMutation) OldTokenWeeklyWindowStart(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenWeeklyWindowStart is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenWeeklyWindowStart requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenWeeklyWindowStart: %w", err)
+	}
+	return oldValue.TokenWeeklyWindowStart, nil
+}
+
+// ClearTokenWeeklyWindowStart clears the value of the "token_weekly_window_start" field.
+func (m *UserSubscriptionMutation) ClearTokenWeeklyWindowStart() {
+	m.token_weekly_window_start = nil
+	m.clearedFields[usersubscription.FieldTokenWeeklyWindowStart] = struct{}{}
+}
+
+// TokenWeeklyWindowStartCleared returns if the "token_weekly_window_start" field was cleared in this mutation.
+func (m *UserSubscriptionMutation) TokenWeeklyWindowStartCleared() bool {
+	_, ok := m.clearedFields[usersubscription.FieldTokenWeeklyWindowStart]
+	return ok
+}
+
+// ResetTokenWeeklyWindowStart resets all changes to the "token_weekly_window_start" field.
+func (m *UserSubscriptionMutation) ResetTokenWeeklyWindowStart() {
+	m.token_weekly_window_start = nil
+	delete(m.clearedFields, usersubscription.FieldTokenWeeklyWindowStart)
+}
+
+// SetTokenMonthlyWindowStart sets the "token_monthly_window_start" field.
+func (m *UserSubscriptionMutation) SetTokenMonthlyWindowStart(t time.Time) {
+	m.token_monthly_window_start = &t
+}
+
+// TokenMonthlyWindowStart returns the value of the "token_monthly_window_start" field in the mutation.
+func (m *UserSubscriptionMutation) TokenMonthlyWindowStart() (r time.Time, exists bool) {
+	v := m.token_monthly_window_start
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenMonthlyWindowStart returns the old "token_monthly_window_start" field's value of the UserSubscription entity.
+// If the UserSubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserSubscriptionMutation) OldTokenMonthlyWindowStart(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenMonthlyWindowStart is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenMonthlyWindowStart requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenMonthlyWindowStart: %w", err)
+	}
+	return oldValue.TokenMonthlyWindowStart, nil
+}
+
+// ClearTokenMonthlyWindowStart clears the value of the "token_monthly_window_start" field.
+func (m *UserSubscriptionMutation) ClearTokenMonthlyWindowStart() {
+	m.token_monthly_window_start = nil
+	m.clearedFields[usersubscription.FieldTokenMonthlyWindowStart] = struct{}{}
+}
+
+// TokenMonthlyWindowStartCleared returns if the "token_monthly_window_start" field was cleared in this mutation.
+func (m *UserSubscriptionMutation) TokenMonthlyWindowStartCleared() bool {
+	_, ok := m.clearedFields[usersubscription.FieldTokenMonthlyWindowStart]
+	return ok
+}
+
+// ResetTokenMonthlyWindowStart resets all changes to the "token_monthly_window_start" field.
+func (m *UserSubscriptionMutation) ResetTokenMonthlyWindowStart() {
+	m.token_monthly_window_start = nil
+	delete(m.clearedFields, usersubscription.FieldTokenMonthlyWindowStart)
+}
+
 // SetAssignedBy sets the "assigned_by" field.
 func (m *UserSubscriptionMutation) SetAssignedBy(i int64) {
 	m.assigned_by_user = &i
@@ -27217,7 +28460,7 @@ func (m *UserSubscriptionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserSubscriptionMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 24)
 	if m.created_at != nil {
 		fields = append(fields, usersubscription.FieldCreatedAt)
 	}
@@ -27259,6 +28502,27 @@ func (m *UserSubscriptionMutation) Fields() []string {
 	}
 	if m.monthly_usage_usd != nil {
 		fields = append(fields, usersubscription.FieldMonthlyUsageUsd)
+	}
+	if m.token_usage_total != nil {
+		fields = append(fields, usersubscription.FieldTokenUsageTotal)
+	}
+	if m.token_usage_daily != nil {
+		fields = append(fields, usersubscription.FieldTokenUsageDaily)
+	}
+	if m.token_usage_weekly != nil {
+		fields = append(fields, usersubscription.FieldTokenUsageWeekly)
+	}
+	if m.token_usage_monthly != nil {
+		fields = append(fields, usersubscription.FieldTokenUsageMonthly)
+	}
+	if m.token_daily_window_start != nil {
+		fields = append(fields, usersubscription.FieldTokenDailyWindowStart)
+	}
+	if m.token_weekly_window_start != nil {
+		fields = append(fields, usersubscription.FieldTokenWeeklyWindowStart)
+	}
+	if m.token_monthly_window_start != nil {
+		fields = append(fields, usersubscription.FieldTokenMonthlyWindowStart)
 	}
 	if m.assigned_by_user != nil {
 		fields = append(fields, usersubscription.FieldAssignedBy)
@@ -27305,6 +28569,20 @@ func (m *UserSubscriptionMutation) Field(name string) (ent.Value, bool) {
 		return m.WeeklyUsageUsd()
 	case usersubscription.FieldMonthlyUsageUsd:
 		return m.MonthlyUsageUsd()
+	case usersubscription.FieldTokenUsageTotal:
+		return m.TokenUsageTotal()
+	case usersubscription.FieldTokenUsageDaily:
+		return m.TokenUsageDaily()
+	case usersubscription.FieldTokenUsageWeekly:
+		return m.TokenUsageWeekly()
+	case usersubscription.FieldTokenUsageMonthly:
+		return m.TokenUsageMonthly()
+	case usersubscription.FieldTokenDailyWindowStart:
+		return m.TokenDailyWindowStart()
+	case usersubscription.FieldTokenWeeklyWindowStart:
+		return m.TokenWeeklyWindowStart()
+	case usersubscription.FieldTokenMonthlyWindowStart:
+		return m.TokenMonthlyWindowStart()
 	case usersubscription.FieldAssignedBy:
 		return m.AssignedBy()
 	case usersubscription.FieldAssignedAt:
@@ -27348,6 +28626,20 @@ func (m *UserSubscriptionMutation) OldField(ctx context.Context, name string) (e
 		return m.OldWeeklyUsageUsd(ctx)
 	case usersubscription.FieldMonthlyUsageUsd:
 		return m.OldMonthlyUsageUsd(ctx)
+	case usersubscription.FieldTokenUsageTotal:
+		return m.OldTokenUsageTotal(ctx)
+	case usersubscription.FieldTokenUsageDaily:
+		return m.OldTokenUsageDaily(ctx)
+	case usersubscription.FieldTokenUsageWeekly:
+		return m.OldTokenUsageWeekly(ctx)
+	case usersubscription.FieldTokenUsageMonthly:
+		return m.OldTokenUsageMonthly(ctx)
+	case usersubscription.FieldTokenDailyWindowStart:
+		return m.OldTokenDailyWindowStart(ctx)
+	case usersubscription.FieldTokenWeeklyWindowStart:
+		return m.OldTokenWeeklyWindowStart(ctx)
+	case usersubscription.FieldTokenMonthlyWindowStart:
+		return m.OldTokenMonthlyWindowStart(ctx)
 	case usersubscription.FieldAssignedBy:
 		return m.OldAssignedBy(ctx)
 	case usersubscription.FieldAssignedAt:
@@ -27461,6 +28753,55 @@ func (m *UserSubscriptionMutation) SetField(name string, value ent.Value) error 
 		}
 		m.SetMonthlyUsageUsd(v)
 		return nil
+	case usersubscription.FieldTokenUsageTotal:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenUsageTotal(v)
+		return nil
+	case usersubscription.FieldTokenUsageDaily:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenUsageDaily(v)
+		return nil
+	case usersubscription.FieldTokenUsageWeekly:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenUsageWeekly(v)
+		return nil
+	case usersubscription.FieldTokenUsageMonthly:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenUsageMonthly(v)
+		return nil
+	case usersubscription.FieldTokenDailyWindowStart:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenDailyWindowStart(v)
+		return nil
+	case usersubscription.FieldTokenWeeklyWindowStart:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenWeeklyWindowStart(v)
+		return nil
+	case usersubscription.FieldTokenMonthlyWindowStart:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenMonthlyWindowStart(v)
+		return nil
 	case usersubscription.FieldAssignedBy:
 		v, ok := value.(int64)
 		if !ok {
@@ -27499,6 +28840,18 @@ func (m *UserSubscriptionMutation) AddedFields() []string {
 	if m.addmonthly_usage_usd != nil {
 		fields = append(fields, usersubscription.FieldMonthlyUsageUsd)
 	}
+	if m.addtoken_usage_total != nil {
+		fields = append(fields, usersubscription.FieldTokenUsageTotal)
+	}
+	if m.addtoken_usage_daily != nil {
+		fields = append(fields, usersubscription.FieldTokenUsageDaily)
+	}
+	if m.addtoken_usage_weekly != nil {
+		fields = append(fields, usersubscription.FieldTokenUsageWeekly)
+	}
+	if m.addtoken_usage_monthly != nil {
+		fields = append(fields, usersubscription.FieldTokenUsageMonthly)
+	}
 	return fields
 }
 
@@ -27513,6 +28866,14 @@ func (m *UserSubscriptionMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedWeeklyUsageUsd()
 	case usersubscription.FieldMonthlyUsageUsd:
 		return m.AddedMonthlyUsageUsd()
+	case usersubscription.FieldTokenUsageTotal:
+		return m.AddedTokenUsageTotal()
+	case usersubscription.FieldTokenUsageDaily:
+		return m.AddedTokenUsageDaily()
+	case usersubscription.FieldTokenUsageWeekly:
+		return m.AddedTokenUsageWeekly()
+	case usersubscription.FieldTokenUsageMonthly:
+		return m.AddedTokenUsageMonthly()
 	}
 	return nil, false
 }
@@ -27543,6 +28904,34 @@ func (m *UserSubscriptionMutation) AddField(name string, value ent.Value) error 
 		}
 		m.AddMonthlyUsageUsd(v)
 		return nil
+	case usersubscription.FieldTokenUsageTotal:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenUsageTotal(v)
+		return nil
+	case usersubscription.FieldTokenUsageDaily:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenUsageDaily(v)
+		return nil
+	case usersubscription.FieldTokenUsageWeekly:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenUsageWeekly(v)
+		return nil
+	case usersubscription.FieldTokenUsageMonthly:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenUsageMonthly(v)
+		return nil
 	}
 	return fmt.Errorf("unknown UserSubscription numeric field %s", name)
 }
@@ -27562,6 +28951,15 @@ func (m *UserSubscriptionMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(usersubscription.FieldMonthlyWindowStart) {
 		fields = append(fields, usersubscription.FieldMonthlyWindowStart)
+	}
+	if m.FieldCleared(usersubscription.FieldTokenDailyWindowStart) {
+		fields = append(fields, usersubscription.FieldTokenDailyWindowStart)
+	}
+	if m.FieldCleared(usersubscription.FieldTokenWeeklyWindowStart) {
+		fields = append(fields, usersubscription.FieldTokenWeeklyWindowStart)
+	}
+	if m.FieldCleared(usersubscription.FieldTokenMonthlyWindowStart) {
+		fields = append(fields, usersubscription.FieldTokenMonthlyWindowStart)
 	}
 	if m.FieldCleared(usersubscription.FieldAssignedBy) {
 		fields = append(fields, usersubscription.FieldAssignedBy)
@@ -27594,6 +28992,15 @@ func (m *UserSubscriptionMutation) ClearField(name string) error {
 		return nil
 	case usersubscription.FieldMonthlyWindowStart:
 		m.ClearMonthlyWindowStart()
+		return nil
+	case usersubscription.FieldTokenDailyWindowStart:
+		m.ClearTokenDailyWindowStart()
+		return nil
+	case usersubscription.FieldTokenWeeklyWindowStart:
+		m.ClearTokenWeeklyWindowStart()
+		return nil
+	case usersubscription.FieldTokenMonthlyWindowStart:
+		m.ClearTokenMonthlyWindowStart()
 		return nil
 	case usersubscription.FieldAssignedBy:
 		m.ClearAssignedBy()
@@ -27650,6 +29057,27 @@ func (m *UserSubscriptionMutation) ResetField(name string) error {
 		return nil
 	case usersubscription.FieldMonthlyUsageUsd:
 		m.ResetMonthlyUsageUsd()
+		return nil
+	case usersubscription.FieldTokenUsageTotal:
+		m.ResetTokenUsageTotal()
+		return nil
+	case usersubscription.FieldTokenUsageDaily:
+		m.ResetTokenUsageDaily()
+		return nil
+	case usersubscription.FieldTokenUsageWeekly:
+		m.ResetTokenUsageWeekly()
+		return nil
+	case usersubscription.FieldTokenUsageMonthly:
+		m.ResetTokenUsageMonthly()
+		return nil
+	case usersubscription.FieldTokenDailyWindowStart:
+		m.ResetTokenDailyWindowStart()
+		return nil
+	case usersubscription.FieldTokenWeeklyWindowStart:
+		m.ResetTokenWeeklyWindowStart()
+		return nil
+	case usersubscription.FieldTokenMonthlyWindowStart:
+		m.ResetTokenMonthlyWindowStart()
 		return nil
 	case usersubscription.FieldAssignedBy:
 		m.ResetAssignedBy()

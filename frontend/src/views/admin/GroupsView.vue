@@ -104,13 +104,17 @@
                   'inline-block rounded-full px-2 py-0.5 text-xs font-medium',
                   row.subscription_type === 'subscription'
                     ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400'
-                    : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+                    : row.subscription_type === 'token_quota'
+                      ? 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-300'
+                      : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
                 ]"
               >
                 {{
                   row.subscription_type === 'subscription'
                     ? t('admin.groups.subscription.subscription')
-                    : t('admin.groups.subscription.standard')
+                    : row.subscription_type === 'token_quota'
+                      ? t('admin.groups.subscription.tokenQuota')
+                      : t('admin.groups.subscription.standard')
                 }}
               </span>
               <!-- Subscription Limits - compact single line -->
@@ -139,6 +143,45 @@
                   >
                   <span v-if="row.monthly_limit_usd"
                     >${{ row.monthly_limit_usd }}/{{ t('admin.groups.limitMonth') }}</span
+                  >
+                </template>
+                <span v-else class="text-gray-400 dark:text-gray-500">{{
+                  t('admin.groups.subscription.noLimit')
+                }}</span>
+              </div>
+              <div
+                v-else-if="row.subscription_type === 'token_quota'"
+                class="text-xs text-gray-500 dark:text-gray-400"
+              >
+                <template
+                  v-if="row.token_quota || row.token_quota_daily || row.token_quota_weekly || row.token_quota_monthly"
+                >
+                  <span v-if="row.token_quota"
+                    >{{ t('admin.groups.subscription.tokenQuotaLimit') }}: {{ row.token_quota }}</span
+                  >
+                  <span
+                    v-if="row.token_quota && (row.token_quota_daily || row.token_quota_weekly || row.token_quota_monthly)"
+                    class="mx-1 text-gray-300 dark:text-gray-600"
+                    >·</span
+                  >
+                  <span v-if="row.token_quota_daily"
+                    >{{ t('admin.groups.subscription.tokenQuotaDaily') }}: {{ row.token_quota_daily }}</span
+                  >
+                  <span
+                    v-if="row.token_quota_daily && (row.token_quota_weekly || row.token_quota_monthly)"
+                    class="mx-1 text-gray-300 dark:text-gray-600"
+                    >·</span
+                  >
+                  <span v-if="row.token_quota_weekly"
+                    >{{ t('admin.groups.subscription.tokenQuotaWeekly') }}: {{ row.token_quota_weekly }}</span
+                  >
+                  <span
+                    v-if="row.token_quota_weekly && row.token_quota_monthly"
+                    class="mx-1 text-gray-300 dark:text-gray-600"
+                    >·</span
+                  >
+                  <span v-if="row.token_quota_monthly"
+                    >{{ t('admin.groups.subscription.tokenQuotaMonthly') }}: {{ row.token_quota_monthly }}</span
                   >
                 </template>
                 <span v-else class="text-gray-400 dark:text-gray-500">{{

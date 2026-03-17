@@ -18,8 +18,17 @@ type APIKeyAuthSnapshot struct {
 	QuotaUsed float64 `json:"quota_used"` // Used quota amount
 
 	// Token Quota fields for API Key token quota feature
-	TokenQuota     int64 `json:"token_quota"`      // Token quota limit (0 = unlimited)
-	TokenQuotaUsed int64 `json:"token_quota_used"` // Used token quota amount
+	TokenQuota             int64      `json:"token_quota"`      // Token quota limit (0 = unlimited)
+	TokenQuotaUsed         int64      `json:"token_quota_used"` // Used token quota amount
+	TokenQuotaDaily        *int64     `json:"token_quota_daily,omitempty"`
+	TokenQuotaDailyUsed    *int64     `json:"token_quota_daily_used,omitempty"`
+	TokenQuotaDailyStart   *time.Time `json:"token_quota_daily_start,omitempty"`
+	TokenQuotaWeekly       *int64     `json:"token_quota_weekly,omitempty"`
+	TokenQuotaWeeklyUsed   *int64     `json:"token_quota_weekly_used,omitempty"`
+	TokenQuotaWeeklyStart  *time.Time `json:"token_quota_weekly_start,omitempty"`
+	TokenQuotaMonthly      *int64     `json:"token_quota_monthly,omitempty"`
+	TokenQuotaMonthlyUsed  *int64     `json:"token_quota_monthly_used,omitempty"`
+	TokenQuotaMonthlyStart *time.Time `json:"token_quota_monthly_start,omitempty"`
 
 	// Expiration field for API Key expiration feature
 	ExpiresAt *time.Time `json:"expires_at,omitempty"` // Expiration time (nil = never expires)
@@ -75,10 +84,17 @@ type APIKeyAuthGroupSnapshot struct {
 	DefaultMappedModel    string `json:"default_mapped_model,omitempty"`
 
 	// Token 配额配置（token_quota 类型使用）
-	TokenQuota        *int64 `json:"token_quota,omitempty"`
-	TokenQuotaDaily   *int64 `json:"token_quota_daily,omitempty"`
-	TokenQuotaWeekly  *int64 `json:"token_quota_weekly,omitempty"`
-	TokenQuotaMonthly *int64 `json:"token_quota_monthly,omitempty"`
+	TokenQuota             *int64     `json:"token_quota,omitempty"`
+	TokenQuotaUsed         *int64     `json:"token_quota_used,omitempty"`
+	TokenQuotaDaily        *int64     `json:"token_quota_daily,omitempty"`
+	TokenQuotaDailyUsed    *int64     `json:"token_quota_daily_used,omitempty"`
+	TokenQuotaDailyStart   *time.Time `json:"token_quota_daily_start,omitempty"`
+	TokenQuotaWeekly       *int64     `json:"token_quota_weekly,omitempty"`
+	TokenQuotaWeeklyUsed   *int64     `json:"token_quota_weekly_used,omitempty"`
+	TokenQuotaWeeklyStart  *time.Time `json:"token_quota_weekly_start,omitempty"`
+	TokenQuotaMonthly      *int64     `json:"token_quota_monthly,omitempty"`
+	TokenQuotaMonthlyUsed  *int64     `json:"token_quota_monthly_used,omitempty"`
+	TokenQuotaMonthlyStart *time.Time `json:"token_quota_monthly_start,omitempty"`
 }
 
 // APIKeyAuthCacheEntry 缓存条目，支持负缓存

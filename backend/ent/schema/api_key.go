@@ -80,6 +80,57 @@ func (APIKey) Fields() []ent.Field {
 			Default(0).
 			Comment("Used token quota amount"),
 
+		// Token quota daily limit (0 = unlimited)
+		field.Int64("token_quota_daily").
+			Optional().
+			Nillable().
+			Comment("Daily token quota limit (0 = unlimited)"),
+		// Token quota daily used
+		field.Int64("token_quota_daily_used").
+			Optional().
+			Nillable().
+			Default(0).
+			Comment("Used daily token quota amount"),
+		// Token quota daily window start
+		field.Time("token_quota_daily_start").
+			Optional().
+			Nillable().
+			Comment("Daily token quota window start time"),
+
+		// Token quota weekly limit (0 = unlimited)
+		field.Int64("token_quota_weekly").
+			Optional().
+			Nillable().
+			Comment("Weekly token quota limit (0 = unlimited)"),
+		// Token quota weekly used
+		field.Int64("token_quota_weekly_used").
+			Optional().
+			Nillable().
+			Default(0).
+			Comment("Used weekly token quota amount"),
+		// Token quota weekly window start
+		field.Time("token_quota_weekly_start").
+			Optional().
+			Nillable().
+			Comment("Weekly token quota window start time"),
+
+		// Token quota monthly limit (0 = unlimited)
+		field.Int64("token_quota_monthly").
+			Optional().
+			Nillable().
+			Comment("Monthly token quota limit (0 = unlimited)"),
+		// Token quota monthly used
+		field.Int64("token_quota_monthly_used").
+			Optional().
+			Nillable().
+			Default(0).
+			Comment("Used monthly token quota amount"),
+		// Token quota monthly window start
+		field.Time("token_quota_monthly_start").
+			Optional().
+			Nillable().
+			Comment("Monthly token quota window start time"),
+
 		// Expiration time (nil = never expires)
 		field.Time("expires_at").
 			Optional().

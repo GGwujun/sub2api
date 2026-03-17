@@ -1016,6 +1016,7 @@ func (s *ZhipuGatewayService) LogResponse(ctx context.Context, accountID int64, 
 // ZhipuRecordUsageInput input for recording usage
 type ZhipuRecordUsageInput struct {
 	APIKey        *APIKey
+	Subscription  *UserSubscription
 	Account       *Account
 	Model         string
 	Usage         *ZhipuUsage
@@ -1088,7 +1089,9 @@ func (s *ZhipuGatewayService) RecordUsage(ctx context.Context, input *ZhipuRecor
 	var subscription *UserSubscription
 	isTokenQuotaBill := (apiKey.Group != nil && apiKey.Group.IsTokenQuotaType()) || apiKey.HasTokenQuota()
 	isSubscriptionBilling := !isTokenQuotaBill && apiKey.GroupID != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
-	if isSubscriptionBilling && s.userSubRepo != nil {
+	// Token 配额模式也需要加载订阅
+	needsSubscription := isSubscriptionBilling || isTokenQuotaBill
+	if needsSubscription && s.userSubRepo != nil && apiKey.GroupID != nil {
 		sub, subErr := s.userSubRepo.GetActiveByUserIDAndGroupID(ctx, user.ID, *apiKey.GroupID)
 		if subErr != nil {
 			logger.FromContext(ctx).Warn("zhipu.subscription_not_found",
@@ -1096,6 +1099,10 @@ func (s *ZhipuGatewayService) RecordUsage(ctx context.Context, input *ZhipuRecor
 				zap.Int64("user_id", user.ID),
 				zap.Int64("group_id", *apiKey.GroupID),
 			)
+			// Token 配额模式如果没有订阅，不应该继续
+			if isTokenQuotaBill {
+				isTokenQuotaBill = false
+			}
 			isSubscriptionBilling = false
 		} else {
 			subscription = sub

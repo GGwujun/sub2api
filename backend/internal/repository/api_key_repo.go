@@ -130,6 +130,16 @@ func (r *apiKeyRepository) GetByKeyForAuth(ctx context.Context, key string) (*se
 			apikey.FieldQuotaUsed,
 			apikey.FieldTokenQuota,
 			apikey.FieldTokenQuotaUsed,
+			// Token Quota Daily/Weekly/Monthly
+			apikey.FieldTokenQuotaDaily,
+			apikey.FieldTokenQuotaDailyUsed,
+			apikey.FieldTokenQuotaDailyStart,
+			apikey.FieldTokenQuotaWeekly,
+			apikey.FieldTokenQuotaWeeklyUsed,
+			apikey.FieldTokenQuotaWeeklyStart,
+			apikey.FieldTokenQuotaMonthly,
+			apikey.FieldTokenQuotaMonthlyUsed,
+			apikey.FieldTokenQuotaMonthlyStart,
 			apikey.FieldExpiresAt,
 			apikey.FieldRateLimit5h,
 			apikey.FieldRateLimit1d,
@@ -171,6 +181,11 @@ func (r *apiKeyRepository) GetByKeyForAuth(ctx context.Context, key string) (*se
 				group.FieldSupportedModelScopes,
 				group.FieldAllowMessagesDispatch,
 				group.FieldDefaultMappedModel,
+				// Group-level Token Quota
+				group.FieldTokenQuota,
+				group.FieldTokenQuotaDaily,
+				group.FieldTokenQuotaWeekly,
+				group.FieldTokenQuotaMonthly,
 			)
 		}).
 		Only(ctx)
@@ -525,6 +540,42 @@ func (r *apiKeyRepository) IncrementTokenQuotaUsedAndGetState(ctx context.Contex
 	return state, nil
 }
 
+// IncrementTokenQuotaWindows atomically increments daily/weekly/monthly token quota usage
+// and resets windows if they've expired. Similar pattern to IncrementRateLimitUsage.
+func (r *apiKeyRepository) IncrementTokenQuotaWindows(ctx context.Context, id int64, tokens int64) error {
+	_, err := r.sql.ExecContext(ctx, `
+		UPDATE api_keys SET
+			token_quota_daily_used = CASE 
+				WHEN token_quota_daily_start IS NOT NULL AND token_quota_daily_start + INTERVAL '1 day' <= NOW() THEN $1 
+				ELSE token_quota_daily_used + $1 
+			END,
+			token_quota_weekly_used = CASE 
+				WHEN token_quota_weekly_start IS NOT NULL AND token_quota_weekly_start + INTERVAL '7 days' <= NOW() THEN $1 
+				ELSE token_quota_weekly_used + $1 
+			END,
+			token_quota_monthly_used = CASE 
+				WHEN token_quota_monthly_start IS NULL THEN $1
+				WHEN date_trunc('month', token_quota_monthly_start) <> date_trunc('month', NOW()) THEN $1
+				ELSE token_quota_monthly_used + $1 
+			END,
+			token_quota_daily_start = CASE 
+				WHEN token_quota_daily_start IS NULL OR token_quota_daily_start + INTERVAL '1 day' <= NOW() THEN date_trunc('day', NOW()) 
+				ELSE token_quota_daily_start 
+			END,
+			token_quota_weekly_start = CASE 
+				WHEN token_quota_weekly_start IS NULL OR token_quota_weekly_start + INTERVAL '7 days' <= NOW() THEN date_trunc('week', NOW()) 
+				ELSE token_quota_weekly_start 
+			END,
+			token_quota_monthly_start = CASE 
+				WHEN token_quota_monthly_start IS NULL OR date_trunc('month', token_quota_monthly_start) <> date_trunc('month', NOW()) THEN date_trunc('month', NOW()) 
+				ELSE token_quota_monthly_start 
+			END,
+			updated_at = NOW()
+		WHERE id = $2 AND deleted_at IS NULL`,
+		tokens, id)
+	return err
+}
+
 func (r *apiKeyRepository) UpdateLastUsed(ctx context.Context, id int64, usedAt time.Time) error {
 	affected, err := r.client.APIKey.Update().
 		Where(apikey.IDEQ(id), apikey.DeletedAtIsNil()).
@@ -618,16 +669,26 @@ func apiKeyEntityToService(m *dbent.APIKey) *service.APIKey {
 		QuotaUsed:      m.QuotaUsed,
 		TokenQuota:     m.TokenQuota,
 		TokenQuotaUsed: m.TokenQuotaUsed,
-		ExpiresAt:      m.ExpiresAt,
-		RateLimit5h:    m.RateLimit5h,
-		RateLimit1d:    m.RateLimit1d,
-		RateLimit7d:    m.RateLimit7d,
-		Usage5h:        m.Usage5h,
-		Usage1d:        m.Usage1d,
-		Usage7d:        m.Usage7d,
-		Window5hStart:  m.Window5hStart,
-		Window1dStart:  m.Window1dStart,
-		Window7dStart:  m.Window7dStart,
+		// Token Quota Daily/Weekly/Monthly
+		TokenQuotaDaily:        m.TokenQuotaDaily,
+		TokenQuotaDailyUsed:    m.TokenQuotaDailyUsed,
+		TokenQuotaDailyStart:   m.TokenQuotaDailyStart,
+		TokenQuotaWeekly:       m.TokenQuotaWeekly,
+		TokenQuotaWeeklyUsed:   m.TokenQuotaWeeklyUsed,
+		TokenQuotaWeeklyStart:  m.TokenQuotaWeeklyStart,
+		TokenQuotaMonthly:      m.TokenQuotaMonthly,
+		TokenQuotaMonthlyUsed:  m.TokenQuotaMonthlyUsed,
+		TokenQuotaMonthlyStart: m.TokenQuotaMonthlyStart,
+		ExpiresAt:              m.ExpiresAt,
+		RateLimit5h:            m.RateLimit5h,
+		RateLimit1d:            m.RateLimit1d,
+		RateLimit7d:            m.RateLimit7d,
+		Usage5h:                m.Usage5h,
+		Usage1d:                m.Usage1d,
+		Usage7d:                m.Usage7d,
+		Window5hStart:          m.Window5hStart,
+		Window1dStart:          m.Window1dStart,
+		Window7dStart:          m.Window7dStart,
 	}
 	if m.Edges.User != nil {
 		out.User = userEntityToService(m.Edges.User)

@@ -1549,6 +1549,15 @@ const handleSubmit = async () => {
   // Calculate token quota value (null/empty = unlimited/unset, only send if > 0)
   const tokenQuota = formData.value.token_quota && formData.value.token_quota > 0 ? formData.value.token_quota : undefined
 
+  // Create mode fallback: for token_quota groups, auto-use group default token_quota when user leaves it empty
+  const selectedGroup = groups.value.find((group) => group.id === formData.value.group_id) || null
+  const createTokenQuota = !showEditModal.value && tokenQuota === undefined &&
+    selectedGroup?.subscription_type === 'token_quota' &&
+    selectedGroup.token_quota !== null &&
+    selectedGroup.token_quota > 0
+    ? selectedGroup.token_quota
+    : tokenQuota
+
   // Calculate expiration
   let expiresInDays: number | undefined
   let expiresAt: string | null | undefined
@@ -1602,7 +1611,7 @@ const handleSubmit = async () => {
         ipWhitelist,
         ipBlacklist,
         quota,
-        formData.value.token_quota && formData.value.token_quota > 0 ? formData.value.token_quota : undefined,
+        createTokenQuota,
         expiresInDays,
         rateLimitData
       )

@@ -32,9 +32,13 @@ var (
 	ErrSubscriptionAssignConflict = infraerrors.Conflict("SUBSCRIPTION_ASSIGN_CONFLICT", "subscription exists but request conflicts with existing assignment semantics")
 	ErrGroupNotSubscriptionType   = infraerrors.BadRequest("GROUP_NOT_SUBSCRIPTION_TYPE", "group is not a subscription type")
 	ErrInvalidInput               = infraerrors.BadRequest("INVALID_INPUT", "at least one of resetDaily or resetWeekly must be true")
-	ErrDailyLimitExceeded         = infraerrors.TooManyRequests("DAILY_LIMIT_EXCEEDED", "daily usage limit exceeded")
-	ErrWeeklyLimitExceeded        = infraerrors.TooManyRequests("WEEKLY_LIMIT_EXCEEDED", "weekly usage limit exceeded")
-	ErrMonthlyLimitExceeded       = infraerrors.TooManyRequests("MONTHLY_LIMIT_EXCEEDED", "monthly usage limit exceeded")
+	ErrDailyLimitExceeded         = infraerrors.TooManyRequests("DAILY_LIMIT_EXCEEDED", "每日用量已用完，请联系管理员续费")
+	ErrWeeklyLimitExceeded        = infraerrors.TooManyRequests("WEEKLY_LIMIT_EXCEEDED", "每周用量已用完，请联系管理员续费")
+	ErrMonthlyLimitExceeded       = infraerrors.TooManyRequests("MONTHLY_LIMIT_EXCEEDED", "每月用量已用完，请联系管理员续费")
+	ErrTokenQuotaExceeded         = infraerrors.TooManyRequests("TOKEN_QUOTA_EXCEEDED", "令牌额度已用完，请联系管理员续费")
+	ErrTokenQuotaDailyExceeded    = infraerrors.TooManyRequests("TOKEN_QUOTA_DAILY_EXCEEDED", "每日令牌额度已用完，请联系管理员续费")
+	ErrTokenQuotaWeeklyExceeded   = infraerrors.TooManyRequests("TOKEN_QUOTA_WEEKLY_EXCEEDED", "每周令牌额度已用完，请联系管理员续费")
+	ErrTokenQuotaMonthlyExceeded  = infraerrors.TooManyRequests("TOKEN_QUOTA_MONTHLY_EXCEEDED", "每月令牌额度已用完，请联系管理员续费")
 	ErrSubscriptionNilInput       = infraerrors.BadRequest("SUBSCRIPTION_NIL_INPUT", "subscription input cannot be nil")
 	ErrAdjustWouldExpire          = infraerrors.BadRequest("ADJUST_WOULD_EXPIRE", "adjustment would result in expired subscription (remaining days must be > 0)")
 )
@@ -830,6 +834,22 @@ func (s *SubscriptionService) ValidateAndCheckLimits(sub *UserSubscription, grou
 	}
 	if !sub.CheckMonthlyLimit(group, 0) {
 		return needsMaintenance, ErrMonthlyLimitExceeded
+	}
+
+	// 4. 检查 Token 配额限额（Token 配额订阅模式）
+	if group.IsTokenQuotaType() {
+		if group.TokenQuota != nil && *group.TokenQuota > 0 && sub.TokenUsageTotal >= *group.TokenQuota {
+			return needsMaintenance, ErrTokenQuotaExceeded
+		}
+		if group.TokenQuotaDaily != nil && *group.TokenQuotaDaily > 0 && sub.TokenUsageDaily >= *group.TokenQuotaDaily {
+			return needsMaintenance, ErrTokenQuotaDailyExceeded
+		}
+		if group.TokenQuotaWeekly != nil && *group.TokenQuotaWeekly > 0 && sub.TokenUsageWeekly >= *group.TokenQuotaWeekly {
+			return needsMaintenance, ErrTokenQuotaWeeklyExceeded
+		}
+		if group.TokenQuotaMonthly != nil && *group.TokenQuotaMonthly > 0 && sub.TokenUsageMonthly >= *group.TokenQuotaMonthly {
+			return needsMaintenance, ErrTokenQuotaMonthlyExceeded
+		}
 	}
 
 	return needsMaintenance, nil

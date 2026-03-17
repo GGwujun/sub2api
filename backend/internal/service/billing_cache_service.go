@@ -29,7 +29,12 @@ type subscriptionCacheData struct {
 	DailyUsage   float64
 	WeeklyUsage  float64
 	MonthlyUsage float64
-	Version      int64
+	// Token 配额使用量
+	TokenUsageTotal   int64
+	TokenUsageDaily   int64
+	TokenUsageWeekly  int64
+	TokenUsageMonthly int64
+	Version           int64
 }
 
 // 缓存写入任务类型
@@ -405,23 +410,31 @@ func (s *BillingCacheService) GetSubscriptionStatus(ctx context.Context, userID,
 
 func (s *BillingCacheService) convertFromPortsData(data *SubscriptionCacheData) *subscriptionCacheData {
 	return &subscriptionCacheData{
-		Status:       data.Status,
-		ExpiresAt:    data.ExpiresAt,
-		DailyUsage:   data.DailyUsage,
-		WeeklyUsage:  data.WeeklyUsage,
-		MonthlyUsage: data.MonthlyUsage,
-		Version:      data.Version,
+		Status:            data.Status,
+		ExpiresAt:         data.ExpiresAt,
+		DailyUsage:        data.DailyUsage,
+		WeeklyUsage:       data.WeeklyUsage,
+		MonthlyUsage:      data.MonthlyUsage,
+		Version:           data.Version,
+		TokenUsageTotal:   data.TokenUsageTotal,
+		TokenUsageDaily:   data.TokenUsageDaily,
+		TokenUsageWeekly:  data.TokenUsageWeekly,
+		TokenUsageMonthly: data.TokenUsageMonthly,
 	}
 }
 
 func (s *BillingCacheService) convertToPortsData(data *subscriptionCacheData) *SubscriptionCacheData {
 	return &SubscriptionCacheData{
-		Status:       data.Status,
-		ExpiresAt:    data.ExpiresAt,
-		DailyUsage:   data.DailyUsage,
-		WeeklyUsage:  data.WeeklyUsage,
-		MonthlyUsage: data.MonthlyUsage,
-		Version:      data.Version,
+		Status:            data.Status,
+		ExpiresAt:         data.ExpiresAt,
+		DailyUsage:        data.DailyUsage,
+		WeeklyUsage:       data.WeeklyUsage,
+		MonthlyUsage:      data.MonthlyUsage,
+		Version:           data.Version,
+		TokenUsageTotal:   data.TokenUsageTotal,
+		TokenUsageDaily:   data.TokenUsageDaily,
+		TokenUsageWeekly:  data.TokenUsageWeekly,
+		TokenUsageMonthly: data.TokenUsageMonthly,
 	}
 }
 
@@ -635,7 +648,7 @@ func (s *BillingCacheService) QueueUpdateAPIKeyRateLimitUsage(apiKeyID int64, co
 // CheckBillingEligibility 检查用户是否有资格发起请求
 // 余额模式：检查缓存余额 > 0
 // 订阅模式：检查缓存用量未超过限额（Group限额从参数传入）
-// Token 配额模式：检查 API Key Token 配额
+// Token 配额模式：检查订阅 Token 配额 + API Key Token 配额
 func (s *BillingCacheService) CheckBillingEligibility(ctx context.Context, user *User, apiKey *APIKey, group *Group, subscription *UserSubscription) error {
 	// 简易模式：跳过所有计费检查
 	if s.cfg.RunMode == config.RunModeSimple {
@@ -647,8 +660,14 @@ func (s *BillingCacheService) CheckBillingEligibility(ctx context.Context, user 
 
 	// 判断计费模式
 	isSubscriptionMode := group != nil && group.IsSubscriptionType() && subscription != nil
+	isTokenQuotaMode := group != nil && group.IsTokenQuotaType() && subscription != nil
 
-	if isSubscriptionMode {
+	if isTokenQuotaMode {
+		// Token 配额模式：检查订阅 Token 配额
+		if err := s.checkTokenQuotaEligibility(ctx, user.ID, group, subscription); err != nil {
+			return err
+		}
+	} else if isSubscriptionMode {
 		if err := s.checkSubscriptionEligibility(ctx, user.ID, group, subscription); err != nil {
 			return err
 		}
@@ -658,8 +677,16 @@ func (s *BillingCacheService) CheckBillingEligibility(ctx context.Context, user 
 		}
 	}
 
-	// 检查 API Key Token 配额（API Key 级别优先，Group 级别次之）
-	if apiKey != nil && apiKey.HasTokenQuota() {
+	// 检查 API Key USD 配额（适用于所有计费模式，但 Token 配额订阅模式下跳过）
+	if apiKey != nil && apiKey.Quota > 0 && !isTokenQuotaMode {
+		if err := s.checkAPIKeyQuotaEligibility(ctx, apiKey); err != nil {
+			return err
+		}
+	}
+
+	// 检查 API Key Token 配额
+	// Token 配额订阅模式下跳过 API Key Token 配额检查（因为订阅 Token 配额是唯一的限制）
+	if apiKey != nil && apiKey.HasTokenQuota() && !isTokenQuotaMode {
 		if err := s.checkAPIKeyTokenQuotaEligibility(ctx, apiKey); err != nil {
 			return err
 		}
@@ -732,6 +759,62 @@ func (s *BillingCacheService) checkSubscriptionEligibility(ctx context.Context, 
 
 	if group.HasMonthlyLimit() && subData.MonthlyUsage >= *group.MonthlyLimitUSD {
 		return ErrMonthlyLimitExceeded
+	}
+
+	return nil
+}
+
+// checkTokenQuotaEligibility 检查 Token 配额订阅资格
+func (s *BillingCacheService) checkTokenQuotaEligibility(ctx context.Context, userID int64, group *Group, subscription *UserSubscription) error {
+	// 获取订阅缓存数据
+	subData, err := s.GetSubscriptionStatus(ctx, userID, group.ID)
+	if err != nil {
+		if s.circuitBreaker != nil {
+			s.circuitBreaker.OnFailure(err)
+		}
+		logger.LegacyPrintf("service.billing_cache", "ALERT: billing token quota check failed for user %d group %d: %v", userID, group.ID, err)
+		return ErrBillingServiceUnavailable.WithCause(err)
+	}
+	if s.circuitBreaker != nil {
+		s.circuitBreaker.OnSuccess()
+	}
+
+	// 检查订阅状态
+	if subData.Status != SubscriptionStatusActive {
+		return ErrSubscriptionInvalid
+	}
+
+	// 检查是否过期
+	if time.Now().After(subData.ExpiresAt) {
+		return ErrSubscriptionInvalid
+	}
+
+	// 检查 Token 总配额
+	if group.TokenQuota != nil && *group.TokenQuota > 0 {
+		if subData.TokenUsageTotal >= *group.TokenQuota {
+			return ErrTokenQuotaExceeded
+		}
+	}
+
+	// 检查 Token 日配额
+	if group.TokenQuotaDaily != nil && *group.TokenQuotaDaily > 0 {
+		if subData.TokenUsageDaily >= *group.TokenQuotaDaily {
+			return ErrTokenQuotaDailyExceeded
+		}
+	}
+
+	// 检查 Token 周配额
+	if group.TokenQuotaWeekly != nil && *group.TokenQuotaWeekly > 0 {
+		if subData.TokenUsageWeekly >= *group.TokenQuotaWeekly {
+			return ErrTokenQuotaWeeklyExceeded
+		}
+	}
+
+	// 检查 Token 月配额
+	if group.TokenQuotaMonthly != nil && *group.TokenQuotaMonthly > 0 {
+		if subData.TokenUsageMonthly >= *group.TokenQuotaMonthly {
+			return ErrTokenQuotaMonthlyExceeded
+		}
 	}
 
 	return nil
@@ -868,10 +951,32 @@ func circuitStateString(state billingCircuitBreakerState) string {
 	}
 }
 
+// checkAPIKeyQuotaEligibility 检查 API Key USD 配额是否用尽
+func (s *BillingCacheService) checkAPIKeyQuotaEligibility(ctx context.Context, apiKey *APIKey) error {
+	// 直接使用 APIKey 对象的方法检查
+	if apiKey.IsQuotaExhausted() {
+		return ErrAPIKeyQuotaExhausted
+	}
+	return nil
+}
+
 // checkAPIKeyTokenQuotaEligibility 检查 API Key Token 配额是否用尽
 func (s *BillingCacheService) checkAPIKeyTokenQuotaEligibility(ctx context.Context, apiKey *APIKey) error {
-	// 检查 API Key 级别的 Token 配额（总计）
-	if apiKey.TokenQuota > 0 && apiKey.TokenQuotaUsed >= apiKey.TokenQuota {
+	// 检查总 Token 配额（API Key 级别优先，其次 Group 级别）
+	effectiveTotalQuota := apiKey.GetEffectiveTokenQuota()
+	if effectiveTotalQuota > 0 && apiKey.TokenQuotaUsed >= effectiveTotalQuota {
+		return ErrAPIKeyTokenQuotaExhausted
+	}
+	// 检查每日 Token 配额
+	if apiKey.IsTokenQuotaDailyExhausted() {
+		return ErrAPIKeyTokenQuotaExhausted
+	}
+	// 检查每周 Token 配额
+	if apiKey.IsTokenQuotaWeeklyExhausted() {
+		return ErrAPIKeyTokenQuotaExhausted
+	}
+	// 检查每月 Token 配额
+	if apiKey.IsTokenQuotaMonthlyExhausted() {
 		return ErrAPIKeyTokenQuotaExhausted
 	}
 	return nil

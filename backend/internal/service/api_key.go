@@ -53,6 +53,19 @@ type APIKey struct {
 	TokenQuota     int64 // Token quota limit (0 = unlimited)
 	TokenQuotaUsed int64 // Used token quota amount
 
+	// Token Quota Daily/Weekly/Monthly fields
+	TokenQuotaDaily      *int64     // Daily token quota limit (0 = unlimited)
+	TokenQuotaDailyUsed  *int64     // Used daily token quota amount
+	TokenQuotaDailyStart *time.Time // Daily token quota window start
+
+	TokenQuotaWeekly      *int64     // Weekly token quota limit (0 = unlimited)
+	TokenQuotaWeeklyUsed  *int64     // Used weekly token quota amount
+	TokenQuotaWeeklyStart *time.Time // Weekly token quota window start
+
+	TokenQuotaMonthly      *int64     // Monthly token quota limit (0 = unlimited)
+	TokenQuotaMonthlyUsed  *int64     // Used monthly token quota amount
+	TokenQuotaMonthlyStart *time.Time // Monthly token quota window start
+
 	// Rate limit fields
 	RateLimit5h   float64    // Rate limit in USD per 5h (0 = unlimited)
 	RateLimit1d   float64    // Rate limit in USD per 1d (0 = unlimited)
@@ -104,18 +117,20 @@ func (k *APIKey) GetQuotaRemaining() float64 {
 
 // IsTokenQuotaExhausted checks if the API key token quota is exhausted
 func (k *APIKey) IsTokenQuotaExhausted() bool {
-	if k.TokenQuota <= 0 {
+	effectiveQuota := k.GetEffectiveTokenQuota()
+	if effectiveQuota <= 0 {
 		return false // unlimited
 	}
-	return k.TokenQuotaUsed >= k.TokenQuota
+	return k.TokenQuotaUsed >= effectiveQuota
 }
 
 // GetTokenQuotaRemaining returns remaining token quota (-1 for unlimited)
 func (k *APIKey) GetTokenQuotaRemaining() int64 {
-	if k.TokenQuota <= 0 {
+	effectiveQuota := k.GetEffectiveTokenQuota()
+	if effectiveQuota <= 0 {
 		return -1 // unlimited
 	}
-	remaining := k.TokenQuota - k.TokenQuotaUsed
+	remaining := effectiveQuota - k.TokenQuotaUsed
 	if remaining < 0 {
 		return 0
 	}
@@ -136,7 +151,11 @@ func (k *APIKey) GetEffectiveTokenQuota() int64 {
 
 // GetEffectiveTokenQuotaDaily returns the effective daily token quota
 func (k *APIKey) GetEffectiveTokenQuotaDaily() int64 {
-	// API Key level daily quota (not implemented yet, would need fields)
+	// API Key level daily quota
+	if k.TokenQuotaDaily != nil && *k.TokenQuotaDaily > 0 {
+		return *k.TokenQuotaDaily
+	}
+	// Fall back to Group level
 	if k.Group != nil && k.Group.TokenQuotaDaily != nil && *k.Group.TokenQuotaDaily > 0 {
 		return *k.Group.TokenQuotaDaily
 	}
@@ -145,6 +164,11 @@ func (k *APIKey) GetEffectiveTokenQuotaDaily() int64 {
 
 // GetEffectiveTokenQuotaWeekly returns the effective weekly token quota
 func (k *APIKey) GetEffectiveTokenQuotaWeekly() int64 {
+	// API Key level weekly quota
+	if k.TokenQuotaWeekly != nil && *k.TokenQuotaWeekly > 0 {
+		return *k.TokenQuotaWeekly
+	}
+	// Fall back to Group level
 	if k.Group != nil && k.Group.TokenQuotaWeekly != nil && *k.Group.TokenQuotaWeekly > 0 {
 		return *k.Group.TokenQuotaWeekly
 	}
@@ -153,6 +177,11 @@ func (k *APIKey) GetEffectiveTokenQuotaWeekly() int64 {
 
 // GetEffectiveTokenQuotaMonthly returns the effective monthly token quota
 func (k *APIKey) GetEffectiveTokenQuotaMonthly() int64 {
+	// API Key level monthly quota
+	if k.TokenQuotaMonthly != nil && *k.TokenQuotaMonthly > 0 {
+		return *k.TokenQuotaMonthly
+	}
+	// Fall back to Group level
 	if k.Group != nil && k.Group.TokenQuotaMonthly != nil && *k.Group.TokenQuotaMonthly > 0 {
 		return *k.Group.TokenQuotaMonthly
 	}
@@ -163,6 +192,79 @@ func (k *APIKey) GetEffectiveTokenQuotaMonthly() int64 {
 func (k *APIKey) HasTokenQuota() bool {
 	return k.GetEffectiveTokenQuota() > 0 || k.GetEffectiveTokenQuotaDaily() > 0 ||
 		k.GetEffectiveTokenQuotaWeekly() > 0 || k.GetEffectiveTokenQuotaMonthly() > 0
+}
+
+// TokenQuota window helpers
+
+// EffectiveTokenQuotaDailyUsed returns effective daily used amount, considering window expiry
+func (k *APIKey) EffectiveTokenQuotaDailyUsed() int64 {
+	if k.TokenQuotaDailyUsed == nil {
+		return 0
+	}
+	if k.TokenQuotaDailyStart != nil && time.Since(*k.TokenQuotaDailyStart) >= 24*time.Hour {
+		return 0 // Window expired
+	}
+	return *k.TokenQuotaDailyUsed
+}
+
+// EffectiveTokenQuotaWeeklyUsed returns effective weekly used amount, considering window expiry
+func (k *APIKey) EffectiveTokenQuotaWeeklyUsed() int64 {
+	if k.TokenQuotaWeeklyUsed == nil {
+		return 0
+	}
+	if k.TokenQuotaWeeklyStart != nil && time.Since(*k.TokenQuotaWeeklyStart) >= 7*24*time.Hour {
+		return 0 // Window expired
+	}
+	return *k.TokenQuotaWeeklyUsed
+}
+
+// EffectiveTokenQuotaMonthlyUsed returns effective monthly used amount, considering window expiry
+func (k *APIKey) EffectiveTokenQuotaMonthlyUsed() int64 {
+	if k.TokenQuotaMonthlyUsed == nil {
+		return 0
+	}
+	if k.TokenQuotaMonthlyStart != nil {
+		// Check if we're still in the same month
+		start := *k.TokenQuotaMonthlyStart
+		now := time.Now()
+		if start.Year() != now.Year() || start.Month() != now.Month() {
+			return 0 // Window expired (new month)
+		}
+	}
+	return *k.TokenQuotaMonthlyUsed
+}
+
+// IsTokenQuotaDailyExhausted checks if daily token quota is exhausted
+func (k *APIKey) IsTokenQuotaDailyExhausted() bool {
+	quota := k.GetEffectiveTokenQuotaDaily()
+	if quota <= 0 {
+		return false // No limit
+	}
+	return k.EffectiveTokenQuotaDailyUsed() >= quota
+}
+
+// IsTokenQuotaWeeklyExhausted checks if weekly token quota is exhausted
+func (k *APIKey) IsTokenQuotaWeeklyExhausted() bool {
+	quota := k.GetEffectiveTokenQuotaWeekly()
+	if quota <= 0 {
+		return false // No limit
+	}
+	return k.EffectiveTokenQuotaWeeklyUsed() >= quota
+}
+
+// IsTokenQuotaMonthlyExhausted checks if monthly token quota is exhausted
+func (k *APIKey) IsTokenQuotaMonthlyExhausted() bool {
+	quota := k.GetEffectiveTokenQuotaMonthly()
+	if quota <= 0 {
+		return false // No limit
+	}
+	return k.EffectiveTokenQuotaMonthlyUsed() >= quota
+}
+
+// AnyTokenQuotaExhausted checks if any token quota (total, daily, weekly, or monthly) is exhausted
+func (k *APIKey) AnyTokenQuotaExhausted() bool {
+	return k.IsTokenQuotaExhausted() || k.IsTokenQuotaDailyExhausted() ||
+		k.IsTokenQuotaWeeklyExhausted() || k.IsTokenQuotaMonthlyExhausted()
 }
 
 // GetDaysUntilExpiry returns days until expiry (-1 for never expires)
