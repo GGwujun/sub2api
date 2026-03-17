@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"strings"
@@ -147,6 +148,20 @@ func (h *MiniMaxGatewayHandler) ChatCompletions(c *gin.Context) {
 		// Skip if account was already tried
 		if _, failed := failedAccountIDs[account.ID]; failed {
 			continue
+		}
+
+		// ✅ 新增：添加 stream_options.include_usage=true 以获取完整 usage
+		if stream {
+			// 解析请求 body 为 JSON 对象
+			var reqBody map[string]any
+			if parseErr := json.Unmarshal(body, &reqBody); parseErr == nil {
+				// 添加 stream_options
+				reqBody["stream_options"] = map[string]any{
+					"include_usage": true,
+				}
+				// 重新序列化
+				body, _ = json.Marshal(reqBody)
+			}
 		}
 
 		// Forward request

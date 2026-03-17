@@ -140,6 +140,12 @@ func (s *apiKeyRepoStubForGroupUpdate) ListKeysByGroupID(context.Context, int64)
 func (s *apiKeyRepoStubForGroupUpdate) IncrementQuotaUsed(context.Context, int64, float64) (float64, error) {
 	panic("unexpected")
 }
+func (s *apiKeyRepoStubForGroupUpdate) IncrementTokenQuotaUsed(context.Context, int64, int64) (int64, error) {
+	panic("unexpected")
+}
+func (s *apiKeyRepoStubForGroupUpdate) IncrementTokenQuotaWindows(context.Context, int64, int64) error {
+	panic("unexpected")
+}
 func (s *apiKeyRepoStubForGroupUpdate) UpdateLastUsed(context.Context, int64, time.Time) error {
 	panic("unexpected")
 }

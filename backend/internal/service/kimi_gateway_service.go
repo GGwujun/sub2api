@@ -26,19 +26,20 @@ const (
 	defaultKimiBaseURL = "https://api.kimi.com/coding/v1"
 )
 
-// Kimi模型定价表（单位：元/千tokens）
-// 参考 Kimi 官方定价
+// Kimi模型定价表（单位：USD/千tokens）
+// 参考 Kimi 官方定价（展示为 USD/1M tokens），此处已换算为 /1000 口径：pricePer1k = pricePer1M / 1000
 // 更新时间：2026-03-11
 var defaultKimiPricing = map[string]*kimiModelPricing{
 	// K2.5 系列
-	"k2p5":             {InputPrice: 0.005, OutputPrice: 0.015},
-	"kimi-k2-thinking": {InputPrice: 0.005, OutputPrice: 0.015},
+	// Official: input $0.60 / 1M, output $3.00 / 1M
+	"k2p5":             {InputPrice: 0.0006, OutputPrice: 0.003},
+	"kimi-k2-thinking": {InputPrice: 0.0006, OutputPrice: 0.003},
 }
 
 // kimiModelPricing Kimi模型定价配置
 type kimiModelPricing struct {
-	InputPrice  float64 // 输入价格（元/千tokens）
-	OutputPrice float64 // 输出价格（元/千tokens）
+	InputPrice  float64 // 输入价格（USD/千tokens）
+	OutputPrice float64 // 输出价格（USD/千tokens）
 }
 
 // getKimiModelPricing 获取模型定价（支持模糊匹配）
@@ -227,6 +228,23 @@ func (s *KimiGatewayService) Forward(ctx context.Context, account *Account, body
 
 	// 解析使用量
 	usage := s.extractUsage(respBody)
+	if usage == nil {
+		usage = &KimiUsage{}
+	}
+
+	// 优先使用响应头中的 usage（上游若在 header 返回更准确）
+	headerUsage := checkHeadersForUsage(resp.Header)
+	if headerUsage != nil {
+		if headerUsage.PromptTokens > 0 {
+			usage.PromptTokens = headerUsage.PromptTokens
+		}
+		if headerUsage.CompletionTokens > 0 {
+			usage.CompletionTokens = headerUsage.CompletionTokens
+		}
+		if headerUsage.TotalTokens > 0 {
+			usage.TotalTokens = headerUsage.TotalTokens
+		}
+	}
 
 	// 如果没有获取到实际 usage，使用估算值
 	if usage == nil || (usage.PromptTokens == 0 && usage.CompletionTokens == 0 && usage.TotalTokens == 0) {
@@ -353,72 +371,7 @@ func (s *KimiGatewayService) ForwardStream(ctx context.Context, account *Account
 			continue
 		}
 
-		// 解析 data 行
-		// 支持 "data: " 和 "data:" 两种格式
-		if strings.HasPrefix(line, "data: ") {
-			data := strings.TrimPrefix(line, "data: ")
-			if data != "" && data != "[DONE]" {
-				usage := s.extractUsage([]byte(data))
-				if usage != nil {
-					if collectedUsage == nil {
-						collectedUsage = &KimiUsage{}
-					}
-					if usage.PromptTokens > 0 && collectedUsage.PromptTokens == 0 {
-						collectedUsage.PromptTokens = usage.PromptTokens
-					}
-					if usage.CompletionTokens > 0 {
-						collectedUsage.CompletionTokens = usage.CompletionTokens
-					}
-					if usage.TotalTokens > 0 {
-						collectedUsage.TotalTokens = usage.TotalTokens
-					}
-				}
-				if requestID == "" {
-					requestID = gjson.Get(data, "id").String()
-				}
-			}
-			// 处理 [DONE]
-			if data == "[DONE]" {
-				usage := s.extractUsage([]byte(line))
-				if usage != nil {
-					if collectedUsage == nil {
-						collectedUsage = &KimiUsage{}
-					}
-					if usage.PromptTokens > 0 && collectedUsage.PromptTokens == 0 {
-						collectedUsage.PromptTokens = usage.PromptTokens
-					}
-					if usage.CompletionTokens > 0 {
-						collectedUsage.CompletionTokens = usage.CompletionTokens
-					}
-					if usage.TotalTokens > 0 {
-						collectedUsage.TotalTokens = usage.TotalTokens
-					}
-				}
-			}
-		} else if strings.HasPrefix(line, "data:") && !strings.HasPrefix(line, "data: ") {
-			// 支持 "data:" 格式（无空格）
-			data := strings.TrimPrefix(line, "data:")
-			if data != "" && data != "[DONE]" {
-				usage := s.extractUsage([]byte(data))
-				if usage != nil {
-					if collectedUsage == nil {
-						collectedUsage = &KimiUsage{}
-					}
-					if usage.PromptTokens > 0 && collectedUsage.PromptTokens == 0 {
-						collectedUsage.PromptTokens = usage.PromptTokens
-					}
-					if usage.CompletionTokens > 0 {
-						collectedUsage.CompletionTokens = usage.CompletionTokens
-					}
-					if usage.TotalTokens > 0 {
-						collectedUsage.TotalTokens = usage.TotalTokens
-					}
-				}
-				if requestID == "" && len(data) > 5 {
-					requestID = gjson.Get(data, "id").String()
-				}
-			}
-		}
+		// 注意：usage 解析在下方“解析token使用量”中统一处理，避免重复解析导致计费放大。
 
 		// 解析token使用量（包括 [DONE] 消息中的 usage）
 		// 支持 "data: " 和 "data:" 两种格式
@@ -440,7 +393,7 @@ func (s *KimiGatewayService) ForwardStream(ctx context.Context, account *Account
 					}
 					// 累加 output_tokens（可能在多个事件中出现，取最新的值）
 					if usage.CompletionTokens > 0 {
-						collectedUsage.CompletionTokens = usage.CompletionTokens
+						collectedUsage.CompletionTokens += usage.CompletionTokens
 					}
 					// 累加 total_tokens
 					if usage.TotalTokens > 0 {
@@ -462,7 +415,7 @@ func (s *KimiGatewayService) ForwardStream(ctx context.Context, account *Account
 						collectedUsage.PromptTokens = usage.PromptTokens
 					}
 					if usage.CompletionTokens > 0 {
-						collectedUsage.CompletionTokens = usage.CompletionTokens
+						collectedUsage.CompletionTokens += usage.CompletionTokens
 					}
 					if usage.TotalTokens > 0 {
 						collectedUsage.TotalTokens = usage.TotalTokens
@@ -483,7 +436,7 @@ func (s *KimiGatewayService) ForwardStream(ctx context.Context, account *Account
 						collectedUsage.PromptTokens = usage.PromptTokens
 					}
 					if usage.CompletionTokens > 0 {
-						collectedUsage.CompletionTokens = usage.CompletionTokens
+						collectedUsage.CompletionTokens += usage.CompletionTokens
 					}
 					if usage.TotalTokens > 0 {
 						collectedUsage.TotalTokens = usage.TotalTokens
@@ -508,6 +461,17 @@ func (s *KimiGatewayService) ForwardStream(ctx context.Context, account *Account
 	var firstTokenMs int64
 	if !firstTokenTime.IsZero() {
 		firstTokenMs = firstTokenTime.Sub(startTime).Milliseconds()
+	}
+
+	// ✅ 新增：优先检查响应头中的 usage
+	headerUsage := checkHeadersForUsage(resp.Header)
+	if headerUsage != nil && (headerUsage.PromptTokens > 0 || headerUsage.CompletionTokens > 0 || headerUsage.TotalTokens > 0) {
+		collectedUsage = headerUsage
+		logger.FromContext(ctx).Info("kimi.usage_from_headers",
+			zap.Int("prompt_tokens", headerUsage.PromptTokens),
+			zap.Int("completion_tokens", headerUsage.CompletionTokens),
+			zap.Int("total_tokens", headerUsage.TotalTokens),
+		)
 	}
 
 	// 如果没有获取到实际 usage，使用估算值

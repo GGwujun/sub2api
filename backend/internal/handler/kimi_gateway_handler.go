@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"io"
 	"net/http"
 	"strings"
@@ -147,6 +148,17 @@ func (h *KimiGatewayHandler) ChatCompletions(c *gin.Context) {
 		// Skip if account was already tried
 		if _, failed := failedAccountIDs[account.ID]; failed {
 			continue
+		}
+
+		// 为流式请求补充 include_usage，确保末尾返回完整 usage
+		if stream {
+			var reqBody map[string]any
+			if parseErr := json.Unmarshal(body, &reqBody); parseErr == nil {
+				reqBody["stream_options"] = map[string]any{"include_usage": true}
+				if bodyBytes, marshalErr := json.Marshal(reqBody); marshalErr == nil {
+					body = bodyBytes
+				}
+			}
 		}
 
 		// Forward request
