@@ -14,6 +14,12 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func makeAllowlistedBaseURL(raw string) string {
+	// URL 校验器对裸 IP（如 127.0.0.1）有更严格限制，
+	// 测试场景统一替换为 localhost 以匹配 allowlist 规则。
+	return strings.Replace(raw, "127.0.0.1", "localhost", 1)
+}
+
 // TestZhipuGatewayService_TestConnection_Success 测试连接成功场景
 func TestZhipuGatewayService_TestConnection_Success(t *testing.T) {
 	// 创建测试服务器
@@ -51,7 +57,7 @@ func TestZhipuGatewayService_TestConnection_Success(t *testing.T) {
 		Type: AccountTypeAPIKey,
 		Credentials: map[string]any{
 			"api_key":  "test-key-123",
-			"base_url": ts.URL,
+			"base_url": makeAllowlistedBaseURL(ts.URL),
 		},
 		Concurrency: 1,
 		Platform:    PlatformZAI,
@@ -99,7 +105,7 @@ func TestZhipuGatewayService_TestConnection_InvalidAPIKey(t *testing.T) {
 		Type: AccountTypeAPIKey,
 		Credentials: map[string]any{
 			"api_key":  "invalid-key",
-			"base_url": ts.URL,
+			"base_url": makeAllowlistedBaseURL(ts.URL),
 		},
 		Concurrency: 1,
 		Platform:    PlatformZAI,
@@ -151,7 +157,7 @@ func TestZhipuGatewayService_TestConnection_DefaultModel(t *testing.T) {
 		Type: AccountTypeAPIKey,
 		Credentials: map[string]any{
 			"api_key":  "test-key",
-			"base_url": ts.URL,
+			"base_url": makeAllowlistedBaseURL(ts.URL),
 		},
 		Concurrency: 1,
 		Platform:    PlatformZAI,
@@ -195,8 +201,12 @@ func TestZhipuGatewayService_TestConnection_NilAccount(t *testing.T) {
 func TestZhipuGatewayService_TestConnection_Timeout(t *testing.T) {
 	// 创建测试服务器（延迟响应）
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// 模拟超时
-		time.Sleep(35 * time.Second)
+		// 模拟超时；同时监听客户端取消，避免测试结束时连接悬挂
+		select {
+		case <-r.Context().Done():
+			return
+		case <-time.After(35 * time.Second):
+		}
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer ts.Close()
@@ -216,7 +226,7 @@ func TestZhipuGatewayService_TestConnection_Timeout(t *testing.T) {
 		Type: AccountTypeAPIKey,
 		Credentials: map[string]any{
 			"api_key":  "test-key",
-			"base_url": ts.URL,
+			"base_url": makeAllowlistedBaseURL(ts.URL),
 		},
 		Concurrency: 1,
 		Platform:    PlatformZAI,
@@ -234,7 +244,7 @@ func TestZhipuGatewayService_TestConnection_Timeout(t *testing.T) {
 	// 验证结果
 	require.Error(t, err)
 	require.Nil(t, result)
-	require.Contains(t, err.Error(), "timeout")
+	require.Contains(t, err.Error(), "deadline exceeded")
 }
 
 // TestZhipuGatewayService_TestConnection_NoAPIKey 测试账号缺少API Key
@@ -258,7 +268,7 @@ func TestZhipuGatewayService_TestConnection_NoAPIKey(t *testing.T) {
 		Name: "test-account",
 		Type: AccountTypeAPIKey,
 		Credentials: map[string]any{
-			"base_url": ts.URL,
+			"base_url": makeAllowlistedBaseURL(ts.URL),
 			// 缺少api_key
 		},
 		Concurrency: 1,
@@ -286,7 +296,7 @@ func TestZhipuGatewayService_TestConnection_ParseFailed(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"invalid": "json"}`))
+		w.Write([]byte(`{"invalid":`))
 	}))
 	defer ts.Close()
 
@@ -305,7 +315,7 @@ func TestZhipuGatewayService_TestConnection_ParseFailed(t *testing.T) {
 		Type: AccountTypeAPIKey,
 		Credentials: map[string]any{
 			"api_key":  "test-key",
-			"base_url": ts.URL,
+			"base_url": makeAllowlistedBaseURL(ts.URL),
 		},
 		Concurrency: 1,
 		Platform:    PlatformZAI,
@@ -353,7 +363,7 @@ func TestZhipuGatewayService_TestConnection_EmptyResponse(t *testing.T) {
 		Type: AccountTypeAPIKey,
 		Credentials: map[string]any{
 			"api_key":  "test-key",
-			"base_url": ts.URL,
+			"base_url": makeAllowlistedBaseURL(ts.URL),
 		},
 		Concurrency: 1,
 		Platform:    PlatformZAI,

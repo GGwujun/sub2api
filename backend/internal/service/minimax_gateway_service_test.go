@@ -174,8 +174,8 @@ func TestMiniMaxGatewayService_Pricing_M25(t *testing.T) {
 	pricing := getMiniMaxModelPricing("MiniMax-M2.5")
 
 	require.NotNil(t, pricing)
-	require.Equal(t, 0.01, pricing.InputPrice)
-	require.Equal(t, 0.03, pricing.OutputPrice)
+	require.Equal(t, 0.0021, pricing.InputPrice)
+	require.Equal(t, 0.0084, pricing.OutputPrice)
 }
 
 // TestMiniMaxGatewayService_Pricing_M25Highspeed 测试 MiniMax-M2.5-highspeed 定价
@@ -183,8 +183,8 @@ func TestMiniMaxGatewayService_Pricing_M25Highspeed(t *testing.T) {
 	pricing := getMiniMaxModelPricing("MiniMax-M2.5-highspeed")
 
 	require.NotNil(t, pricing)
-	require.Equal(t, 0.02, pricing.InputPrice)
-	require.Equal(t, 0.06, pricing.OutputPrice)
+	require.Equal(t, 0.0042, pricing.InputPrice)
+	require.Equal(t, 0.0168, pricing.OutputPrice)
 }
 
 // TestMiniMaxGatewayService_Pricing_M21 测试 MiniMax-M2.1 定价
@@ -192,8 +192,8 @@ func TestMiniMaxGatewayService_Pricing_M21(t *testing.T) {
 	pricing := getMiniMaxModelPricing("MiniMax-M2.1")
 
 	require.NotNil(t, pricing)
-	require.Equal(t, 0.008, pricing.InputPrice)
-	require.Equal(t, 0.024, pricing.OutputPrice)
+	require.Equal(t, 0.0021, pricing.InputPrice)
+	require.Equal(t, 0.0084, pricing.OutputPrice)
 }
 
 // TestMiniMaxGatewayService_Pricing_M2 测试 MiniMax-M2 定价
@@ -201,8 +201,8 @@ func TestMiniMaxGatewayService_Pricing_M2(t *testing.T) {
 	pricing := getMiniMaxModelPricing("MiniMax-M2")
 
 	require.NotNil(t, pricing)
-	require.Equal(t, 0.005, pricing.InputPrice)
-	require.Equal(t, 0.015, pricing.OutputPrice)
+	require.Equal(t, 0.0021, pricing.InputPrice)
+	require.Equal(t, 0.0084, pricing.OutputPrice)
 }
 
 // TestMiniMaxGatewayService_Pricing_PrefixMatch 测试前缀匹配
@@ -211,7 +211,7 @@ func TestMiniMaxGatewayService_Pricing_PrefixMatch(t *testing.T) {
 	pricing := getMiniMaxModelPricing("MiniMax-M2.5-long")
 
 	require.NotNil(t, pricing)
-	require.Equal(t, 0.01, pricing.InputPrice)
+	require.Equal(t, 0.0021, pricing.InputPrice)
 }
 
 // TestMiniMaxGatewayService_Pricing_Default 测试默认定价
@@ -220,8 +220,8 @@ func TestMiniMaxGatewayService_Pricing_Default(t *testing.T) {
 	pricing := getMiniMaxModelPricing("unknown-model")
 
 	require.NotNil(t, pricing)
-	require.Equal(t, 0.01, pricing.InputPrice)
-	require.Equal(t, 0.03, pricing.OutputPrice)
+	require.Equal(t, 0.0021, pricing.InputPrice)
+	require.Equal(t, 0.0084, pricing.OutputPrice)
 }
 
 // TestMiniMaxGatewayService_CostCalculation 测试费用计算
@@ -236,11 +236,12 @@ func TestMiniMaxGatewayService_CostCalculation(t *testing.T) {
 	outputCost := float64(outputTokens) / 1000 * pricing.OutputPrice
 	totalCost := inputCost + outputCost
 
-	// M2.5: input=0.01元/千, output=0.03元/千
-	// 1000 tokens = 1k * 0.01 = 0.01 元
-	// 500 tokens = 0.5k * 0.03 = 0.015 元
-	// total = 0.025 元
-	require.Equal(t, 0.01, inputCost)
-	require.Equal(t, 0.015, outputCost)
-	require.Equal(t, 0.025, totalCost)
+	// M2.5 官方: 2.1元/百万 + 8.4元/百万
+	// 换算为 /1000 后: input=0.0021元/千, output=0.0084元/千
+	// 1000 tokens = 1k * 0.0021 = 0.0021 元
+	// 500 tokens = 0.5k * 0.0084 = 0.0042 元
+	// total = 0.0063 元
+	require.Equal(t, 0.0021, inputCost)
+	require.Equal(t, 0.0042, outputCost)
+	require.Equal(t, 0.0063, totalCost)
 }

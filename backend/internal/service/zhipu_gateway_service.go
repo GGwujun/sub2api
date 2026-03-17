@@ -448,6 +448,18 @@ func (s *ZhipuGatewayService) isRequestRetryable(err error, result *ZhipuForward
 	return false
 }
 
+func (s *ZhipuGatewayService) urlValidationOptions() urlvalidator.ValidationOptions {
+	if s == nil || s.cfg == nil {
+		return urlvalidator.ValidationOptions{}
+	}
+	allowlist := s.cfg.Security.URLAllowlist
+	return urlvalidator.ValidationOptions{
+		AllowedHosts:     allowlist.UpstreamHosts,
+		RequireAllowlist: allowlist.Enabled,
+		AllowPrivate:     allowlist.AllowPrivateHosts,
+	}
+}
+
 // doForward 执行实际的转发请求（单次尝试）
 func (s *ZhipuGatewayService) doForward(ctx context.Context, account *Account, body []byte, attempt int) (*ZhipuForwardResult, error) {
 	// Get base URL from account or use default
@@ -458,7 +470,7 @@ func (s *ZhipuGatewayService) doForward(ctx context.Context, account *Account, b
 
 	// Validate URL
 	allowInsecure := s.cfg != nil && s.cfg.Security.URLAllowlist.AllowInsecureHTTP
-	validatedURL, err := urlvalidator.ValidateHTTPURL(targetURL, allowInsecure, urlvalidator.ValidationOptions{})
+	validatedURL, err := urlvalidator.ValidateHTTPURL(targetURL, allowInsecure, s.urlValidationOptions())
 	if err != nil {
 		return nil, fmt.Errorf("invalid zhipu base url: %w", err)
 	}
@@ -674,7 +686,7 @@ func (s *ZhipuGatewayService) doForwardStream(ctx context.Context, account *Acco
 
 	// Validate URL
 	allowInsecure := s.cfg != nil && s.cfg.Security.URLAllowlist.AllowInsecureHTTP
-	validatedURL, err := urlvalidator.ValidateHTTPURL(targetURL, allowInsecure, urlvalidator.ValidationOptions{})
+	validatedURL, err := urlvalidator.ValidateHTTPURL(targetURL, allowInsecure, s.urlValidationOptions())
 	if err != nil {
 		return nil, fmt.Errorf("invalid zhipu base url: %w", err)
 	}
@@ -1244,7 +1256,7 @@ func (s *ZhipuGatewayService) TestConnection(ctx context.Context, account *Accou
 
 	// 验证URL
 	allowInsecure := s.cfg != nil && s.cfg.Security.URLAllowlist.AllowInsecureHTTP
-	validatedURL, err := urlvalidator.ValidateHTTPURL(targetURL, allowInsecure, urlvalidator.ValidationOptions{})
+	validatedURL, err := urlvalidator.ValidateHTTPURL(targetURL, allowInsecure, s.urlValidationOptions())
 	if err != nil {
 		return nil, fmt.Errorf("invalid zhipu base url: %w", err)
 	}

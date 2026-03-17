@@ -174,8 +174,8 @@ func TestKimiGatewayService_Pricing_K2p5(t *testing.T) {
 	pricing := getKimiModelPricing("k2p5")
 
 	require.NotNil(t, pricing)
-	require.Equal(t, 0.005, pricing.InputPrice)
-	require.Equal(t, 0.015, pricing.OutputPrice)
+	require.Equal(t, 0.0006, pricing.InputPrice)
+	require.Equal(t, 0.003, pricing.OutputPrice)
 }
 
 // TestKimiGatewayService_Pricing_KimiK2Thinking 测试 kimi-k2-thinking 定价
@@ -183,8 +183,8 @@ func TestKimiGatewayService_Pricing_KimiK2Thinking(t *testing.T) {
 	pricing := getKimiModelPricing("kimi-k2-thinking")
 
 	require.NotNil(t, pricing)
-	require.Equal(t, 0.005, pricing.InputPrice)
-	require.Equal(t, 0.015, pricing.OutputPrice)
+	require.Equal(t, 0.0006, pricing.InputPrice)
+	require.Equal(t, 0.003, pricing.OutputPrice)
 }
 
 // TestKimiGatewayService_Pricing_PrefixMatch 测试前缀匹配
@@ -193,7 +193,7 @@ func TestKimiGatewayService_Pricing_PrefixMatch(t *testing.T) {
 	pricing := getKimiModelPricing("k2p5-long")
 
 	require.NotNil(t, pricing)
-	require.Equal(t, 0.005, pricing.InputPrice)
+	require.Equal(t, 0.0006, pricing.InputPrice)
 }
 
 // TestKimiGatewayService_Pricing_Default 测试默认定价
@@ -202,8 +202,8 @@ func TestKimiGatewayService_Pricing_Default(t *testing.T) {
 	pricing := getKimiModelPricing("unknown-model")
 
 	require.NotNil(t, pricing)
-	require.Equal(t, 0.005, pricing.InputPrice)
-	require.Equal(t, 0.015, pricing.OutputPrice)
+	require.Equal(t, 0.0006, pricing.InputPrice)
+	require.Equal(t, 0.003, pricing.OutputPrice)
 }
 
 // TestKimiGatewayService_CostCalculation 测试费用计算
@@ -218,11 +218,11 @@ func TestKimiGatewayService_CostCalculation(t *testing.T) {
 	outputCost := float64(outputTokens) / 1000 * pricing.OutputPrice
 	totalCost := inputCost + outputCost
 
-	// k2p5: input=0.005元/千, output=0.015元/千
-	// 1000 tokens = 1k * 0.005 = 0.005 元
-	// 500 tokens = 0.5k * 0.015 = 0.0075 元
-	// total = 0.0125 元
-	require.Equal(t, 0.005, inputCost)
-	require.Equal(t, 0.0075, outputCost)
-	require.Equal(t, 0.0125, totalCost)
+	// k2p5: input=$0.60/1M, output=$3.00/1M -> input=0.0006/1k, output=0.003/1k
+	// 1000 tokens = 1k * 0.0006 = 0.0006 USD
+	// 500 tokens = 0.5k * 0.003 = 0.0015 USD
+	// total = 0.0021 USD
+	require.Equal(t, 0.0006, inputCost)
+	require.Equal(t, 0.0015, outputCost)
+	require.Equal(t, 0.0021, totalCost)
 }

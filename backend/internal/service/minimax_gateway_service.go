@@ -26,14 +26,16 @@ const (
 )
 
 // MiniMax模型定价表（单位：元/千tokens）
-// 参考 MiniMax 官方定价
+// 参考 MiniMax 官方按量计费（文档口径：元/百万 tokens），此处已换算为 /1000：pricePer1k = pricePer1M / 1000
 // 更新时间：2026-03-11
 var defaultMiniMaxPricing = map[string]*miniMaxModelPricing{
 	// M2.5 系列
-	"MiniMax-M2.5":           {InputPrice: 0.01, OutputPrice: 0.03},
-	"MiniMax-M2.5-highspeed": {InputPrice: 0.02, OutputPrice: 0.06},
-	"MiniMax-M2.1":           {InputPrice: 0.008, OutputPrice: 0.024},
-	"MiniMax-M2":             {InputPrice: 0.005, OutputPrice: 0.015},
+	// Official (RMB / 1M tokens):
+	// M2.5=2.1/8.4, M2.5-highspeed=4.2/16.8, M2.1=2.1/8.4, M2=2.1/8.4
+	"MiniMax-M2.5":           {InputPrice: 0.0021, OutputPrice: 0.0084},
+	"MiniMax-M2.5-highspeed": {InputPrice: 0.0042, OutputPrice: 0.0168},
+	"MiniMax-M2.1":           {InputPrice: 0.0021, OutputPrice: 0.0084},
+	"MiniMax-M2":             {InputPrice: 0.0021, OutputPrice: 0.0084},
 }
 
 // miniMaxModelPricing MiniMax模型定价配置
@@ -348,7 +350,7 @@ func (s *MiniMaxGatewayService) ForwardStream(ctx context.Context, account *Acco
 						collectedUsage.PromptTokens = usage.PromptTokens
 					}
 					if usage.CompletionTokens > 0 {
-						collectedUsage.CompletionTokens = usage.CompletionTokens
+						collectedUsage.CompletionTokens += usage.CompletionTokens
 					}
 					if usage.TotalTokens > 0 {
 						collectedUsage.TotalTokens = usage.TotalTokens
@@ -369,7 +371,7 @@ func (s *MiniMaxGatewayService) ForwardStream(ctx context.Context, account *Acco
 						collectedUsage.PromptTokens = usage.PromptTokens
 					}
 					if usage.CompletionTokens > 0 {
-						collectedUsage.CompletionTokens = usage.CompletionTokens
+						collectedUsage.CompletionTokens += usage.CompletionTokens
 					}
 					if usage.TotalTokens > 0 {
 						collectedUsage.TotalTokens = usage.TotalTokens
@@ -389,7 +391,7 @@ func (s *MiniMaxGatewayService) ForwardStream(ctx context.Context, account *Acco
 						collectedUsage.PromptTokens = usage.PromptTokens
 					}
 					if usage.CompletionTokens > 0 {
-						collectedUsage.CompletionTokens = usage.CompletionTokens
+						collectedUsage.CompletionTokens += usage.CompletionTokens
 					}
 					if usage.TotalTokens > 0 {
 						collectedUsage.TotalTokens = usage.TotalTokens
@@ -414,6 +416,17 @@ func (s *MiniMaxGatewayService) ForwardStream(ctx context.Context, account *Acco
 	var firstTokenMs int64
 	if !firstTokenTime.IsZero() {
 		firstTokenMs = firstTokenTime.Sub(startTime).Milliseconds()
+	}
+
+	// ✅ 新增：优先检查响应头中的 usage
+	headerUsage := checkHeadersForMiniMaxUsage(resp.Header)
+	if headerUsage != nil && (headerUsage.PromptTokens > 0 || headerUsage.CompletionTokens > 0 || headerUsage.TotalTokens > 0) {
+		collectedUsage = headerUsage
+		logger.FromContext(ctx).Info("minimax.usage_from_headers",
+			zap.Int("prompt_tokens", headerUsage.PromptTokens),
+			zap.Int("completion_tokens", headerUsage.CompletionTokens),
+			zap.Int("total_tokens", headerUsage.TotalTokens),
+		)
 	}
 
 	// 如果没有获取到实际 usage，使用估算值
@@ -668,6 +681,12 @@ func (s *MiniMaxGatewayService) extractUsage(body []byte) *MiniMaxUsage {
 		usage.TotalTokens = int(totalTokens)
 	} else if usage.PromptTokens > 0 || usage.CompletionTokens > 0 {
 		usage.TotalTokens = usage.PromptTokens + usage.CompletionTokens
+	}
+
+	// ✅ 可选：解析 reasoning_tokens（用于审计，不影响计费）
+	if reasoningTokens := gjson.GetBytes(body, "usage.completion_tokens_details.reasoning_tokens").Int(); reasoningTokens > 0 {
+		// 目前仅记录日志，不修改 completion tokens
+		// 如果需要将 reasoning_tokens 纳入计费，可在此处处理
 	}
 
 	return usage
