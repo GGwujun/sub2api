@@ -6633,9 +6633,15 @@ type postUsageBillingParams struct {
 func postUsageBilling(ctx context.Context, p *postUsageBillingParams, deps *billingDeps) {
 	cost := p.Cost
 
-	// Token 配额模式：只扣 Token 配额，不扣余额也不扣订阅
+	// Token 配额模式：扣 Token 配额，同时更新订阅 Token 使用量
 	if p.IsTokenQuotaBill {
-		// 只更新 API Key Token 配额（在后面处理）
+		// 1. 更新订阅 Token 使用量
+		if p.TotalTokens > 0 && p.Subscription != nil {
+			if err := deps.userSubRepo.IncrementTokenUsage(ctx, p.Subscription.ID, p.TotalTokens); err != nil {
+				slog.Error("increment subscription token usage failed", "subscription_id", p.Subscription.ID, "tokens", p.TotalTokens, "error", err)
+			}
+		}
+		// 2. 更新 API Key Token 配额（在后面处理）
 	} else if p.IsSubscriptionBill {
 		// 1. 订阅扣费
 		if cost.TotalCost > 0 {

@@ -88,6 +88,7 @@ type MiniMaxForwardResult struct {
 // MiniMaxRecordUsageInput MiniMax使用量记录输入
 type MiniMaxRecordUsageInput struct {
 	APIKey        *APIKey
+	Subscription  *UserSubscription
 	Account       *Account
 	Model         string
 	Usage         *MiniMaxUsage
@@ -730,7 +731,9 @@ func (s *MiniMaxGatewayService) RecordUsage(ctx context.Context, input *MiniMaxR
 	var subscription *UserSubscription
 	isTokenQuotaBill := (input.APIKey.Group != nil && input.APIKey.Group.IsTokenQuotaType()) || input.APIKey.HasTokenQuota()
 	isSubscriptionBilling := !isTokenQuotaBill && input.APIKey.GroupID != nil && input.APIKey.Group != nil && input.APIKey.Group.IsSubscriptionType()
-	if isSubscriptionBilling && s.userSubRepo != nil {
+	// Token 配额模式也需要加载订阅
+	needsSubscription := isSubscriptionBilling || isTokenQuotaBill
+	if needsSubscription && s.userSubRepo != nil && input.APIKey.GroupID != nil {
 		sub, subErr := s.userSubRepo.GetActiveByUserIDAndGroupID(ctx, user.ID, *input.APIKey.GroupID)
 		if subErr != nil {
 			logger.FromContext(ctx).Warn("minimax.subscription_not_found",
@@ -738,6 +741,10 @@ func (s *MiniMaxGatewayService) RecordUsage(ctx context.Context, input *MiniMaxR
 				zap.Int64("user_id", user.ID),
 				zap.Int64("group_id", *input.APIKey.GroupID),
 			)
+			// Token 配额模式如果没有订阅，不应该继续
+			if isTokenQuotaBill {
+				isTokenQuotaBill = false
+			}
 			isSubscriptionBilling = false
 		} else {
 			subscription = sub

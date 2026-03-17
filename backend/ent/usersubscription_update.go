@@ -250,6 +250,150 @@ func (_u *UserSubscriptionUpdate) AddMonthlyUsageUsd(v float64) *UserSubscriptio
 	return _u
 }
 
+// SetTokenUsageTotal sets the "token_usage_total" field.
+func (_u *UserSubscriptionUpdate) SetTokenUsageTotal(v int64) *UserSubscriptionUpdate {
+	_u.mutation.ResetTokenUsageTotal()
+	_u.mutation.SetTokenUsageTotal(v)
+	return _u
+}
+
+// SetNillableTokenUsageTotal sets the "token_usage_total" field if the given value is not nil.
+func (_u *UserSubscriptionUpdate) SetNillableTokenUsageTotal(v *int64) *UserSubscriptionUpdate {
+	if v != nil {
+		_u.SetTokenUsageTotal(*v)
+	}
+	return _u
+}
+
+// AddTokenUsageTotal adds value to the "token_usage_total" field.
+func (_u *UserSubscriptionUpdate) AddTokenUsageTotal(v int64) *UserSubscriptionUpdate {
+	_u.mutation.AddTokenUsageTotal(v)
+	return _u
+}
+
+// SetTokenUsageDaily sets the "token_usage_daily" field.
+func (_u *UserSubscriptionUpdate) SetTokenUsageDaily(v int64) *UserSubscriptionUpdate {
+	_u.mutation.ResetTokenUsageDaily()
+	_u.mutation.SetTokenUsageDaily(v)
+	return _u
+}
+
+// SetNillableTokenUsageDaily sets the "token_usage_daily" field if the given value is not nil.
+func (_u *UserSubscriptionUpdate) SetNillableTokenUsageDaily(v *int64) *UserSubscriptionUpdate {
+	if v != nil {
+		_u.SetTokenUsageDaily(*v)
+	}
+	return _u
+}
+
+// AddTokenUsageDaily adds value to the "token_usage_daily" field.
+func (_u *UserSubscriptionUpdate) AddTokenUsageDaily(v int64) *UserSubscriptionUpdate {
+	_u.mutation.AddTokenUsageDaily(v)
+	return _u
+}
+
+// SetTokenUsageWeekly sets the "token_usage_weekly" field.
+func (_u *UserSubscriptionUpdate) SetTokenUsageWeekly(v int64) *UserSubscriptionUpdate {
+	_u.mutation.ResetTokenUsageWeekly()
+	_u.mutation.SetTokenUsageWeekly(v)
+	return _u
+}
+
+// SetNillableTokenUsageWeekly sets the "token_usage_weekly" field if the given value is not nil.
+func (_u *UserSubscriptionUpdate) SetNillableTokenUsageWeekly(v *int64) *UserSubscriptionUpdate {
+	if v != nil {
+		_u.SetTokenUsageWeekly(*v)
+	}
+	return _u
+}
+
+// AddTokenUsageWeekly adds value to the "token_usage_weekly" field.
+func (_u *UserSubscriptionUpdate) AddTokenUsageWeekly(v int64) *UserSubscriptionUpdate {
+	_u.mutation.AddTokenUsageWeekly(v)
+	return _u
+}
+
+// SetTokenUsageMonthly sets the "token_usage_monthly" field.
+func (_u *UserSubscriptionUpdate) SetTokenUsageMonthly(v int64) *UserSubscriptionUpdate {
+	_u.mutation.ResetTokenUsageMonthly()
+	_u.mutation.SetTokenUsageMonthly(v)
+	return _u
+}
+
+// SetNillableTokenUsageMonthly sets the "token_usage_monthly" field if the given value is not nil.
+func (_u *UserSubscriptionUpdate) SetNillableTokenUsageMonthly(v *int64) *UserSubscriptionUpdate {
+	if v != nil {
+		_u.SetTokenUsageMonthly(*v)
+	}
+	return _u
+}
+
+// AddTokenUsageMonthly adds value to the "token_usage_monthly" field.
+func (_u *UserSubscriptionUpdate) AddTokenUsageMonthly(v int64) *UserSubscriptionUpdate {
+	_u.mutation.AddTokenUsageMonthly(v)
+	return _u
+}
+
+// SetTokenDailyWindowStart sets the "token_daily_window_start" field.
+func (_u *UserSubscriptionUpdate) SetTokenDailyWindowStart(v time.Time) *UserSubscriptionUpdate {
+	_u.mutation.SetTokenDailyWindowStart(v)
+	return _u
+}
+
+// SetNillableTokenDailyWindowStart sets the "token_daily_window_start" field if the given value is not nil.
+func (_u *UserSubscriptionUpdate) SetNillableTokenDailyWindowStart(v *time.Time) *UserSubscriptionUpdate {
+	if v != nil {
+		_u.SetTokenDailyWindowStart(*v)
+	}
+	return _u
+}
+
+// ClearTokenDailyWindowStart clears the value of the "token_daily_window_start" field.
+func (_u *UserSubscriptionUpdate) ClearTokenDailyWindowStart() *UserSubscriptionUpdate {
+	_u.mutation.ClearTokenDailyWindowStart()
+	return _u
+}
+
+// SetTokenWeeklyWindowStart sets the "token_weekly_window_start" field.
+func (_u *UserSubscriptionUpdate) SetTokenWeeklyWindowStart(v time.Time) *UserSubscriptionUpdate {
+	_u.mutation.SetTokenWeeklyWindowStart(v)
+	return _u
+}
+
+// SetNillableTokenWeeklyWindowStart sets the "token_weekly_window_start" field if the given value is not nil.
+func (_u *UserSubscriptionUpdate) SetNillableTokenWeeklyWindowStart(v *time.Time) *UserSubscriptionUpdate {
+	if v != nil {
+		_u.SetTokenWeeklyWindowStart(*v)
+	}
+	return _u
+}
+
+// ClearTokenWeeklyWindowStart clears the value of the "token_weekly_window_start" field.
+func (_u *UserSubscriptionUpdate) ClearTokenWeeklyWindowStart() *UserSubscriptionUpdate {
+	_u.mutation.ClearTokenWeeklyWindowStart()
+	return _u
+}
+
+// SetTokenMonthlyWindowStart sets the "token_monthly_window_start" field.
+func (_u *UserSubscriptionUpdate) SetTokenMonthlyWindowStart(v time.Time) *UserSubscriptionUpdate {
+	_u.mutation.SetTokenMonthlyWindowStart(v)
+	return _u
+}
+
+// SetNillableTokenMonthlyWindowStart sets the "token_monthly_window_start" field if the given value is not nil.
+func (_u *UserSubscriptionUpdate) SetNillableTokenMonthlyWindowStart(v *time.Time) *UserSubscriptionUpdate {
+	if v != nil {
+		_u.SetTokenMonthlyWindowStart(*v)
+	}
+	return _u
+}
+
+// ClearTokenMonthlyWindowStart clears the value of the "token_monthly_window_start" field.
+func (_u *UserSubscriptionUpdate) ClearTokenMonthlyWindowStart() *UserSubscriptionUpdate {
+	_u.mutation.ClearTokenMonthlyWindowStart()
+	return _u
+}
+
 // SetAssignedBy sets the "assigned_by" field.
 func (_u *UserSubscriptionUpdate) SetAssignedBy(v int64) *UserSubscriptionUpdate {
 	_u.mutation.SetAssignedBy(v)
@@ -515,6 +659,48 @@ func (_u *UserSubscriptionUpdate) sqlSave(ctx context.Context) (_node int, err e
 	}
 	if value, ok := _u.mutation.AddedMonthlyUsageUsd(); ok {
 		_spec.AddField(usersubscription.FieldMonthlyUsageUsd, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.TokenUsageTotal(); ok {
+		_spec.SetField(usersubscription.FieldTokenUsageTotal, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenUsageTotal(); ok {
+		_spec.AddField(usersubscription.FieldTokenUsageTotal, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenUsageDaily(); ok {
+		_spec.SetField(usersubscription.FieldTokenUsageDaily, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenUsageDaily(); ok {
+		_spec.AddField(usersubscription.FieldTokenUsageDaily, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenUsageWeekly(); ok {
+		_spec.SetField(usersubscription.FieldTokenUsageWeekly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenUsageWeekly(); ok {
+		_spec.AddField(usersubscription.FieldTokenUsageWeekly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenUsageMonthly(); ok {
+		_spec.SetField(usersubscription.FieldTokenUsageMonthly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenUsageMonthly(); ok {
+		_spec.AddField(usersubscription.FieldTokenUsageMonthly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenDailyWindowStart(); ok {
+		_spec.SetField(usersubscription.FieldTokenDailyWindowStart, field.TypeTime, value)
+	}
+	if _u.mutation.TokenDailyWindowStartCleared() {
+		_spec.ClearField(usersubscription.FieldTokenDailyWindowStart, field.TypeTime)
+	}
+	if value, ok := _u.mutation.TokenWeeklyWindowStart(); ok {
+		_spec.SetField(usersubscription.FieldTokenWeeklyWindowStart, field.TypeTime, value)
+	}
+	if _u.mutation.TokenWeeklyWindowStartCleared() {
+		_spec.ClearField(usersubscription.FieldTokenWeeklyWindowStart, field.TypeTime)
+	}
+	if value, ok := _u.mutation.TokenMonthlyWindowStart(); ok {
+		_spec.SetField(usersubscription.FieldTokenMonthlyWindowStart, field.TypeTime, value)
+	}
+	if _u.mutation.TokenMonthlyWindowStartCleared() {
+		_spec.ClearField(usersubscription.FieldTokenMonthlyWindowStart, field.TypeTime)
 	}
 	if value, ok := _u.mutation.AssignedAt(); ok {
 		_spec.SetField(usersubscription.FieldAssignedAt, field.TypeTime, value)
@@ -896,6 +1082,150 @@ func (_u *UserSubscriptionUpdateOne) AddMonthlyUsageUsd(v float64) *UserSubscrip
 	return _u
 }
 
+// SetTokenUsageTotal sets the "token_usage_total" field.
+func (_u *UserSubscriptionUpdateOne) SetTokenUsageTotal(v int64) *UserSubscriptionUpdateOne {
+	_u.mutation.ResetTokenUsageTotal()
+	_u.mutation.SetTokenUsageTotal(v)
+	return _u
+}
+
+// SetNillableTokenUsageTotal sets the "token_usage_total" field if the given value is not nil.
+func (_u *UserSubscriptionUpdateOne) SetNillableTokenUsageTotal(v *int64) *UserSubscriptionUpdateOne {
+	if v != nil {
+		_u.SetTokenUsageTotal(*v)
+	}
+	return _u
+}
+
+// AddTokenUsageTotal adds value to the "token_usage_total" field.
+func (_u *UserSubscriptionUpdateOne) AddTokenUsageTotal(v int64) *UserSubscriptionUpdateOne {
+	_u.mutation.AddTokenUsageTotal(v)
+	return _u
+}
+
+// SetTokenUsageDaily sets the "token_usage_daily" field.
+func (_u *UserSubscriptionUpdateOne) SetTokenUsageDaily(v int64) *UserSubscriptionUpdateOne {
+	_u.mutation.ResetTokenUsageDaily()
+	_u.mutation.SetTokenUsageDaily(v)
+	return _u
+}
+
+// SetNillableTokenUsageDaily sets the "token_usage_daily" field if the given value is not nil.
+func (_u *UserSubscriptionUpdateOne) SetNillableTokenUsageDaily(v *int64) *UserSubscriptionUpdateOne {
+	if v != nil {
+		_u.SetTokenUsageDaily(*v)
+	}
+	return _u
+}
+
+// AddTokenUsageDaily adds value to the "token_usage_daily" field.
+func (_u *UserSubscriptionUpdateOne) AddTokenUsageDaily(v int64) *UserSubscriptionUpdateOne {
+	_u.mutation.AddTokenUsageDaily(v)
+	return _u
+}
+
+// SetTokenUsageWeekly sets the "token_usage_weekly" field.
+func (_u *UserSubscriptionUpdateOne) SetTokenUsageWeekly(v int64) *UserSubscriptionUpdateOne {
+	_u.mutation.ResetTokenUsageWeekly()
+	_u.mutation.SetTokenUsageWeekly(v)
+	return _u
+}
+
+// SetNillableTokenUsageWeekly sets the "token_usage_weekly" field if the given value is not nil.
+func (_u *UserSubscriptionUpdateOne) SetNillableTokenUsageWeekly(v *int64) *UserSubscriptionUpdateOne {
+	if v != nil {
+		_u.SetTokenUsageWeekly(*v)
+	}
+	return _u
+}
+
+// AddTokenUsageWeekly adds value to the "token_usage_weekly" field.
+func (_u *UserSubscriptionUpdateOne) AddTokenUsageWeekly(v int64) *UserSubscriptionUpdateOne {
+	_u.mutation.AddTokenUsageWeekly(v)
+	return _u
+}
+
+// SetTokenUsageMonthly sets the "token_usage_monthly" field.
+func (_u *UserSubscriptionUpdateOne) SetTokenUsageMonthly(v int64) *UserSubscriptionUpdateOne {
+	_u.mutation.ResetTokenUsageMonthly()
+	_u.mutation.SetTokenUsageMonthly(v)
+	return _u
+}
+
+// SetNillableTokenUsageMonthly sets the "token_usage_monthly" field if the given value is not nil.
+func (_u *UserSubscriptionUpdateOne) SetNillableTokenUsageMonthly(v *int64) *UserSubscriptionUpdateOne {
+	if v != nil {
+		_u.SetTokenUsageMonthly(*v)
+	}
+	return _u
+}
+
+// AddTokenUsageMonthly adds value to the "token_usage_monthly" field.
+func (_u *UserSubscriptionUpdateOne) AddTokenUsageMonthly(v int64) *UserSubscriptionUpdateOne {
+	_u.mutation.AddTokenUsageMonthly(v)
+	return _u
+}
+
+// SetTokenDailyWindowStart sets the "token_daily_window_start" field.
+func (_u *UserSubscriptionUpdateOne) SetTokenDailyWindowStart(v time.Time) *UserSubscriptionUpdateOne {
+	_u.mutation.SetTokenDailyWindowStart(v)
+	return _u
+}
+
+// SetNillableTokenDailyWindowStart sets the "token_daily_window_start" field if the given value is not nil.
+func (_u *UserSubscriptionUpdateOne) SetNillableTokenDailyWindowStart(v *time.Time) *UserSubscriptionUpdateOne {
+	if v != nil {
+		_u.SetTokenDailyWindowStart(*v)
+	}
+	return _u
+}
+
+// ClearTokenDailyWindowStart clears the value of the "token_daily_window_start" field.
+func (_u *UserSubscriptionUpdateOne) ClearTokenDailyWindowStart() *UserSubscriptionUpdateOne {
+	_u.mutation.ClearTokenDailyWindowStart()
+	return _u
+}
+
+// SetTokenWeeklyWindowStart sets the "token_weekly_window_start" field.
+func (_u *UserSubscriptionUpdateOne) SetTokenWeeklyWindowStart(v time.Time) *UserSubscriptionUpdateOne {
+	_u.mutation.SetTokenWeeklyWindowStart(v)
+	return _u
+}
+
+// SetNillableTokenWeeklyWindowStart sets the "token_weekly_window_start" field if the given value is not nil.
+func (_u *UserSubscriptionUpdateOne) SetNillableTokenWeeklyWindowStart(v *time.Time) *UserSubscriptionUpdateOne {
+	if v != nil {
+		_u.SetTokenWeeklyWindowStart(*v)
+	}
+	return _u
+}
+
+// ClearTokenWeeklyWindowStart clears the value of the "token_weekly_window_start" field.
+func (_u *UserSubscriptionUpdateOne) ClearTokenWeeklyWindowStart() *UserSubscriptionUpdateOne {
+	_u.mutation.ClearTokenWeeklyWindowStart()
+	return _u
+}
+
+// SetTokenMonthlyWindowStart sets the "token_monthly_window_start" field.
+func (_u *UserSubscriptionUpdateOne) SetTokenMonthlyWindowStart(v time.Time) *UserSubscriptionUpdateOne {
+	_u.mutation.SetTokenMonthlyWindowStart(v)
+	return _u
+}
+
+// SetNillableTokenMonthlyWindowStart sets the "token_monthly_window_start" field if the given value is not nil.
+func (_u *UserSubscriptionUpdateOne) SetNillableTokenMonthlyWindowStart(v *time.Time) *UserSubscriptionUpdateOne {
+	if v != nil {
+		_u.SetTokenMonthlyWindowStart(*v)
+	}
+	return _u
+}
+
+// ClearTokenMonthlyWindowStart clears the value of the "token_monthly_window_start" field.
+func (_u *UserSubscriptionUpdateOne) ClearTokenMonthlyWindowStart() *UserSubscriptionUpdateOne {
+	_u.mutation.ClearTokenMonthlyWindowStart()
+	return _u
+}
+
 // SetAssignedBy sets the "assigned_by" field.
 func (_u *UserSubscriptionUpdateOne) SetAssignedBy(v int64) *UserSubscriptionUpdateOne {
 	_u.mutation.SetAssignedBy(v)
@@ -1191,6 +1521,48 @@ func (_u *UserSubscriptionUpdateOne) sqlSave(ctx context.Context) (_node *UserSu
 	}
 	if value, ok := _u.mutation.AddedMonthlyUsageUsd(); ok {
 		_spec.AddField(usersubscription.FieldMonthlyUsageUsd, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.TokenUsageTotal(); ok {
+		_spec.SetField(usersubscription.FieldTokenUsageTotal, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenUsageTotal(); ok {
+		_spec.AddField(usersubscription.FieldTokenUsageTotal, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenUsageDaily(); ok {
+		_spec.SetField(usersubscription.FieldTokenUsageDaily, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenUsageDaily(); ok {
+		_spec.AddField(usersubscription.FieldTokenUsageDaily, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenUsageWeekly(); ok {
+		_spec.SetField(usersubscription.FieldTokenUsageWeekly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenUsageWeekly(); ok {
+		_spec.AddField(usersubscription.FieldTokenUsageWeekly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenUsageMonthly(); ok {
+		_spec.SetField(usersubscription.FieldTokenUsageMonthly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenUsageMonthly(); ok {
+		_spec.AddField(usersubscription.FieldTokenUsageMonthly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenDailyWindowStart(); ok {
+		_spec.SetField(usersubscription.FieldTokenDailyWindowStart, field.TypeTime, value)
+	}
+	if _u.mutation.TokenDailyWindowStartCleared() {
+		_spec.ClearField(usersubscription.FieldTokenDailyWindowStart, field.TypeTime)
+	}
+	if value, ok := _u.mutation.TokenWeeklyWindowStart(); ok {
+		_spec.SetField(usersubscription.FieldTokenWeeklyWindowStart, field.TypeTime, value)
+	}
+	if _u.mutation.TokenWeeklyWindowStartCleared() {
+		_spec.ClearField(usersubscription.FieldTokenWeeklyWindowStart, field.TypeTime)
+	}
+	if value, ok := _u.mutation.TokenMonthlyWindowStart(); ok {
+		_spec.SetField(usersubscription.FieldTokenMonthlyWindowStart, field.TypeTime, value)
+	}
+	if _u.mutation.TokenMonthlyWindowStartCleared() {
+		_spec.ClearField(usersubscription.FieldTokenMonthlyWindowStart, field.TypeTime)
 	}
 	if value, ok := _u.mutation.AssignedAt(); ok {
 		_spec.SetField(usersubscription.FieldAssignedAt, field.TypeTime, value)

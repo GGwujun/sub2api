@@ -47,6 +47,20 @@ type UserSubscription struct {
 	WeeklyUsageUsd float64 `json:"weekly_usage_usd,omitempty"`
 	// MonthlyUsageUsd holds the value of the "monthly_usage_usd" field.
 	MonthlyUsageUsd float64 `json:"monthly_usage_usd,omitempty"`
+	// TokenUsageTotal holds the value of the "token_usage_total" field.
+	TokenUsageTotal int64 `json:"token_usage_total,omitempty"`
+	// TokenUsageDaily holds the value of the "token_usage_daily" field.
+	TokenUsageDaily int64 `json:"token_usage_daily,omitempty"`
+	// TokenUsageWeekly holds the value of the "token_usage_weekly" field.
+	TokenUsageWeekly int64 `json:"token_usage_weekly,omitempty"`
+	// TokenUsageMonthly holds the value of the "token_usage_monthly" field.
+	TokenUsageMonthly int64 `json:"token_usage_monthly,omitempty"`
+	// TokenDailyWindowStart holds the value of the "token_daily_window_start" field.
+	TokenDailyWindowStart *time.Time `json:"token_daily_window_start,omitempty"`
+	// TokenWeeklyWindowStart holds the value of the "token_weekly_window_start" field.
+	TokenWeeklyWindowStart *time.Time `json:"token_weekly_window_start,omitempty"`
+	// TokenMonthlyWindowStart holds the value of the "token_monthly_window_start" field.
+	TokenMonthlyWindowStart *time.Time `json:"token_monthly_window_start,omitempty"`
 	// AssignedBy holds the value of the "assigned_by" field.
 	AssignedBy *int64 `json:"assigned_by,omitempty"`
 	// AssignedAt holds the value of the "assigned_at" field.
@@ -123,11 +137,11 @@ func (*UserSubscription) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case usersubscription.FieldDailyUsageUsd, usersubscription.FieldWeeklyUsageUsd, usersubscription.FieldMonthlyUsageUsd:
 			values[i] = new(sql.NullFloat64)
-		case usersubscription.FieldID, usersubscription.FieldUserID, usersubscription.FieldGroupID, usersubscription.FieldAssignedBy:
+		case usersubscription.FieldID, usersubscription.FieldUserID, usersubscription.FieldGroupID, usersubscription.FieldTokenUsageTotal, usersubscription.FieldTokenUsageDaily, usersubscription.FieldTokenUsageWeekly, usersubscription.FieldTokenUsageMonthly, usersubscription.FieldAssignedBy:
 			values[i] = new(sql.NullInt64)
 		case usersubscription.FieldStatus, usersubscription.FieldNotes:
 			values[i] = new(sql.NullString)
-		case usersubscription.FieldCreatedAt, usersubscription.FieldUpdatedAt, usersubscription.FieldDeletedAt, usersubscription.FieldStartsAt, usersubscription.FieldExpiresAt, usersubscription.FieldDailyWindowStart, usersubscription.FieldWeeklyWindowStart, usersubscription.FieldMonthlyWindowStart, usersubscription.FieldAssignedAt:
+		case usersubscription.FieldCreatedAt, usersubscription.FieldUpdatedAt, usersubscription.FieldDeletedAt, usersubscription.FieldStartsAt, usersubscription.FieldExpiresAt, usersubscription.FieldDailyWindowStart, usersubscription.FieldWeeklyWindowStart, usersubscription.FieldMonthlyWindowStart, usersubscription.FieldTokenDailyWindowStart, usersubscription.FieldTokenWeeklyWindowStart, usersubscription.FieldTokenMonthlyWindowStart, usersubscription.FieldAssignedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -237,6 +251,51 @@ func (_m *UserSubscription) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field monthly_usage_usd", values[i])
 			} else if value.Valid {
 				_m.MonthlyUsageUsd = value.Float64
+			}
+		case usersubscription.FieldTokenUsageTotal:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_usage_total", values[i])
+			} else if value.Valid {
+				_m.TokenUsageTotal = value.Int64
+			}
+		case usersubscription.FieldTokenUsageDaily:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_usage_daily", values[i])
+			} else if value.Valid {
+				_m.TokenUsageDaily = value.Int64
+			}
+		case usersubscription.FieldTokenUsageWeekly:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_usage_weekly", values[i])
+			} else if value.Valid {
+				_m.TokenUsageWeekly = value.Int64
+			}
+		case usersubscription.FieldTokenUsageMonthly:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_usage_monthly", values[i])
+			} else if value.Valid {
+				_m.TokenUsageMonthly = value.Int64
+			}
+		case usersubscription.FieldTokenDailyWindowStart:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field token_daily_window_start", values[i])
+			} else if value.Valid {
+				_m.TokenDailyWindowStart = new(time.Time)
+				*_m.TokenDailyWindowStart = value.Time
+			}
+		case usersubscription.FieldTokenWeeklyWindowStart:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field token_weekly_window_start", values[i])
+			} else if value.Valid {
+				_m.TokenWeeklyWindowStart = new(time.Time)
+				*_m.TokenWeeklyWindowStart = value.Time
+			}
+		case usersubscription.FieldTokenMonthlyWindowStart:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field token_monthly_window_start", values[i])
+			} else if value.Valid {
+				_m.TokenMonthlyWindowStart = new(time.Time)
+				*_m.TokenMonthlyWindowStart = value.Time
 			}
 		case usersubscription.FieldAssignedBy:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -363,6 +422,33 @@ func (_m *UserSubscription) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("monthly_usage_usd=")
 	builder.WriteString(fmt.Sprintf("%v", _m.MonthlyUsageUsd))
+	builder.WriteString(", ")
+	builder.WriteString("token_usage_total=")
+	builder.WriteString(fmt.Sprintf("%v", _m.TokenUsageTotal))
+	builder.WriteString(", ")
+	builder.WriteString("token_usage_daily=")
+	builder.WriteString(fmt.Sprintf("%v", _m.TokenUsageDaily))
+	builder.WriteString(", ")
+	builder.WriteString("token_usage_weekly=")
+	builder.WriteString(fmt.Sprintf("%v", _m.TokenUsageWeekly))
+	builder.WriteString(", ")
+	builder.WriteString("token_usage_monthly=")
+	builder.WriteString(fmt.Sprintf("%v", _m.TokenUsageMonthly))
+	builder.WriteString(", ")
+	if v := _m.TokenDailyWindowStart; v != nil {
+		builder.WriteString("token_daily_window_start=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenWeeklyWindowStart; v != nil {
+		builder.WriteString("token_weekly_window_start=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.TokenMonthlyWindowStart; v != nil {
+		builder.WriteString("token_monthly_window_start=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", ")
 	if v := _m.AssignedBy; v != nil {
 		builder.WriteString("assigned_by=")

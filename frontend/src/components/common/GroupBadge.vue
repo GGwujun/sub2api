@@ -48,7 +48,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n()
 
-const isSubscription = computed(() => props.subscriptionType === 'subscription')
+const isSubscription = computed(() => {
+  return props.subscriptionType === 'subscription' || props.subscriptionType === 'token_quota'
+})
 
 // 是否有专属倍率（且与默认倍率不同）
 const hasCustomRate = computed(() => {

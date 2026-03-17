@@ -195,6 +195,132 @@ func (_c *APIKeyCreate) SetNillableTokenQuotaUsed(v *int64) *APIKeyCreate {
 	return _c
 }
 
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (_c *APIKeyCreate) SetTokenQuotaDaily(v int64) *APIKeyCreate {
+	_c.mutation.SetTokenQuotaDaily(v)
+	return _c
+}
+
+// SetNillableTokenQuotaDaily sets the "token_quota_daily" field if the given value is not nil.
+func (_c *APIKeyCreate) SetNillableTokenQuotaDaily(v *int64) *APIKeyCreate {
+	if v != nil {
+		_c.SetTokenQuotaDaily(*v)
+	}
+	return _c
+}
+
+// SetTokenQuotaDailyUsed sets the "token_quota_daily_used" field.
+func (_c *APIKeyCreate) SetTokenQuotaDailyUsed(v int64) *APIKeyCreate {
+	_c.mutation.SetTokenQuotaDailyUsed(v)
+	return _c
+}
+
+// SetNillableTokenQuotaDailyUsed sets the "token_quota_daily_used" field if the given value is not nil.
+func (_c *APIKeyCreate) SetNillableTokenQuotaDailyUsed(v *int64) *APIKeyCreate {
+	if v != nil {
+		_c.SetTokenQuotaDailyUsed(*v)
+	}
+	return _c
+}
+
+// SetTokenQuotaDailyStart sets the "token_quota_daily_start" field.
+func (_c *APIKeyCreate) SetTokenQuotaDailyStart(v time.Time) *APIKeyCreate {
+	_c.mutation.SetTokenQuotaDailyStart(v)
+	return _c
+}
+
+// SetNillableTokenQuotaDailyStart sets the "token_quota_daily_start" field if the given value is not nil.
+func (_c *APIKeyCreate) SetNillableTokenQuotaDailyStart(v *time.Time) *APIKeyCreate {
+	if v != nil {
+		_c.SetTokenQuotaDailyStart(*v)
+	}
+	return _c
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (_c *APIKeyCreate) SetTokenQuotaWeekly(v int64) *APIKeyCreate {
+	_c.mutation.SetTokenQuotaWeekly(v)
+	return _c
+}
+
+// SetNillableTokenQuotaWeekly sets the "token_quota_weekly" field if the given value is not nil.
+func (_c *APIKeyCreate) SetNillableTokenQuotaWeekly(v *int64) *APIKeyCreate {
+	if v != nil {
+		_c.SetTokenQuotaWeekly(*v)
+	}
+	return _c
+}
+
+// SetTokenQuotaWeeklyUsed sets the "token_quota_weekly_used" field.
+func (_c *APIKeyCreate) SetTokenQuotaWeeklyUsed(v int64) *APIKeyCreate {
+	_c.mutation.SetTokenQuotaWeeklyUsed(v)
+	return _c
+}
+
+// SetNillableTokenQuotaWeeklyUsed sets the "token_quota_weekly_used" field if the given value is not nil.
+func (_c *APIKeyCreate) SetNillableTokenQuotaWeeklyUsed(v *int64) *APIKeyCreate {
+	if v != nil {
+		_c.SetTokenQuotaWeeklyUsed(*v)
+	}
+	return _c
+}
+
+// SetTokenQuotaWeeklyStart sets the "token_quota_weekly_start" field.
+func (_c *APIKeyCreate) SetTokenQuotaWeeklyStart(v time.Time) *APIKeyCreate {
+	_c.mutation.SetTokenQuotaWeeklyStart(v)
+	return _c
+}
+
+// SetNillableTokenQuotaWeeklyStart sets the "token_quota_weekly_start" field if the given value is not nil.
+func (_c *APIKeyCreate) SetNillableTokenQuotaWeeklyStart(v *time.Time) *APIKeyCreate {
+	if v != nil {
+		_c.SetTokenQuotaWeeklyStart(*v)
+	}
+	return _c
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (_c *APIKeyCreate) SetTokenQuotaMonthly(v int64) *APIKeyCreate {
+	_c.mutation.SetTokenQuotaMonthly(v)
+	return _c
+}
+
+// SetNillableTokenQuotaMonthly sets the "token_quota_monthly" field if the given value is not nil.
+func (_c *APIKeyCreate) SetNillableTokenQuotaMonthly(v *int64) *APIKeyCreate {
+	if v != nil {
+		_c.SetTokenQuotaMonthly(*v)
+	}
+	return _c
+}
+
+// SetTokenQuotaMonthlyUsed sets the "token_quota_monthly_used" field.
+func (_c *APIKeyCreate) SetTokenQuotaMonthlyUsed(v int64) *APIKeyCreate {
+	_c.mutation.SetTokenQuotaMonthlyUsed(v)
+	return _c
+}
+
+// SetNillableTokenQuotaMonthlyUsed sets the "token_quota_monthly_used" field if the given value is not nil.
+func (_c *APIKeyCreate) SetNillableTokenQuotaMonthlyUsed(v *int64) *APIKeyCreate {
+	if v != nil {
+		_c.SetTokenQuotaMonthlyUsed(*v)
+	}
+	return _c
+}
+
+// SetTokenQuotaMonthlyStart sets the "token_quota_monthly_start" field.
+func (_c *APIKeyCreate) SetTokenQuotaMonthlyStart(v time.Time) *APIKeyCreate {
+	_c.mutation.SetTokenQuotaMonthlyStart(v)
+	return _c
+}
+
+// SetNillableTokenQuotaMonthlyStart sets the "token_quota_monthly_start" field if the given value is not nil.
+func (_c *APIKeyCreate) SetNillableTokenQuotaMonthlyStart(v *time.Time) *APIKeyCreate {
+	if v != nil {
+		_c.SetTokenQuotaMonthlyStart(*v)
+	}
+	return _c
+}
+
 // SetExpiresAt sets the "expires_at" field.
 func (_c *APIKeyCreate) SetExpiresAt(v time.Time) *APIKeyCreate {
 	_c.mutation.SetExpiresAt(v)
@@ -431,6 +557,18 @@ func (_c *APIKeyCreate) defaults() error {
 		v := apikey.DefaultTokenQuotaUsed
 		_c.mutation.SetTokenQuotaUsed(v)
 	}
+	if _, ok := _c.mutation.TokenQuotaDailyUsed(); !ok {
+		v := apikey.DefaultTokenQuotaDailyUsed
+		_c.mutation.SetTokenQuotaDailyUsed(v)
+	}
+	if _, ok := _c.mutation.TokenQuotaWeeklyUsed(); !ok {
+		v := apikey.DefaultTokenQuotaWeeklyUsed
+		_c.mutation.SetTokenQuotaWeeklyUsed(v)
+	}
+	if _, ok := _c.mutation.TokenQuotaMonthlyUsed(); !ok {
+		v := apikey.DefaultTokenQuotaMonthlyUsed
+		_c.mutation.SetTokenQuotaMonthlyUsed(v)
+	}
 	if _, ok := _c.mutation.RateLimit5h(); !ok {
 		v := apikey.DefaultRateLimit5h
 		_c.mutation.SetRateLimit5h(v)
@@ -604,6 +742,42 @@ func (_c *APIKeyCreate) createSpec() (*APIKey, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.TokenQuotaUsed(); ok {
 		_spec.SetField(apikey.FieldTokenQuotaUsed, field.TypeInt64, value)
 		_node.TokenQuotaUsed = value
+	}
+	if value, ok := _c.mutation.TokenQuotaDaily(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaDaily, field.TypeInt64, value)
+		_node.TokenQuotaDaily = &value
+	}
+	if value, ok := _c.mutation.TokenQuotaDailyUsed(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaDailyUsed, field.TypeInt64, value)
+		_node.TokenQuotaDailyUsed = &value
+	}
+	if value, ok := _c.mutation.TokenQuotaDailyStart(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaDailyStart, field.TypeTime, value)
+		_node.TokenQuotaDailyStart = &value
+	}
+	if value, ok := _c.mutation.TokenQuotaWeekly(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaWeekly, field.TypeInt64, value)
+		_node.TokenQuotaWeekly = &value
+	}
+	if value, ok := _c.mutation.TokenQuotaWeeklyUsed(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaWeeklyUsed, field.TypeInt64, value)
+		_node.TokenQuotaWeeklyUsed = &value
+	}
+	if value, ok := _c.mutation.TokenQuotaWeeklyStart(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaWeeklyStart, field.TypeTime, value)
+		_node.TokenQuotaWeeklyStart = &value
+	}
+	if value, ok := _c.mutation.TokenQuotaMonthly(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaMonthly, field.TypeInt64, value)
+		_node.TokenQuotaMonthly = &value
+	}
+	if value, ok := _c.mutation.TokenQuotaMonthlyUsed(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaMonthlyUsed, field.TypeInt64, value)
+		_node.TokenQuotaMonthlyUsed = &value
+	}
+	if value, ok := _c.mutation.TokenQuotaMonthlyStart(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaMonthlyStart, field.TypeTime, value)
+		_node.TokenQuotaMonthlyStart = &value
 	}
 	if value, ok := _c.mutation.ExpiresAt(); ok {
 		_spec.SetField(apikey.FieldExpiresAt, field.TypeTime, value)
@@ -966,6 +1140,204 @@ func (u *APIKeyUpsert) UpdateTokenQuotaUsed() *APIKeyUpsert {
 // AddTokenQuotaUsed adds v to the "token_quota_used" field.
 func (u *APIKeyUpsert) AddTokenQuotaUsed(v int64) *APIKeyUpsert {
 	u.Add(apikey.FieldTokenQuotaUsed, v)
+	return u
+}
+
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (u *APIKeyUpsert) SetTokenQuotaDaily(v int64) *APIKeyUpsert {
+	u.Set(apikey.FieldTokenQuotaDaily, v)
+	return u
+}
+
+// UpdateTokenQuotaDaily sets the "token_quota_daily" field to the value that was provided on create.
+func (u *APIKeyUpsert) UpdateTokenQuotaDaily() *APIKeyUpsert {
+	u.SetExcluded(apikey.FieldTokenQuotaDaily)
+	return u
+}
+
+// AddTokenQuotaDaily adds v to the "token_quota_daily" field.
+func (u *APIKeyUpsert) AddTokenQuotaDaily(v int64) *APIKeyUpsert {
+	u.Add(apikey.FieldTokenQuotaDaily, v)
+	return u
+}
+
+// ClearTokenQuotaDaily clears the value of the "token_quota_daily" field.
+func (u *APIKeyUpsert) ClearTokenQuotaDaily() *APIKeyUpsert {
+	u.SetNull(apikey.FieldTokenQuotaDaily)
+	return u
+}
+
+// SetTokenQuotaDailyUsed sets the "token_quota_daily_used" field.
+func (u *APIKeyUpsert) SetTokenQuotaDailyUsed(v int64) *APIKeyUpsert {
+	u.Set(apikey.FieldTokenQuotaDailyUsed, v)
+	return u
+}
+
+// UpdateTokenQuotaDailyUsed sets the "token_quota_daily_used" field to the value that was provided on create.
+func (u *APIKeyUpsert) UpdateTokenQuotaDailyUsed() *APIKeyUpsert {
+	u.SetExcluded(apikey.FieldTokenQuotaDailyUsed)
+	return u
+}
+
+// AddTokenQuotaDailyUsed adds v to the "token_quota_daily_used" field.
+func (u *APIKeyUpsert) AddTokenQuotaDailyUsed(v int64) *APIKeyUpsert {
+	u.Add(apikey.FieldTokenQuotaDailyUsed, v)
+	return u
+}
+
+// ClearTokenQuotaDailyUsed clears the value of the "token_quota_daily_used" field.
+func (u *APIKeyUpsert) ClearTokenQuotaDailyUsed() *APIKeyUpsert {
+	u.SetNull(apikey.FieldTokenQuotaDailyUsed)
+	return u
+}
+
+// SetTokenQuotaDailyStart sets the "token_quota_daily_start" field.
+func (u *APIKeyUpsert) SetTokenQuotaDailyStart(v time.Time) *APIKeyUpsert {
+	u.Set(apikey.FieldTokenQuotaDailyStart, v)
+	return u
+}
+
+// UpdateTokenQuotaDailyStart sets the "token_quota_daily_start" field to the value that was provided on create.
+func (u *APIKeyUpsert) UpdateTokenQuotaDailyStart() *APIKeyUpsert {
+	u.SetExcluded(apikey.FieldTokenQuotaDailyStart)
+	return u
+}
+
+// ClearTokenQuotaDailyStart clears the value of the "token_quota_daily_start" field.
+func (u *APIKeyUpsert) ClearTokenQuotaDailyStart() *APIKeyUpsert {
+	u.SetNull(apikey.FieldTokenQuotaDailyStart)
+	return u
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (u *APIKeyUpsert) SetTokenQuotaWeekly(v int64) *APIKeyUpsert {
+	u.Set(apikey.FieldTokenQuotaWeekly, v)
+	return u
+}
+
+// UpdateTokenQuotaWeekly sets the "token_quota_weekly" field to the value that was provided on create.
+func (u *APIKeyUpsert) UpdateTokenQuotaWeekly() *APIKeyUpsert {
+	u.SetExcluded(apikey.FieldTokenQuotaWeekly)
+	return u
+}
+
+// AddTokenQuotaWeekly adds v to the "token_quota_weekly" field.
+func (u *APIKeyUpsert) AddTokenQuotaWeekly(v int64) *APIKeyUpsert {
+	u.Add(apikey.FieldTokenQuotaWeekly, v)
+	return u
+}
+
+// ClearTokenQuotaWeekly clears the value of the "token_quota_weekly" field.
+func (u *APIKeyUpsert) ClearTokenQuotaWeekly() *APIKeyUpsert {
+	u.SetNull(apikey.FieldTokenQuotaWeekly)
+	return u
+}
+
+// SetTokenQuotaWeeklyUsed sets the "token_quota_weekly_used" field.
+func (u *APIKeyUpsert) SetTokenQuotaWeeklyUsed(v int64) *APIKeyUpsert {
+	u.Set(apikey.FieldTokenQuotaWeeklyUsed, v)
+	return u
+}
+
+// UpdateTokenQuotaWeeklyUsed sets the "token_quota_weekly_used" field to the value that was provided on create.
+func (u *APIKeyUpsert) UpdateTokenQuotaWeeklyUsed() *APIKeyUpsert {
+	u.SetExcluded(apikey.FieldTokenQuotaWeeklyUsed)
+	return u
+}
+
+// AddTokenQuotaWeeklyUsed adds v to the "token_quota_weekly_used" field.
+func (u *APIKeyUpsert) AddTokenQuotaWeeklyUsed(v int64) *APIKeyUpsert {
+	u.Add(apikey.FieldTokenQuotaWeeklyUsed, v)
+	return u
+}
+
+// ClearTokenQuotaWeeklyUsed clears the value of the "token_quota_weekly_used" field.
+func (u *APIKeyUpsert) ClearTokenQuotaWeeklyUsed() *APIKeyUpsert {
+	u.SetNull(apikey.FieldTokenQuotaWeeklyUsed)
+	return u
+}
+
+// SetTokenQuotaWeeklyStart sets the "token_quota_weekly_start" field.
+func (u *APIKeyUpsert) SetTokenQuotaWeeklyStart(v time.Time) *APIKeyUpsert {
+	u.Set(apikey.FieldTokenQuotaWeeklyStart, v)
+	return u
+}
+
+// UpdateTokenQuotaWeeklyStart sets the "token_quota_weekly_start" field to the value that was provided on create.
+func (u *APIKeyUpsert) UpdateTokenQuotaWeeklyStart() *APIKeyUpsert {
+	u.SetExcluded(apikey.FieldTokenQuotaWeeklyStart)
+	return u
+}
+
+// ClearTokenQuotaWeeklyStart clears the value of the "token_quota_weekly_start" field.
+func (u *APIKeyUpsert) ClearTokenQuotaWeeklyStart() *APIKeyUpsert {
+	u.SetNull(apikey.FieldTokenQuotaWeeklyStart)
+	return u
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (u *APIKeyUpsert) SetTokenQuotaMonthly(v int64) *APIKeyUpsert {
+	u.Set(apikey.FieldTokenQuotaMonthly, v)
+	return u
+}
+
+// UpdateTokenQuotaMonthly sets the "token_quota_monthly" field to the value that was provided on create.
+func (u *APIKeyUpsert) UpdateTokenQuotaMonthly() *APIKeyUpsert {
+	u.SetExcluded(apikey.FieldTokenQuotaMonthly)
+	return u
+}
+
+// AddTokenQuotaMonthly adds v to the "token_quota_monthly" field.
+func (u *APIKeyUpsert) AddTokenQuotaMonthly(v int64) *APIKeyUpsert {
+	u.Add(apikey.FieldTokenQuotaMonthly, v)
+	return u
+}
+
+// ClearTokenQuotaMonthly clears the value of the "token_quota_monthly" field.
+func (u *APIKeyUpsert) ClearTokenQuotaMonthly() *APIKeyUpsert {
+	u.SetNull(apikey.FieldTokenQuotaMonthly)
+	return u
+}
+
+// SetTokenQuotaMonthlyUsed sets the "token_quota_monthly_used" field.
+func (u *APIKeyUpsert) SetTokenQuotaMonthlyUsed(v int64) *APIKeyUpsert {
+	u.Set(apikey.FieldTokenQuotaMonthlyUsed, v)
+	return u
+}
+
+// UpdateTokenQuotaMonthlyUsed sets the "token_quota_monthly_used" field to the value that was provided on create.
+func (u *APIKeyUpsert) UpdateTokenQuotaMonthlyUsed() *APIKeyUpsert {
+	u.SetExcluded(apikey.FieldTokenQuotaMonthlyUsed)
+	return u
+}
+
+// AddTokenQuotaMonthlyUsed adds v to the "token_quota_monthly_used" field.
+func (u *APIKeyUpsert) AddTokenQuotaMonthlyUsed(v int64) *APIKeyUpsert {
+	u.Add(apikey.FieldTokenQuotaMonthlyUsed, v)
+	return u
+}
+
+// ClearTokenQuotaMonthlyUsed clears the value of the "token_quota_monthly_used" field.
+func (u *APIKeyUpsert) ClearTokenQuotaMonthlyUsed() *APIKeyUpsert {
+	u.SetNull(apikey.FieldTokenQuotaMonthlyUsed)
+	return u
+}
+
+// SetTokenQuotaMonthlyStart sets the "token_quota_monthly_start" field.
+func (u *APIKeyUpsert) SetTokenQuotaMonthlyStart(v time.Time) *APIKeyUpsert {
+	u.Set(apikey.FieldTokenQuotaMonthlyStart, v)
+	return u
+}
+
+// UpdateTokenQuotaMonthlyStart sets the "token_quota_monthly_start" field to the value that was provided on create.
+func (u *APIKeyUpsert) UpdateTokenQuotaMonthlyStart() *APIKeyUpsert {
+	u.SetExcluded(apikey.FieldTokenQuotaMonthlyStart)
+	return u
+}
+
+// ClearTokenQuotaMonthlyStart clears the value of the "token_quota_monthly_start" field.
+func (u *APIKeyUpsert) ClearTokenQuotaMonthlyStart() *APIKeyUpsert {
+	u.SetNull(apikey.FieldTokenQuotaMonthlyStart)
 	return u
 }
 
@@ -1450,6 +1822,237 @@ func (u *APIKeyUpsertOne) AddTokenQuotaUsed(v int64) *APIKeyUpsertOne {
 func (u *APIKeyUpsertOne) UpdateTokenQuotaUsed() *APIKeyUpsertOne {
 	return u.Update(func(s *APIKeyUpsert) {
 		s.UpdateTokenQuotaUsed()
+	})
+}
+
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (u *APIKeyUpsertOne) SetTokenQuotaDaily(v int64) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaDaily(v)
+	})
+}
+
+// AddTokenQuotaDaily adds v to the "token_quota_daily" field.
+func (u *APIKeyUpsertOne) AddTokenQuotaDaily(v int64) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.AddTokenQuotaDaily(v)
+	})
+}
+
+// UpdateTokenQuotaDaily sets the "token_quota_daily" field to the value that was provided on create.
+func (u *APIKeyUpsertOne) UpdateTokenQuotaDaily() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaDaily()
+	})
+}
+
+// ClearTokenQuotaDaily clears the value of the "token_quota_daily" field.
+func (u *APIKeyUpsertOne) ClearTokenQuotaDaily() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaDaily()
+	})
+}
+
+// SetTokenQuotaDailyUsed sets the "token_quota_daily_used" field.
+func (u *APIKeyUpsertOne) SetTokenQuotaDailyUsed(v int64) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaDailyUsed(v)
+	})
+}
+
+// AddTokenQuotaDailyUsed adds v to the "token_quota_daily_used" field.
+func (u *APIKeyUpsertOne) AddTokenQuotaDailyUsed(v int64) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.AddTokenQuotaDailyUsed(v)
+	})
+}
+
+// UpdateTokenQuotaDailyUsed sets the "token_quota_daily_used" field to the value that was provided on create.
+func (u *APIKeyUpsertOne) UpdateTokenQuotaDailyUsed() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaDailyUsed()
+	})
+}
+
+// ClearTokenQuotaDailyUsed clears the value of the "token_quota_daily_used" field.
+func (u *APIKeyUpsertOne) ClearTokenQuotaDailyUsed() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaDailyUsed()
+	})
+}
+
+// SetTokenQuotaDailyStart sets the "token_quota_daily_start" field.
+func (u *APIKeyUpsertOne) SetTokenQuotaDailyStart(v time.Time) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaDailyStart(v)
+	})
+}
+
+// UpdateTokenQuotaDailyStart sets the "token_quota_daily_start" field to the value that was provided on create.
+func (u *APIKeyUpsertOne) UpdateTokenQuotaDailyStart() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaDailyStart()
+	})
+}
+
+// ClearTokenQuotaDailyStart clears the value of the "token_quota_daily_start" field.
+func (u *APIKeyUpsertOne) ClearTokenQuotaDailyStart() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaDailyStart()
+	})
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (u *APIKeyUpsertOne) SetTokenQuotaWeekly(v int64) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaWeekly(v)
+	})
+}
+
+// AddTokenQuotaWeekly adds v to the "token_quota_weekly" field.
+func (u *APIKeyUpsertOne) AddTokenQuotaWeekly(v int64) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.AddTokenQuotaWeekly(v)
+	})
+}
+
+// UpdateTokenQuotaWeekly sets the "token_quota_weekly" field to the value that was provided on create.
+func (u *APIKeyUpsertOne) UpdateTokenQuotaWeekly() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaWeekly()
+	})
+}
+
+// ClearTokenQuotaWeekly clears the value of the "token_quota_weekly" field.
+func (u *APIKeyUpsertOne) ClearTokenQuotaWeekly() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaWeekly()
+	})
+}
+
+// SetTokenQuotaWeeklyUsed sets the "token_quota_weekly_used" field.
+func (u *APIKeyUpsertOne) SetTokenQuotaWeeklyUsed(v int64) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaWeeklyUsed(v)
+	})
+}
+
+// AddTokenQuotaWeeklyUsed adds v to the "token_quota_weekly_used" field.
+func (u *APIKeyUpsertOne) AddTokenQuotaWeeklyUsed(v int64) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.AddTokenQuotaWeeklyUsed(v)
+	})
+}
+
+// UpdateTokenQuotaWeeklyUsed sets the "token_quota_weekly_used" field to the value that was provided on create.
+func (u *APIKeyUpsertOne) UpdateTokenQuotaWeeklyUsed() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaWeeklyUsed()
+	})
+}
+
+// ClearTokenQuotaWeeklyUsed clears the value of the "token_quota_weekly_used" field.
+func (u *APIKeyUpsertOne) ClearTokenQuotaWeeklyUsed() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaWeeklyUsed()
+	})
+}
+
+// SetTokenQuotaWeeklyStart sets the "token_quota_weekly_start" field.
+func (u *APIKeyUpsertOne) SetTokenQuotaWeeklyStart(v time.Time) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaWeeklyStart(v)
+	})
+}
+
+// UpdateTokenQuotaWeeklyStart sets the "token_quota_weekly_start" field to the value that was provided on create.
+func (u *APIKeyUpsertOne) UpdateTokenQuotaWeeklyStart() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaWeeklyStart()
+	})
+}
+
+// ClearTokenQuotaWeeklyStart clears the value of the "token_quota_weekly_start" field.
+func (u *APIKeyUpsertOne) ClearTokenQuotaWeeklyStart() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaWeeklyStart()
+	})
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (u *APIKeyUpsertOne) SetTokenQuotaMonthly(v int64) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaMonthly(v)
+	})
+}
+
+// AddTokenQuotaMonthly adds v to the "token_quota_monthly" field.
+func (u *APIKeyUpsertOne) AddTokenQuotaMonthly(v int64) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.AddTokenQuotaMonthly(v)
+	})
+}
+
+// UpdateTokenQuotaMonthly sets the "token_quota_monthly" field to the value that was provided on create.
+func (u *APIKeyUpsertOne) UpdateTokenQuotaMonthly() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaMonthly()
+	})
+}
+
+// ClearTokenQuotaMonthly clears the value of the "token_quota_monthly" field.
+func (u *APIKeyUpsertOne) ClearTokenQuotaMonthly() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaMonthly()
+	})
+}
+
+// SetTokenQuotaMonthlyUsed sets the "token_quota_monthly_used" field.
+func (u *APIKeyUpsertOne) SetTokenQuotaMonthlyUsed(v int64) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaMonthlyUsed(v)
+	})
+}
+
+// AddTokenQuotaMonthlyUsed adds v to the "token_quota_monthly_used" field.
+func (u *APIKeyUpsertOne) AddTokenQuotaMonthlyUsed(v int64) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.AddTokenQuotaMonthlyUsed(v)
+	})
+}
+
+// UpdateTokenQuotaMonthlyUsed sets the "token_quota_monthly_used" field to the value that was provided on create.
+func (u *APIKeyUpsertOne) UpdateTokenQuotaMonthlyUsed() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaMonthlyUsed()
+	})
+}
+
+// ClearTokenQuotaMonthlyUsed clears the value of the "token_quota_monthly_used" field.
+func (u *APIKeyUpsertOne) ClearTokenQuotaMonthlyUsed() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaMonthlyUsed()
+	})
+}
+
+// SetTokenQuotaMonthlyStart sets the "token_quota_monthly_start" field.
+func (u *APIKeyUpsertOne) SetTokenQuotaMonthlyStart(v time.Time) *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaMonthlyStart(v)
+	})
+}
+
+// UpdateTokenQuotaMonthlyStart sets the "token_quota_monthly_start" field to the value that was provided on create.
+func (u *APIKeyUpsertOne) UpdateTokenQuotaMonthlyStart() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaMonthlyStart()
+	})
+}
+
+// ClearTokenQuotaMonthlyStart clears the value of the "token_quota_monthly_start" field.
+func (u *APIKeyUpsertOne) ClearTokenQuotaMonthlyStart() *APIKeyUpsertOne {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaMonthlyStart()
 	})
 }
 
@@ -2130,6 +2733,237 @@ func (u *APIKeyUpsertBulk) AddTokenQuotaUsed(v int64) *APIKeyUpsertBulk {
 func (u *APIKeyUpsertBulk) UpdateTokenQuotaUsed() *APIKeyUpsertBulk {
 	return u.Update(func(s *APIKeyUpsert) {
 		s.UpdateTokenQuotaUsed()
+	})
+}
+
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (u *APIKeyUpsertBulk) SetTokenQuotaDaily(v int64) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaDaily(v)
+	})
+}
+
+// AddTokenQuotaDaily adds v to the "token_quota_daily" field.
+func (u *APIKeyUpsertBulk) AddTokenQuotaDaily(v int64) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.AddTokenQuotaDaily(v)
+	})
+}
+
+// UpdateTokenQuotaDaily sets the "token_quota_daily" field to the value that was provided on create.
+func (u *APIKeyUpsertBulk) UpdateTokenQuotaDaily() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaDaily()
+	})
+}
+
+// ClearTokenQuotaDaily clears the value of the "token_quota_daily" field.
+func (u *APIKeyUpsertBulk) ClearTokenQuotaDaily() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaDaily()
+	})
+}
+
+// SetTokenQuotaDailyUsed sets the "token_quota_daily_used" field.
+func (u *APIKeyUpsertBulk) SetTokenQuotaDailyUsed(v int64) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaDailyUsed(v)
+	})
+}
+
+// AddTokenQuotaDailyUsed adds v to the "token_quota_daily_used" field.
+func (u *APIKeyUpsertBulk) AddTokenQuotaDailyUsed(v int64) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.AddTokenQuotaDailyUsed(v)
+	})
+}
+
+// UpdateTokenQuotaDailyUsed sets the "token_quota_daily_used" field to the value that was provided on create.
+func (u *APIKeyUpsertBulk) UpdateTokenQuotaDailyUsed() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaDailyUsed()
+	})
+}
+
+// ClearTokenQuotaDailyUsed clears the value of the "token_quota_daily_used" field.
+func (u *APIKeyUpsertBulk) ClearTokenQuotaDailyUsed() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaDailyUsed()
+	})
+}
+
+// SetTokenQuotaDailyStart sets the "token_quota_daily_start" field.
+func (u *APIKeyUpsertBulk) SetTokenQuotaDailyStart(v time.Time) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaDailyStart(v)
+	})
+}
+
+// UpdateTokenQuotaDailyStart sets the "token_quota_daily_start" field to the value that was provided on create.
+func (u *APIKeyUpsertBulk) UpdateTokenQuotaDailyStart() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaDailyStart()
+	})
+}
+
+// ClearTokenQuotaDailyStart clears the value of the "token_quota_daily_start" field.
+func (u *APIKeyUpsertBulk) ClearTokenQuotaDailyStart() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaDailyStart()
+	})
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (u *APIKeyUpsertBulk) SetTokenQuotaWeekly(v int64) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaWeekly(v)
+	})
+}
+
+// AddTokenQuotaWeekly adds v to the "token_quota_weekly" field.
+func (u *APIKeyUpsertBulk) AddTokenQuotaWeekly(v int64) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.AddTokenQuotaWeekly(v)
+	})
+}
+
+// UpdateTokenQuotaWeekly sets the "token_quota_weekly" field to the value that was provided on create.
+func (u *APIKeyUpsertBulk) UpdateTokenQuotaWeekly() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaWeekly()
+	})
+}
+
+// ClearTokenQuotaWeekly clears the value of the "token_quota_weekly" field.
+func (u *APIKeyUpsertBulk) ClearTokenQuotaWeekly() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaWeekly()
+	})
+}
+
+// SetTokenQuotaWeeklyUsed sets the "token_quota_weekly_used" field.
+func (u *APIKeyUpsertBulk) SetTokenQuotaWeeklyUsed(v int64) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaWeeklyUsed(v)
+	})
+}
+
+// AddTokenQuotaWeeklyUsed adds v to the "token_quota_weekly_used" field.
+func (u *APIKeyUpsertBulk) AddTokenQuotaWeeklyUsed(v int64) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.AddTokenQuotaWeeklyUsed(v)
+	})
+}
+
+// UpdateTokenQuotaWeeklyUsed sets the "token_quota_weekly_used" field to the value that was provided on create.
+func (u *APIKeyUpsertBulk) UpdateTokenQuotaWeeklyUsed() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaWeeklyUsed()
+	})
+}
+
+// ClearTokenQuotaWeeklyUsed clears the value of the "token_quota_weekly_used" field.
+func (u *APIKeyUpsertBulk) ClearTokenQuotaWeeklyUsed() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaWeeklyUsed()
+	})
+}
+
+// SetTokenQuotaWeeklyStart sets the "token_quota_weekly_start" field.
+func (u *APIKeyUpsertBulk) SetTokenQuotaWeeklyStart(v time.Time) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaWeeklyStart(v)
+	})
+}
+
+// UpdateTokenQuotaWeeklyStart sets the "token_quota_weekly_start" field to the value that was provided on create.
+func (u *APIKeyUpsertBulk) UpdateTokenQuotaWeeklyStart() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaWeeklyStart()
+	})
+}
+
+// ClearTokenQuotaWeeklyStart clears the value of the "token_quota_weekly_start" field.
+func (u *APIKeyUpsertBulk) ClearTokenQuotaWeeklyStart() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaWeeklyStart()
+	})
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (u *APIKeyUpsertBulk) SetTokenQuotaMonthly(v int64) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaMonthly(v)
+	})
+}
+
+// AddTokenQuotaMonthly adds v to the "token_quota_monthly" field.
+func (u *APIKeyUpsertBulk) AddTokenQuotaMonthly(v int64) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.AddTokenQuotaMonthly(v)
+	})
+}
+
+// UpdateTokenQuotaMonthly sets the "token_quota_monthly" field to the value that was provided on create.
+func (u *APIKeyUpsertBulk) UpdateTokenQuotaMonthly() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaMonthly()
+	})
+}
+
+// ClearTokenQuotaMonthly clears the value of the "token_quota_monthly" field.
+func (u *APIKeyUpsertBulk) ClearTokenQuotaMonthly() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaMonthly()
+	})
+}
+
+// SetTokenQuotaMonthlyUsed sets the "token_quota_monthly_used" field.
+func (u *APIKeyUpsertBulk) SetTokenQuotaMonthlyUsed(v int64) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaMonthlyUsed(v)
+	})
+}
+
+// AddTokenQuotaMonthlyUsed adds v to the "token_quota_monthly_used" field.
+func (u *APIKeyUpsertBulk) AddTokenQuotaMonthlyUsed(v int64) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.AddTokenQuotaMonthlyUsed(v)
+	})
+}
+
+// UpdateTokenQuotaMonthlyUsed sets the "token_quota_monthly_used" field to the value that was provided on create.
+func (u *APIKeyUpsertBulk) UpdateTokenQuotaMonthlyUsed() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaMonthlyUsed()
+	})
+}
+
+// ClearTokenQuotaMonthlyUsed clears the value of the "token_quota_monthly_used" field.
+func (u *APIKeyUpsertBulk) ClearTokenQuotaMonthlyUsed() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaMonthlyUsed()
+	})
+}
+
+// SetTokenQuotaMonthlyStart sets the "token_quota_monthly_start" field.
+func (u *APIKeyUpsertBulk) SetTokenQuotaMonthlyStart(v time.Time) *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.SetTokenQuotaMonthlyStart(v)
+	})
+}
+
+// UpdateTokenQuotaMonthlyStart sets the "token_quota_monthly_start" field to the value that was provided on create.
+func (u *APIKeyUpsertBulk) UpdateTokenQuotaMonthlyStart() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.UpdateTokenQuotaMonthlyStart()
+	})
+}
+
+// ClearTokenQuotaMonthlyStart clears the value of the "token_quota_monthly_start" field.
+func (u *APIKeyUpsertBulk) ClearTokenQuotaMonthlyStart() *APIKeyUpsertBulk {
+	return u.Update(func(s *APIKeyUpsert) {
+		s.ClearTokenQuotaMonthlyStart()
 	})
 }
 

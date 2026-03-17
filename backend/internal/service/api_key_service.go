@@ -13,6 +13,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/internal/config"
 	infraerrors "github.com/Wei-Shaw/sub2api/internal/pkg/errors"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/ip"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/logger"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/pagination"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/timezone"
 	"github.com/dgraph-io/ristretto"
@@ -73,6 +74,7 @@ type APIKeyRepository interface {
 	// Quota methods
 	IncrementQuotaUsed(ctx context.Context, id int64, amount float64) (float64, error)
 	IncrementTokenQuotaUsed(ctx context.Context, id int64, tokens int64) (int64, error)
+	IncrementTokenQuotaWindows(ctx context.Context, id int64, tokens int64) error
 	UpdateLastUsed(ctx context.Context, id int64, usedAt time.Time) error
 
 	// Rate limit methods
@@ -177,11 +179,12 @@ type UpdateAPIKeyRequest struct {
 	IPBlacklist []string `json:"ip_blacklist"` // IP 黑名单（空数组清空）
 
 	// Quota fields
-	Quota           *float64   `json:"quota"`       // Quota limit in USD (nil = no change, 0 = unlimited)
-	TokenQuota      *int64     `json:"token_quota"` // Token quota limit (nil = no change, 0 = unlimited)
-	ExpiresAt       *time.Time `json:"expires_at"`  // Expiration time (nil = no change)
-	ClearExpiration bool       `json:"-"`           // Clear expiration (internal use)
-	ResetQuota      *bool      `json:"reset_quota"` // Reset quota_used to 0
+	Quota           *float64   `json:"quota"`             // Quota limit in USD (nil = no change, 0 = unlimited)
+	TokenQuota      *int64     `json:"token_quota"`       // Token quota limit (nil = no change, 0 = unlimited)
+	ExpiresAt       *time.Time `json:"expires_at"`        // Expiration time (nil = no change)
+	ClearExpiration bool       `json:"-"`                 // Clear expiration (internal use)
+	ResetQuota      *bool      `json:"reset_quota"`       // Reset quota_used to 0
+	ResetTokenQuota *bool      `json:"reset_token_quota"` // Reset token_quota_used to 0
 
 	// Rate limit fields (nil = no change, 0 = unlimited)
 	RateLimit5h         *float64 `json:"rate_limit_5h"`
@@ -586,8 +589,21 @@ func (s *APIKeyService) Update(ctx context.Context, id int64, userID int64, req 
 	// Update token quota fields
 	if req.TokenQuota != nil {
 		apiKey.TokenQuota = *req.TokenQuota
-		// If token quota is increased and status was quota_exhausted or disabled (from frontend 'inactive'), reactivate
-		if (apiKey.Status == StatusAPIKeyQuotaExhausted || apiKey.Status == StatusAPIKeyDisabled) && *req.TokenQuota > apiKey.TokenQuotaUsed {
+		// 如果增加 token quota 且当前状态不是 active，则自动恢复为 active
+		// 除非用户明确设置为 disabled
+		if apiKey.Status != StatusActive && *req.TokenQuota > apiKey.TokenQuotaUsed {
+			// 检查用户是否明确想保持 disabled
+			if req.Status == nil || *req.Status != StatusAPIKeyDisabled {
+				apiKey.Status = StatusActive
+			}
+		}
+	}
+
+	// Reset token quota usage
+	if req.ResetTokenQuota != nil && *req.ResetTokenQuota {
+		apiKey.TokenQuotaUsed = 0
+		// If resetting token quota and status was quota_exhausted or disabled, reactivate
+		if apiKey.Status == StatusAPIKeyQuotaExhausted || apiKey.Status == StatusAPIKeyDisabled {
 			apiKey.Status = StatusActive
 		}
 	}
@@ -905,12 +921,13 @@ func (s *APIKeyService) UpdateRateLimitUsage(ctx context.Context, apiKeyID int64
 }
 
 // UpdateTokenQuotaUsed updates the token_quota_used field after a request
-// Also checks if token quota is exhausted and updates status accordingly
+// Also updates daily/weekly/monthly token quota usage and checks if token quota is exhausted
 func (s *APIKeyService) UpdateTokenQuotaUsed(ctx context.Context, apiKeyID int64, tokens int64) error {
 	if tokens <= 0 {
 		return nil
 	}
 
+	// Update total token quota usage
 	type tokenQuotaStateReader interface {
 		IncrementTokenQuotaUsedAndGetState(ctx context.Context, id int64, tokens int64) (*APIKeyQuotaUsageState, error)
 	}
@@ -923,29 +940,34 @@ func (s *APIKeyService) UpdateTokenQuotaUsed(ctx context.Context, apiKeyID int64
 		if state != nil && state.Status == StatusAPIKeyQuotaExhausted && strings.TrimSpace(state.Key) != "" {
 			s.InvalidateAuthCacheByKey(ctx, state.Key)
 		}
-		return nil
-	}
-
-	// Fallback: use simple increment
-	_, err := s.apiKeyRepo.IncrementTokenQuotaUsed(ctx, apiKeyID, tokens)
-	if err != nil {
-		return fmt.Errorf("increment token quota used: %w", err)
-	}
-
-	// Check if token quota is now exhausted and update status if needed
-	apiKey, err := s.apiKeyRepo.GetByID(ctx, apiKeyID)
-	if err != nil {
-		return nil // Don't fail the request, just log
-	}
-
-	// If token quota is set and now exhausted, update status
-	if apiKey.TokenQuota > 0 && apiKey.TokenQuotaUsed >= apiKey.TokenQuota {
-		apiKey.Status = StatusAPIKeyQuotaExhausted
-		if err := s.apiKeyRepo.Update(ctx, apiKey); err != nil {
-			return nil // Don't fail the request
+	} else {
+		// Fallback: use simple increment
+		_, err := s.apiKeyRepo.IncrementTokenQuotaUsed(ctx, apiKeyID, tokens)
+		if err != nil {
+			return fmt.Errorf("increment token quota used: %w", err)
 		}
-		// Invalidate cache so next request sees the new status
-		s.InvalidateAuthCacheByKey(ctx, apiKey.Key)
+
+		// Check if token quota is now exhausted and update status if needed
+		apiKey, err := s.apiKeyRepo.GetByID(ctx, apiKeyID)
+		if err != nil {
+			return nil // Don't fail the request, just log
+		}
+
+		// If token quota is set and now exhausted, update status
+		if apiKey.TokenQuota > 0 && apiKey.TokenQuotaUsed >= apiKey.TokenQuota {
+			apiKey.Status = StatusAPIKeyQuotaExhausted
+			if err := s.apiKeyRepo.Update(ctx, apiKey); err != nil {
+				return nil // Don't fail the request
+			}
+			// Invalidate cache so next request sees the new status
+			s.InvalidateAuthCacheByKey(ctx, apiKey.Key)
+		}
+	}
+
+	// Update daily/weekly/monthly token quota windows
+	if err := s.apiKeyRepo.IncrementTokenQuotaWindows(ctx, apiKeyID, tokens); err != nil {
+		// Log error but don't fail the request - this is non-critical
+		logger.LegacyPrintf("service.api_key", "ERROR: failed to update token quota windows: %v", err)
 	}
 
 	return nil

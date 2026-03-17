@@ -125,6 +125,41 @@ func MonthlyUsageUsd(v float64) predicate.UserSubscription {
 	return predicate.UserSubscription(sql.FieldEQ(FieldMonthlyUsageUsd, v))
 }
 
+// TokenUsageTotal applies equality check predicate on the "token_usage_total" field. It's identical to TokenUsageTotalEQ.
+func TokenUsageTotal(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenUsageTotal, v))
+}
+
+// TokenUsageDaily applies equality check predicate on the "token_usage_daily" field. It's identical to TokenUsageDailyEQ.
+func TokenUsageDaily(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenUsageDaily, v))
+}
+
+// TokenUsageWeekly applies equality check predicate on the "token_usage_weekly" field. It's identical to TokenUsageWeeklyEQ.
+func TokenUsageWeekly(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenUsageWeekly, v))
+}
+
+// TokenUsageMonthly applies equality check predicate on the "token_usage_monthly" field. It's identical to TokenUsageMonthlyEQ.
+func TokenUsageMonthly(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenUsageMonthly, v))
+}
+
+// TokenDailyWindowStart applies equality check predicate on the "token_daily_window_start" field. It's identical to TokenDailyWindowStartEQ.
+func TokenDailyWindowStart(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenDailyWindowStart, v))
+}
+
+// TokenWeeklyWindowStart applies equality check predicate on the "token_weekly_window_start" field. It's identical to TokenWeeklyWindowStartEQ.
+func TokenWeeklyWindowStart(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenWeeklyWindowStart, v))
+}
+
+// TokenMonthlyWindowStart applies equality check predicate on the "token_monthly_window_start" field. It's identical to TokenMonthlyWindowStartEQ.
+func TokenMonthlyWindowStart(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenMonthlyWindowStart, v))
+}
+
 // AssignedBy applies equality check predicate on the "assigned_by" field. It's identical to AssignedByEQ.
 func AssignedBy(v int64) predicate.UserSubscription {
 	return predicate.UserSubscription(sql.FieldEQ(FieldAssignedBy, v))
@@ -723,6 +758,316 @@ func MonthlyUsageUsdLT(v float64) predicate.UserSubscription {
 // MonthlyUsageUsdLTE applies the LTE predicate on the "monthly_usage_usd" field.
 func MonthlyUsageUsdLTE(v float64) predicate.UserSubscription {
 	return predicate.UserSubscription(sql.FieldLTE(FieldMonthlyUsageUsd, v))
+}
+
+// TokenUsageTotalEQ applies the EQ predicate on the "token_usage_total" field.
+func TokenUsageTotalEQ(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenUsageTotal, v))
+}
+
+// TokenUsageTotalNEQ applies the NEQ predicate on the "token_usage_total" field.
+func TokenUsageTotalNEQ(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNEQ(FieldTokenUsageTotal, v))
+}
+
+// TokenUsageTotalIn applies the In predicate on the "token_usage_total" field.
+func TokenUsageTotalIn(vs ...int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldIn(FieldTokenUsageTotal, vs...))
+}
+
+// TokenUsageTotalNotIn applies the NotIn predicate on the "token_usage_total" field.
+func TokenUsageTotalNotIn(vs ...int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNotIn(FieldTokenUsageTotal, vs...))
+}
+
+// TokenUsageTotalGT applies the GT predicate on the "token_usage_total" field.
+func TokenUsageTotalGT(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGT(FieldTokenUsageTotal, v))
+}
+
+// TokenUsageTotalGTE applies the GTE predicate on the "token_usage_total" field.
+func TokenUsageTotalGTE(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGTE(FieldTokenUsageTotal, v))
+}
+
+// TokenUsageTotalLT applies the LT predicate on the "token_usage_total" field.
+func TokenUsageTotalLT(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLT(FieldTokenUsageTotal, v))
+}
+
+// TokenUsageTotalLTE applies the LTE predicate on the "token_usage_total" field.
+func TokenUsageTotalLTE(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLTE(FieldTokenUsageTotal, v))
+}
+
+// TokenUsageDailyEQ applies the EQ predicate on the "token_usage_daily" field.
+func TokenUsageDailyEQ(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenUsageDaily, v))
+}
+
+// TokenUsageDailyNEQ applies the NEQ predicate on the "token_usage_daily" field.
+func TokenUsageDailyNEQ(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNEQ(FieldTokenUsageDaily, v))
+}
+
+// TokenUsageDailyIn applies the In predicate on the "token_usage_daily" field.
+func TokenUsageDailyIn(vs ...int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldIn(FieldTokenUsageDaily, vs...))
+}
+
+// TokenUsageDailyNotIn applies the NotIn predicate on the "token_usage_daily" field.
+func TokenUsageDailyNotIn(vs ...int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNotIn(FieldTokenUsageDaily, vs...))
+}
+
+// TokenUsageDailyGT applies the GT predicate on the "token_usage_daily" field.
+func TokenUsageDailyGT(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGT(FieldTokenUsageDaily, v))
+}
+
+// TokenUsageDailyGTE applies the GTE predicate on the "token_usage_daily" field.
+func TokenUsageDailyGTE(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGTE(FieldTokenUsageDaily, v))
+}
+
+// TokenUsageDailyLT applies the LT predicate on the "token_usage_daily" field.
+func TokenUsageDailyLT(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLT(FieldTokenUsageDaily, v))
+}
+
+// TokenUsageDailyLTE applies the LTE predicate on the "token_usage_daily" field.
+func TokenUsageDailyLTE(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLTE(FieldTokenUsageDaily, v))
+}
+
+// TokenUsageWeeklyEQ applies the EQ predicate on the "token_usage_weekly" field.
+func TokenUsageWeeklyEQ(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenUsageWeekly, v))
+}
+
+// TokenUsageWeeklyNEQ applies the NEQ predicate on the "token_usage_weekly" field.
+func TokenUsageWeeklyNEQ(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNEQ(FieldTokenUsageWeekly, v))
+}
+
+// TokenUsageWeeklyIn applies the In predicate on the "token_usage_weekly" field.
+func TokenUsageWeeklyIn(vs ...int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldIn(FieldTokenUsageWeekly, vs...))
+}
+
+// TokenUsageWeeklyNotIn applies the NotIn predicate on the "token_usage_weekly" field.
+func TokenUsageWeeklyNotIn(vs ...int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNotIn(FieldTokenUsageWeekly, vs...))
+}
+
+// TokenUsageWeeklyGT applies the GT predicate on the "token_usage_weekly" field.
+func TokenUsageWeeklyGT(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGT(FieldTokenUsageWeekly, v))
+}
+
+// TokenUsageWeeklyGTE applies the GTE predicate on the "token_usage_weekly" field.
+func TokenUsageWeeklyGTE(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGTE(FieldTokenUsageWeekly, v))
+}
+
+// TokenUsageWeeklyLT applies the LT predicate on the "token_usage_weekly" field.
+func TokenUsageWeeklyLT(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLT(FieldTokenUsageWeekly, v))
+}
+
+// TokenUsageWeeklyLTE applies the LTE predicate on the "token_usage_weekly" field.
+func TokenUsageWeeklyLTE(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLTE(FieldTokenUsageWeekly, v))
+}
+
+// TokenUsageMonthlyEQ applies the EQ predicate on the "token_usage_monthly" field.
+func TokenUsageMonthlyEQ(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenUsageMonthly, v))
+}
+
+// TokenUsageMonthlyNEQ applies the NEQ predicate on the "token_usage_monthly" field.
+func TokenUsageMonthlyNEQ(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNEQ(FieldTokenUsageMonthly, v))
+}
+
+// TokenUsageMonthlyIn applies the In predicate on the "token_usage_monthly" field.
+func TokenUsageMonthlyIn(vs ...int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldIn(FieldTokenUsageMonthly, vs...))
+}
+
+// TokenUsageMonthlyNotIn applies the NotIn predicate on the "token_usage_monthly" field.
+func TokenUsageMonthlyNotIn(vs ...int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNotIn(FieldTokenUsageMonthly, vs...))
+}
+
+// TokenUsageMonthlyGT applies the GT predicate on the "token_usage_monthly" field.
+func TokenUsageMonthlyGT(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGT(FieldTokenUsageMonthly, v))
+}
+
+// TokenUsageMonthlyGTE applies the GTE predicate on the "token_usage_monthly" field.
+func TokenUsageMonthlyGTE(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGTE(FieldTokenUsageMonthly, v))
+}
+
+// TokenUsageMonthlyLT applies the LT predicate on the "token_usage_monthly" field.
+func TokenUsageMonthlyLT(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLT(FieldTokenUsageMonthly, v))
+}
+
+// TokenUsageMonthlyLTE applies the LTE predicate on the "token_usage_monthly" field.
+func TokenUsageMonthlyLTE(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLTE(FieldTokenUsageMonthly, v))
+}
+
+// TokenDailyWindowStartEQ applies the EQ predicate on the "token_daily_window_start" field.
+func TokenDailyWindowStartEQ(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenDailyWindowStart, v))
+}
+
+// TokenDailyWindowStartNEQ applies the NEQ predicate on the "token_daily_window_start" field.
+func TokenDailyWindowStartNEQ(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNEQ(FieldTokenDailyWindowStart, v))
+}
+
+// TokenDailyWindowStartIn applies the In predicate on the "token_daily_window_start" field.
+func TokenDailyWindowStartIn(vs ...time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldIn(FieldTokenDailyWindowStart, vs...))
+}
+
+// TokenDailyWindowStartNotIn applies the NotIn predicate on the "token_daily_window_start" field.
+func TokenDailyWindowStartNotIn(vs ...time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNotIn(FieldTokenDailyWindowStart, vs...))
+}
+
+// TokenDailyWindowStartGT applies the GT predicate on the "token_daily_window_start" field.
+func TokenDailyWindowStartGT(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGT(FieldTokenDailyWindowStart, v))
+}
+
+// TokenDailyWindowStartGTE applies the GTE predicate on the "token_daily_window_start" field.
+func TokenDailyWindowStartGTE(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGTE(FieldTokenDailyWindowStart, v))
+}
+
+// TokenDailyWindowStartLT applies the LT predicate on the "token_daily_window_start" field.
+func TokenDailyWindowStartLT(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLT(FieldTokenDailyWindowStart, v))
+}
+
+// TokenDailyWindowStartLTE applies the LTE predicate on the "token_daily_window_start" field.
+func TokenDailyWindowStartLTE(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLTE(FieldTokenDailyWindowStart, v))
+}
+
+// TokenDailyWindowStartIsNil applies the IsNil predicate on the "token_daily_window_start" field.
+func TokenDailyWindowStartIsNil() predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldIsNull(FieldTokenDailyWindowStart))
+}
+
+// TokenDailyWindowStartNotNil applies the NotNil predicate on the "token_daily_window_start" field.
+func TokenDailyWindowStartNotNil() predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNotNull(FieldTokenDailyWindowStart))
+}
+
+// TokenWeeklyWindowStartEQ applies the EQ predicate on the "token_weekly_window_start" field.
+func TokenWeeklyWindowStartEQ(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenWeeklyWindowStart, v))
+}
+
+// TokenWeeklyWindowStartNEQ applies the NEQ predicate on the "token_weekly_window_start" field.
+func TokenWeeklyWindowStartNEQ(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNEQ(FieldTokenWeeklyWindowStart, v))
+}
+
+// TokenWeeklyWindowStartIn applies the In predicate on the "token_weekly_window_start" field.
+func TokenWeeklyWindowStartIn(vs ...time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldIn(FieldTokenWeeklyWindowStart, vs...))
+}
+
+// TokenWeeklyWindowStartNotIn applies the NotIn predicate on the "token_weekly_window_start" field.
+func TokenWeeklyWindowStartNotIn(vs ...time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNotIn(FieldTokenWeeklyWindowStart, vs...))
+}
+
+// TokenWeeklyWindowStartGT applies the GT predicate on the "token_weekly_window_start" field.
+func TokenWeeklyWindowStartGT(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGT(FieldTokenWeeklyWindowStart, v))
+}
+
+// TokenWeeklyWindowStartGTE applies the GTE predicate on the "token_weekly_window_start" field.
+func TokenWeeklyWindowStartGTE(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGTE(FieldTokenWeeklyWindowStart, v))
+}
+
+// TokenWeeklyWindowStartLT applies the LT predicate on the "token_weekly_window_start" field.
+func TokenWeeklyWindowStartLT(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLT(FieldTokenWeeklyWindowStart, v))
+}
+
+// TokenWeeklyWindowStartLTE applies the LTE predicate on the "token_weekly_window_start" field.
+func TokenWeeklyWindowStartLTE(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLTE(FieldTokenWeeklyWindowStart, v))
+}
+
+// TokenWeeklyWindowStartIsNil applies the IsNil predicate on the "token_weekly_window_start" field.
+func TokenWeeklyWindowStartIsNil() predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldIsNull(FieldTokenWeeklyWindowStart))
+}
+
+// TokenWeeklyWindowStartNotNil applies the NotNil predicate on the "token_weekly_window_start" field.
+func TokenWeeklyWindowStartNotNil() predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNotNull(FieldTokenWeeklyWindowStart))
+}
+
+// TokenMonthlyWindowStartEQ applies the EQ predicate on the "token_monthly_window_start" field.
+func TokenMonthlyWindowStartEQ(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenMonthlyWindowStart, v))
+}
+
+// TokenMonthlyWindowStartNEQ applies the NEQ predicate on the "token_monthly_window_start" field.
+func TokenMonthlyWindowStartNEQ(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNEQ(FieldTokenMonthlyWindowStart, v))
+}
+
+// TokenMonthlyWindowStartIn applies the In predicate on the "token_monthly_window_start" field.
+func TokenMonthlyWindowStartIn(vs ...time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldIn(FieldTokenMonthlyWindowStart, vs...))
+}
+
+// TokenMonthlyWindowStartNotIn applies the NotIn predicate on the "token_monthly_window_start" field.
+func TokenMonthlyWindowStartNotIn(vs ...time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNotIn(FieldTokenMonthlyWindowStart, vs...))
+}
+
+// TokenMonthlyWindowStartGT applies the GT predicate on the "token_monthly_window_start" field.
+func TokenMonthlyWindowStartGT(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGT(FieldTokenMonthlyWindowStart, v))
+}
+
+// TokenMonthlyWindowStartGTE applies the GTE predicate on the "token_monthly_window_start" field.
+func TokenMonthlyWindowStartGTE(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGTE(FieldTokenMonthlyWindowStart, v))
+}
+
+// TokenMonthlyWindowStartLT applies the LT predicate on the "token_monthly_window_start" field.
+func TokenMonthlyWindowStartLT(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLT(FieldTokenMonthlyWindowStart, v))
+}
+
+// TokenMonthlyWindowStartLTE applies the LTE predicate on the "token_monthly_window_start" field.
+func TokenMonthlyWindowStartLTE(v time.Time) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLTE(FieldTokenMonthlyWindowStart, v))
+}
+
+// TokenMonthlyWindowStartIsNil applies the IsNil predicate on the "token_monthly_window_start" field.
+func TokenMonthlyWindowStartIsNil() predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldIsNull(FieldTokenMonthlyWindowStart))
+}
+
+// TokenMonthlyWindowStartNotNil applies the NotNil predicate on the "token_monthly_window_start" field.
+func TokenMonthlyWindowStartNotNil() predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNotNull(FieldTokenMonthlyWindowStart))
 }
 
 // AssignedByEQ applies the EQ predicate on the "assigned_by" field.

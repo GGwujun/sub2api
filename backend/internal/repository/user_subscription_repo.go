@@ -369,6 +369,39 @@ func (r *userSubscriptionRepository) IncrementUsage(ctx context.Context, id int6
 	return service.ErrSubscriptionNotFound
 }
 
+// IncrementTokenUsage 原子性地累加订阅 Token 使用量（Token 配额订阅模式使用）
+func (r *userSubscriptionRepository) IncrementTokenUsage(ctx context.Context, id int64, tokens int64) error {
+	const updateSQL = `
+		UPDATE user_subscriptions us
+		SET
+			token_usage_total = us.token_usage_total + $1,
+			token_usage_daily = us.token_usage_daily + $1,
+			token_usage_weekly = us.token_usage_weekly + $1,
+			token_usage_monthly = us.token_usage_monthly + $1,
+			updated_at = NOW()
+		WHERE us.id = $2
+			AND us.deleted_at IS NULL
+	`
+
+	client := clientFromContext(ctx, r.client)
+	result, err := client.ExecContext(ctx, updateSQL, tokens, id)
+	if err != nil {
+		return err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if affected > 0 {
+		return nil
+	}
+
+	// affected == 0：订阅不存在或已删除
+	return service.ErrSubscriptionNotFound
+}
+
 func (r *userSubscriptionRepository) BatchUpdateExpiredStatus(ctx context.Context) (int64, error) {
 	client := clientFromContext(ctx, r.client)
 	n, err := client.UserSubscription.Update().
@@ -438,11 +471,19 @@ func userSubscriptionEntityToService(m *dbent.UserSubscription) *service.UserSub
 		DailyUsageUSD:      m.DailyUsageUsd,
 		WeeklyUsageUSD:     m.WeeklyUsageUsd,
 		MonthlyUsageUSD:    m.MonthlyUsageUsd,
-		AssignedBy:         m.AssignedBy,
-		AssignedAt:         m.AssignedAt,
-		Notes:              derefString(m.Notes),
-		CreatedAt:          m.CreatedAt,
-		UpdatedAt:          m.UpdatedAt,
+		// Token 配额使用量
+		TokenUsageTotal:         m.TokenUsageTotal,
+		TokenUsageDaily:         m.TokenUsageDaily,
+		TokenUsageWeekly:        m.TokenUsageWeekly,
+		TokenUsageMonthly:       m.TokenUsageMonthly,
+		TokenDailyWindowStart:   m.TokenDailyWindowStart,
+		TokenWeeklyWindowStart:  m.TokenWeeklyWindowStart,
+		TokenMonthlyWindowStart: m.TokenMonthlyWindowStart,
+		AssignedBy:              m.AssignedBy,
+		AssignedAt:              m.AssignedAt,
+		Notes:                   derefString(m.Notes),
+		CreatedAt:               m.CreatedAt,
+		UpdatedAt:               m.UpdatedAt,
 	}
 	if m.Edges.User != nil {
 		out.User = userEntityToService(m.Edges.User)

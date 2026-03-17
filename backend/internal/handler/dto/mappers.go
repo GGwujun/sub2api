@@ -169,6 +169,10 @@ func groupFromServiceBase(g *service.Group) Group {
 		DailyLimitUSD:                   g.DailyLimitUSD,
 		WeeklyLimitUSD:                  g.WeeklyLimitUSD,
 		MonthlyLimitUSD:                 g.MonthlyLimitUSD,
+		TokenQuota:                      g.TokenQuota,
+		TokenQuotaDaily:                 g.TokenQuotaDaily,
+		TokenQuotaWeekly:                g.TokenQuotaWeekly,
+		TokenQuotaMonthly:               g.TokenQuotaMonthly,
 		ImagePrice1K:                    g.ImagePrice1K,
 		ImagePrice2K:                    g.ImagePrice2K,
 		ImagePrice4K:                    g.ImagePrice4K,
@@ -646,10 +650,15 @@ func userSubscriptionFromServiceBase(sub *service.UserSubscription) UserSubscrip
 		DailyUsageUSD:      sub.DailyUsageUSD,
 		WeeklyUsageUSD:     sub.WeeklyUsageUSD,
 		MonthlyUsageUSD:    sub.MonthlyUsageUSD,
-		CreatedAt:          sub.CreatedAt,
-		UpdatedAt:          sub.UpdatedAt,
-		User:               UserFromServiceShallow(sub.User),
-		Group:              GroupFromServiceShallow(sub.Group),
+		// Token 使用量
+		TokenUsageTotal:   sub.TokenUsageTotal,
+		TokenUsageDaily:   sub.TokenUsageDaily,
+		TokenUsageWeekly:  sub.TokenUsageWeekly,
+		TokenUsageMonthly: sub.TokenUsageMonthly,
+		CreatedAt:         sub.CreatedAt,
+		UpdatedAt:         sub.UpdatedAt,
+		User:              UserFromServiceShallow(sub.User),
+		Group:             GroupFromServiceShallow(sub.Group),
 	}
 }
 

@@ -19,6 +19,15 @@ type UserSubscription struct {
 	WeeklyUsageUSD  float64
 	MonthlyUsageUSD float64
 
+	// Token 配额使用量（Token 配额订阅模式使用）
+	TokenUsageTotal         int64
+	TokenUsageDaily         int64
+	TokenUsageWeekly        int64
+	TokenUsageMonthly       int64
+	TokenDailyWindowStart   *time.Time
+	TokenWeeklyWindowStart  *time.Time
+	TokenMonthlyWindowStart *time.Time
+
 	AssignedBy *int64
 	AssignedAt time.Time
 	Notes      string

@@ -274,6 +274,228 @@ func (_u *APIKeyUpdate) AddTokenQuotaUsed(v int64) *APIKeyUpdate {
 	return _u
 }
 
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (_u *APIKeyUpdate) SetTokenQuotaDaily(v int64) *APIKeyUpdate {
+	_u.mutation.ResetTokenQuotaDaily()
+	_u.mutation.SetTokenQuotaDaily(v)
+	return _u
+}
+
+// SetNillableTokenQuotaDaily sets the "token_quota_daily" field if the given value is not nil.
+func (_u *APIKeyUpdate) SetNillableTokenQuotaDaily(v *int64) *APIKeyUpdate {
+	if v != nil {
+		_u.SetTokenQuotaDaily(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaDaily adds value to the "token_quota_daily" field.
+func (_u *APIKeyUpdate) AddTokenQuotaDaily(v int64) *APIKeyUpdate {
+	_u.mutation.AddTokenQuotaDaily(v)
+	return _u
+}
+
+// ClearTokenQuotaDaily clears the value of the "token_quota_daily" field.
+func (_u *APIKeyUpdate) ClearTokenQuotaDaily() *APIKeyUpdate {
+	_u.mutation.ClearTokenQuotaDaily()
+	return _u
+}
+
+// SetTokenQuotaDailyUsed sets the "token_quota_daily_used" field.
+func (_u *APIKeyUpdate) SetTokenQuotaDailyUsed(v int64) *APIKeyUpdate {
+	_u.mutation.ResetTokenQuotaDailyUsed()
+	_u.mutation.SetTokenQuotaDailyUsed(v)
+	return _u
+}
+
+// SetNillableTokenQuotaDailyUsed sets the "token_quota_daily_used" field if the given value is not nil.
+func (_u *APIKeyUpdate) SetNillableTokenQuotaDailyUsed(v *int64) *APIKeyUpdate {
+	if v != nil {
+		_u.SetTokenQuotaDailyUsed(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaDailyUsed adds value to the "token_quota_daily_used" field.
+func (_u *APIKeyUpdate) AddTokenQuotaDailyUsed(v int64) *APIKeyUpdate {
+	_u.mutation.AddTokenQuotaDailyUsed(v)
+	return _u
+}
+
+// ClearTokenQuotaDailyUsed clears the value of the "token_quota_daily_used" field.
+func (_u *APIKeyUpdate) ClearTokenQuotaDailyUsed() *APIKeyUpdate {
+	_u.mutation.ClearTokenQuotaDailyUsed()
+	return _u
+}
+
+// SetTokenQuotaDailyStart sets the "token_quota_daily_start" field.
+func (_u *APIKeyUpdate) SetTokenQuotaDailyStart(v time.Time) *APIKeyUpdate {
+	_u.mutation.SetTokenQuotaDailyStart(v)
+	return _u
+}
+
+// SetNillableTokenQuotaDailyStart sets the "token_quota_daily_start" field if the given value is not nil.
+func (_u *APIKeyUpdate) SetNillableTokenQuotaDailyStart(v *time.Time) *APIKeyUpdate {
+	if v != nil {
+		_u.SetTokenQuotaDailyStart(*v)
+	}
+	return _u
+}
+
+// ClearTokenQuotaDailyStart clears the value of the "token_quota_daily_start" field.
+func (_u *APIKeyUpdate) ClearTokenQuotaDailyStart() *APIKeyUpdate {
+	_u.mutation.ClearTokenQuotaDailyStart()
+	return _u
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (_u *APIKeyUpdate) SetTokenQuotaWeekly(v int64) *APIKeyUpdate {
+	_u.mutation.ResetTokenQuotaWeekly()
+	_u.mutation.SetTokenQuotaWeekly(v)
+	return _u
+}
+
+// SetNillableTokenQuotaWeekly sets the "token_quota_weekly" field if the given value is not nil.
+func (_u *APIKeyUpdate) SetNillableTokenQuotaWeekly(v *int64) *APIKeyUpdate {
+	if v != nil {
+		_u.SetTokenQuotaWeekly(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaWeekly adds value to the "token_quota_weekly" field.
+func (_u *APIKeyUpdate) AddTokenQuotaWeekly(v int64) *APIKeyUpdate {
+	_u.mutation.AddTokenQuotaWeekly(v)
+	return _u
+}
+
+// ClearTokenQuotaWeekly clears the value of the "token_quota_weekly" field.
+func (_u *APIKeyUpdate) ClearTokenQuotaWeekly() *APIKeyUpdate {
+	_u.mutation.ClearTokenQuotaWeekly()
+	return _u
+}
+
+// SetTokenQuotaWeeklyUsed sets the "token_quota_weekly_used" field.
+func (_u *APIKeyUpdate) SetTokenQuotaWeeklyUsed(v int64) *APIKeyUpdate {
+	_u.mutation.ResetTokenQuotaWeeklyUsed()
+	_u.mutation.SetTokenQuotaWeeklyUsed(v)
+	return _u
+}
+
+// SetNillableTokenQuotaWeeklyUsed sets the "token_quota_weekly_used" field if the given value is not nil.
+func (_u *APIKeyUpdate) SetNillableTokenQuotaWeeklyUsed(v *int64) *APIKeyUpdate {
+	if v != nil {
+		_u.SetTokenQuotaWeeklyUsed(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaWeeklyUsed adds value to the "token_quota_weekly_used" field.
+func (_u *APIKeyUpdate) AddTokenQuotaWeeklyUsed(v int64) *APIKeyUpdate {
+	_u.mutation.AddTokenQuotaWeeklyUsed(v)
+	return _u
+}
+
+// ClearTokenQuotaWeeklyUsed clears the value of the "token_quota_weekly_used" field.
+func (_u *APIKeyUpdate) ClearTokenQuotaWeeklyUsed() *APIKeyUpdate {
+	_u.mutation.ClearTokenQuotaWeeklyUsed()
+	return _u
+}
+
+// SetTokenQuotaWeeklyStart sets the "token_quota_weekly_start" field.
+func (_u *APIKeyUpdate) SetTokenQuotaWeeklyStart(v time.Time) *APIKeyUpdate {
+	_u.mutation.SetTokenQuotaWeeklyStart(v)
+	return _u
+}
+
+// SetNillableTokenQuotaWeeklyStart sets the "token_quota_weekly_start" field if the given value is not nil.
+func (_u *APIKeyUpdate) SetNillableTokenQuotaWeeklyStart(v *time.Time) *APIKeyUpdate {
+	if v != nil {
+		_u.SetTokenQuotaWeeklyStart(*v)
+	}
+	return _u
+}
+
+// ClearTokenQuotaWeeklyStart clears the value of the "token_quota_weekly_start" field.
+func (_u *APIKeyUpdate) ClearTokenQuotaWeeklyStart() *APIKeyUpdate {
+	_u.mutation.ClearTokenQuotaWeeklyStart()
+	return _u
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (_u *APIKeyUpdate) SetTokenQuotaMonthly(v int64) *APIKeyUpdate {
+	_u.mutation.ResetTokenQuotaMonthly()
+	_u.mutation.SetTokenQuotaMonthly(v)
+	return _u
+}
+
+// SetNillableTokenQuotaMonthly sets the "token_quota_monthly" field if the given value is not nil.
+func (_u *APIKeyUpdate) SetNillableTokenQuotaMonthly(v *int64) *APIKeyUpdate {
+	if v != nil {
+		_u.SetTokenQuotaMonthly(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaMonthly adds value to the "token_quota_monthly" field.
+func (_u *APIKeyUpdate) AddTokenQuotaMonthly(v int64) *APIKeyUpdate {
+	_u.mutation.AddTokenQuotaMonthly(v)
+	return _u
+}
+
+// ClearTokenQuotaMonthly clears the value of the "token_quota_monthly" field.
+func (_u *APIKeyUpdate) ClearTokenQuotaMonthly() *APIKeyUpdate {
+	_u.mutation.ClearTokenQuotaMonthly()
+	return _u
+}
+
+// SetTokenQuotaMonthlyUsed sets the "token_quota_monthly_used" field.
+func (_u *APIKeyUpdate) SetTokenQuotaMonthlyUsed(v int64) *APIKeyUpdate {
+	_u.mutation.ResetTokenQuotaMonthlyUsed()
+	_u.mutation.SetTokenQuotaMonthlyUsed(v)
+	return _u
+}
+
+// SetNillableTokenQuotaMonthlyUsed sets the "token_quota_monthly_used" field if the given value is not nil.
+func (_u *APIKeyUpdate) SetNillableTokenQuotaMonthlyUsed(v *int64) *APIKeyUpdate {
+	if v != nil {
+		_u.SetTokenQuotaMonthlyUsed(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaMonthlyUsed adds value to the "token_quota_monthly_used" field.
+func (_u *APIKeyUpdate) AddTokenQuotaMonthlyUsed(v int64) *APIKeyUpdate {
+	_u.mutation.AddTokenQuotaMonthlyUsed(v)
+	return _u
+}
+
+// ClearTokenQuotaMonthlyUsed clears the value of the "token_quota_monthly_used" field.
+func (_u *APIKeyUpdate) ClearTokenQuotaMonthlyUsed() *APIKeyUpdate {
+	_u.mutation.ClearTokenQuotaMonthlyUsed()
+	return _u
+}
+
+// SetTokenQuotaMonthlyStart sets the "token_quota_monthly_start" field.
+func (_u *APIKeyUpdate) SetTokenQuotaMonthlyStart(v time.Time) *APIKeyUpdate {
+	_u.mutation.SetTokenQuotaMonthlyStart(v)
+	return _u
+}
+
+// SetNillableTokenQuotaMonthlyStart sets the "token_quota_monthly_start" field if the given value is not nil.
+func (_u *APIKeyUpdate) SetNillableTokenQuotaMonthlyStart(v *time.Time) *APIKeyUpdate {
+	if v != nil {
+		_u.SetTokenQuotaMonthlyStart(*v)
+	}
+	return _u
+}
+
+// ClearTokenQuotaMonthlyStart clears the value of the "token_quota_monthly_start" field.
+func (_u *APIKeyUpdate) ClearTokenQuotaMonthlyStart() *APIKeyUpdate {
+	_u.mutation.ClearTokenQuotaMonthlyStart()
+	return _u
+}
+
 // SetExpiresAt sets the "expires_at" field.
 func (_u *APIKeyUpdate) SetExpiresAt(v time.Time) *APIKeyUpdate {
 	_u.mutation.SetExpiresAt(v)
@@ -689,6 +911,78 @@ func (_u *APIKeyUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.AddedTokenQuotaUsed(); ok {
 		_spec.AddField(apikey.FieldTokenQuotaUsed, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenQuotaDaily(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaDaily, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaDaily(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaDaily, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaDailyCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaDaily, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaDailyUsed(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaDailyUsed, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaDailyUsed(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaDailyUsed, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaDailyUsedCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaDailyUsed, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaDailyStart(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaDailyStart, field.TypeTime, value)
+	}
+	if _u.mutation.TokenQuotaDailyStartCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaDailyStart, field.TypeTime)
+	}
+	if value, ok := _u.mutation.TokenQuotaWeekly(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaWeekly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaWeekly(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaWeekly, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaWeeklyCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaWeekly, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaWeeklyUsed(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaWeeklyUsed, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaWeeklyUsed(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaWeeklyUsed, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaWeeklyUsedCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaWeeklyUsed, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaWeeklyStart(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaWeeklyStart, field.TypeTime, value)
+	}
+	if _u.mutation.TokenQuotaWeeklyStartCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaWeeklyStart, field.TypeTime)
+	}
+	if value, ok := _u.mutation.TokenQuotaMonthly(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaMonthly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaMonthly(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaMonthly, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaMonthlyCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaMonthly, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaMonthlyUsed(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaMonthlyUsed, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaMonthlyUsed(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaMonthlyUsed, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaMonthlyUsedCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaMonthlyUsed, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaMonthlyStart(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaMonthlyStart, field.TypeTime, value)
+	}
+	if _u.mutation.TokenQuotaMonthlyStartCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaMonthlyStart, field.TypeTime)
 	}
 	if value, ok := _u.mutation.ExpiresAt(); ok {
 		_spec.SetField(apikey.FieldExpiresAt, field.TypeTime, value)
@@ -1112,6 +1406,228 @@ func (_u *APIKeyUpdateOne) SetNillableTokenQuotaUsed(v *int64) *APIKeyUpdateOne 
 // AddTokenQuotaUsed adds value to the "token_quota_used" field.
 func (_u *APIKeyUpdateOne) AddTokenQuotaUsed(v int64) *APIKeyUpdateOne {
 	_u.mutation.AddTokenQuotaUsed(v)
+	return _u
+}
+
+// SetTokenQuotaDaily sets the "token_quota_daily" field.
+func (_u *APIKeyUpdateOne) SetTokenQuotaDaily(v int64) *APIKeyUpdateOne {
+	_u.mutation.ResetTokenQuotaDaily()
+	_u.mutation.SetTokenQuotaDaily(v)
+	return _u
+}
+
+// SetNillableTokenQuotaDaily sets the "token_quota_daily" field if the given value is not nil.
+func (_u *APIKeyUpdateOne) SetNillableTokenQuotaDaily(v *int64) *APIKeyUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaDaily(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaDaily adds value to the "token_quota_daily" field.
+func (_u *APIKeyUpdateOne) AddTokenQuotaDaily(v int64) *APIKeyUpdateOne {
+	_u.mutation.AddTokenQuotaDaily(v)
+	return _u
+}
+
+// ClearTokenQuotaDaily clears the value of the "token_quota_daily" field.
+func (_u *APIKeyUpdateOne) ClearTokenQuotaDaily() *APIKeyUpdateOne {
+	_u.mutation.ClearTokenQuotaDaily()
+	return _u
+}
+
+// SetTokenQuotaDailyUsed sets the "token_quota_daily_used" field.
+func (_u *APIKeyUpdateOne) SetTokenQuotaDailyUsed(v int64) *APIKeyUpdateOne {
+	_u.mutation.ResetTokenQuotaDailyUsed()
+	_u.mutation.SetTokenQuotaDailyUsed(v)
+	return _u
+}
+
+// SetNillableTokenQuotaDailyUsed sets the "token_quota_daily_used" field if the given value is not nil.
+func (_u *APIKeyUpdateOne) SetNillableTokenQuotaDailyUsed(v *int64) *APIKeyUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaDailyUsed(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaDailyUsed adds value to the "token_quota_daily_used" field.
+func (_u *APIKeyUpdateOne) AddTokenQuotaDailyUsed(v int64) *APIKeyUpdateOne {
+	_u.mutation.AddTokenQuotaDailyUsed(v)
+	return _u
+}
+
+// ClearTokenQuotaDailyUsed clears the value of the "token_quota_daily_used" field.
+func (_u *APIKeyUpdateOne) ClearTokenQuotaDailyUsed() *APIKeyUpdateOne {
+	_u.mutation.ClearTokenQuotaDailyUsed()
+	return _u
+}
+
+// SetTokenQuotaDailyStart sets the "token_quota_daily_start" field.
+func (_u *APIKeyUpdateOne) SetTokenQuotaDailyStart(v time.Time) *APIKeyUpdateOne {
+	_u.mutation.SetTokenQuotaDailyStart(v)
+	return _u
+}
+
+// SetNillableTokenQuotaDailyStart sets the "token_quota_daily_start" field if the given value is not nil.
+func (_u *APIKeyUpdateOne) SetNillableTokenQuotaDailyStart(v *time.Time) *APIKeyUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaDailyStart(*v)
+	}
+	return _u
+}
+
+// ClearTokenQuotaDailyStart clears the value of the "token_quota_daily_start" field.
+func (_u *APIKeyUpdateOne) ClearTokenQuotaDailyStart() *APIKeyUpdateOne {
+	_u.mutation.ClearTokenQuotaDailyStart()
+	return _u
+}
+
+// SetTokenQuotaWeekly sets the "token_quota_weekly" field.
+func (_u *APIKeyUpdateOne) SetTokenQuotaWeekly(v int64) *APIKeyUpdateOne {
+	_u.mutation.ResetTokenQuotaWeekly()
+	_u.mutation.SetTokenQuotaWeekly(v)
+	return _u
+}
+
+// SetNillableTokenQuotaWeekly sets the "token_quota_weekly" field if the given value is not nil.
+func (_u *APIKeyUpdateOne) SetNillableTokenQuotaWeekly(v *int64) *APIKeyUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaWeekly(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaWeekly adds value to the "token_quota_weekly" field.
+func (_u *APIKeyUpdateOne) AddTokenQuotaWeekly(v int64) *APIKeyUpdateOne {
+	_u.mutation.AddTokenQuotaWeekly(v)
+	return _u
+}
+
+// ClearTokenQuotaWeekly clears the value of the "token_quota_weekly" field.
+func (_u *APIKeyUpdateOne) ClearTokenQuotaWeekly() *APIKeyUpdateOne {
+	_u.mutation.ClearTokenQuotaWeekly()
+	return _u
+}
+
+// SetTokenQuotaWeeklyUsed sets the "token_quota_weekly_used" field.
+func (_u *APIKeyUpdateOne) SetTokenQuotaWeeklyUsed(v int64) *APIKeyUpdateOne {
+	_u.mutation.ResetTokenQuotaWeeklyUsed()
+	_u.mutation.SetTokenQuotaWeeklyUsed(v)
+	return _u
+}
+
+// SetNillableTokenQuotaWeeklyUsed sets the "token_quota_weekly_used" field if the given value is not nil.
+func (_u *APIKeyUpdateOne) SetNillableTokenQuotaWeeklyUsed(v *int64) *APIKeyUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaWeeklyUsed(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaWeeklyUsed adds value to the "token_quota_weekly_used" field.
+func (_u *APIKeyUpdateOne) AddTokenQuotaWeeklyUsed(v int64) *APIKeyUpdateOne {
+	_u.mutation.AddTokenQuotaWeeklyUsed(v)
+	return _u
+}
+
+// ClearTokenQuotaWeeklyUsed clears the value of the "token_quota_weekly_used" field.
+func (_u *APIKeyUpdateOne) ClearTokenQuotaWeeklyUsed() *APIKeyUpdateOne {
+	_u.mutation.ClearTokenQuotaWeeklyUsed()
+	return _u
+}
+
+// SetTokenQuotaWeeklyStart sets the "token_quota_weekly_start" field.
+func (_u *APIKeyUpdateOne) SetTokenQuotaWeeklyStart(v time.Time) *APIKeyUpdateOne {
+	_u.mutation.SetTokenQuotaWeeklyStart(v)
+	return _u
+}
+
+// SetNillableTokenQuotaWeeklyStart sets the "token_quota_weekly_start" field if the given value is not nil.
+func (_u *APIKeyUpdateOne) SetNillableTokenQuotaWeeklyStart(v *time.Time) *APIKeyUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaWeeklyStart(*v)
+	}
+	return _u
+}
+
+// ClearTokenQuotaWeeklyStart clears the value of the "token_quota_weekly_start" field.
+func (_u *APIKeyUpdateOne) ClearTokenQuotaWeeklyStart() *APIKeyUpdateOne {
+	_u.mutation.ClearTokenQuotaWeeklyStart()
+	return _u
+}
+
+// SetTokenQuotaMonthly sets the "token_quota_monthly" field.
+func (_u *APIKeyUpdateOne) SetTokenQuotaMonthly(v int64) *APIKeyUpdateOne {
+	_u.mutation.ResetTokenQuotaMonthly()
+	_u.mutation.SetTokenQuotaMonthly(v)
+	return _u
+}
+
+// SetNillableTokenQuotaMonthly sets the "token_quota_monthly" field if the given value is not nil.
+func (_u *APIKeyUpdateOne) SetNillableTokenQuotaMonthly(v *int64) *APIKeyUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaMonthly(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaMonthly adds value to the "token_quota_monthly" field.
+func (_u *APIKeyUpdateOne) AddTokenQuotaMonthly(v int64) *APIKeyUpdateOne {
+	_u.mutation.AddTokenQuotaMonthly(v)
+	return _u
+}
+
+// ClearTokenQuotaMonthly clears the value of the "token_quota_monthly" field.
+func (_u *APIKeyUpdateOne) ClearTokenQuotaMonthly() *APIKeyUpdateOne {
+	_u.mutation.ClearTokenQuotaMonthly()
+	return _u
+}
+
+// SetTokenQuotaMonthlyUsed sets the "token_quota_monthly_used" field.
+func (_u *APIKeyUpdateOne) SetTokenQuotaMonthlyUsed(v int64) *APIKeyUpdateOne {
+	_u.mutation.ResetTokenQuotaMonthlyUsed()
+	_u.mutation.SetTokenQuotaMonthlyUsed(v)
+	return _u
+}
+
+// SetNillableTokenQuotaMonthlyUsed sets the "token_quota_monthly_used" field if the given value is not nil.
+func (_u *APIKeyUpdateOne) SetNillableTokenQuotaMonthlyUsed(v *int64) *APIKeyUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaMonthlyUsed(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaMonthlyUsed adds value to the "token_quota_monthly_used" field.
+func (_u *APIKeyUpdateOne) AddTokenQuotaMonthlyUsed(v int64) *APIKeyUpdateOne {
+	_u.mutation.AddTokenQuotaMonthlyUsed(v)
+	return _u
+}
+
+// ClearTokenQuotaMonthlyUsed clears the value of the "token_quota_monthly_used" field.
+func (_u *APIKeyUpdateOne) ClearTokenQuotaMonthlyUsed() *APIKeyUpdateOne {
+	_u.mutation.ClearTokenQuotaMonthlyUsed()
+	return _u
+}
+
+// SetTokenQuotaMonthlyStart sets the "token_quota_monthly_start" field.
+func (_u *APIKeyUpdateOne) SetTokenQuotaMonthlyStart(v time.Time) *APIKeyUpdateOne {
+	_u.mutation.SetTokenQuotaMonthlyStart(v)
+	return _u
+}
+
+// SetNillableTokenQuotaMonthlyStart sets the "token_quota_monthly_start" field if the given value is not nil.
+func (_u *APIKeyUpdateOne) SetNillableTokenQuotaMonthlyStart(v *time.Time) *APIKeyUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaMonthlyStart(*v)
+	}
+	return _u
+}
+
+// ClearTokenQuotaMonthlyStart clears the value of the "token_quota_monthly_start" field.
+func (_u *APIKeyUpdateOne) ClearTokenQuotaMonthlyStart() *APIKeyUpdateOne {
+	_u.mutation.ClearTokenQuotaMonthlyStart()
 	return _u
 }
 
@@ -1560,6 +2076,78 @@ func (_u *APIKeyUpdateOne) sqlSave(ctx context.Context) (_node *APIKey, err erro
 	}
 	if value, ok := _u.mutation.AddedTokenQuotaUsed(); ok {
 		_spec.AddField(apikey.FieldTokenQuotaUsed, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenQuotaDaily(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaDaily, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaDaily(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaDaily, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaDailyCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaDaily, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaDailyUsed(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaDailyUsed, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaDailyUsed(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaDailyUsed, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaDailyUsedCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaDailyUsed, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaDailyStart(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaDailyStart, field.TypeTime, value)
+	}
+	if _u.mutation.TokenQuotaDailyStartCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaDailyStart, field.TypeTime)
+	}
+	if value, ok := _u.mutation.TokenQuotaWeekly(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaWeekly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaWeekly(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaWeekly, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaWeeklyCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaWeekly, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaWeeklyUsed(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaWeeklyUsed, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaWeeklyUsed(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaWeeklyUsed, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaWeeklyUsedCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaWeeklyUsed, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaWeeklyStart(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaWeeklyStart, field.TypeTime, value)
+	}
+	if _u.mutation.TokenQuotaWeeklyStartCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaWeeklyStart, field.TypeTime)
+	}
+	if value, ok := _u.mutation.TokenQuotaMonthly(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaMonthly, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaMonthly(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaMonthly, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaMonthlyCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaMonthly, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaMonthlyUsed(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaMonthlyUsed, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaMonthlyUsed(); ok {
+		_spec.AddField(apikey.FieldTokenQuotaMonthlyUsed, field.TypeInt64, value)
+	}
+	if _u.mutation.TokenQuotaMonthlyUsedCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaMonthlyUsed, field.TypeInt64)
+	}
+	if value, ok := _u.mutation.TokenQuotaMonthlyStart(); ok {
+		_spec.SetField(apikey.FieldTokenQuotaMonthlyStart, field.TypeTime, value)
+	}
+	if _u.mutation.TokenQuotaMonthlyStartCleared() {
+		_spec.ClearField(apikey.FieldTokenQuotaMonthlyStart, field.TypeTime)
 	}
 	if value, ok := _u.mutation.ExpiresAt(); ok {
 		_spec.SetField(apikey.FieldExpiresAt, field.TypeTime, value)
