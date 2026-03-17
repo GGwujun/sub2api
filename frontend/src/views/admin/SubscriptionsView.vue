@@ -196,6 +196,132 @@
 
           <template #cell-usage="{ row }">
             <div class="min-w-[280px] space-y-2">
+              <!-- Token Quota Usage -->
+              <template v-if="isTokenQuotaSubscription(row)">
+                <div v-if="row.group?.token_quota && row.group.token_quota > 0" class="usage-row">
+                  <div class="flex items-center gap-2">
+                    <span class="usage-label">{{ t('userSubscriptions.tokenTotal') }}</span>
+                    <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-dark-600">
+                      <div
+                        class="h-1.5 rounded-full transition-all"
+                        :class="getProgressClass(getTokenUsageTotal(row), row.group.token_quota)"
+                        :style="{ width: getProgressWidth(getTokenUsageTotal(row), row.group.token_quota) }"
+                      ></div>
+                    </div>
+                    <span class="usage-amount">
+                      {{ formatTokenUsage(getTokenUsageTotal(row), row.group.token_quota) }}
+                    </span>
+                  </div>
+                </div>
+
+                <div v-if="row.group?.token_quota_daily && row.group.token_quota_daily > 0" class="usage-row">
+                  <div class="flex items-center gap-2">
+                    <span class="usage-label">{{ t('userSubscriptions.tokenDaily') }}</span>
+                    <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-dark-600">
+                      <div
+                        class="h-1.5 rounded-full transition-all"
+                        :class="getProgressClass(getTokenUsageDaily(row), row.group.token_quota_daily)"
+                        :style="{ width: getProgressWidth(getTokenUsageDaily(row), row.group.token_quota_daily) }"
+                      ></div>
+                    </div>
+                    <span class="usage-amount">
+                      {{ formatTokenUsage(getTokenUsageDaily(row), row.group.token_quota_daily) }}
+                    </span>
+                  </div>
+                  <div class="reset-info" v-if="row.token_daily_window_start">
+                    <svg
+                      class="h-3 w-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{{ formatResetTime(row.token_daily_window_start, 'daily') }}</span>
+                  </div>
+                </div>
+
+                <div v-if="row.group?.token_quota_weekly && row.group.token_quota_weekly > 0" class="usage-row">
+                  <div class="flex items-center gap-2">
+                    <span class="usage-label">{{ t('userSubscriptions.tokenWeekly') }}</span>
+                    <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-dark-600">
+                      <div
+                        class="h-1.5 rounded-full transition-all"
+                        :class="getProgressClass(getTokenUsageWeekly(row), row.group.token_quota_weekly)"
+                        :style="{ width: getProgressWidth(getTokenUsageWeekly(row), row.group.token_quota_weekly) }"
+                      ></div>
+                    </div>
+                    <span class="usage-amount">
+                      {{ formatTokenUsage(getTokenUsageWeekly(row), row.group.token_quota_weekly) }}
+                    </span>
+                  </div>
+                  <div class="reset-info" v-if="row.token_weekly_window_start">
+                    <svg
+                      class="h-3 w-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{{ formatResetTime(row.token_weekly_window_start, 'weekly') }}</span>
+                  </div>
+                </div>
+
+                <div v-if="row.group?.token_quota_monthly && row.group.token_quota_monthly > 0" class="usage-row">
+                  <div class="flex items-center gap-2">
+                    <span class="usage-label">{{ t('userSubscriptions.tokenMonthly') }}</span>
+                    <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-dark-600">
+                      <div
+                        class="h-1.5 rounded-full transition-all"
+                        :class="getProgressClass(getTokenUsageMonthly(row), row.group.token_quota_monthly)"
+                        :style="{ width: getProgressWidth(getTokenUsageMonthly(row), row.group.token_quota_monthly) }"
+                      ></div>
+                    </div>
+                    <span class="usage-amount">
+                      {{ formatTokenUsage(getTokenUsageMonthly(row), row.group.token_quota_monthly) }}
+                    </span>
+                  </div>
+                  <div class="reset-info" v-if="row.token_monthly_window_start">
+                    <svg
+                      class="h-3 w-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>{{ formatResetTime(row.token_monthly_window_start, 'monthly') }}</span>
+                  </div>
+                </div>
+
+                <div
+                  v-if="!hasTokenQuotaLimits(row)"
+                  class="flex items-center gap-2 rounded-lg bg-gradient-to-r from-emerald-50 to-teal-50 px-3 py-2 dark:from-emerald-900/20 dark:to-teal-900/20"
+                >
+                  <span class="text-lg text-emerald-600 dark:text-emerald-400">∞</span>
+                  <span class="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                    {{ t('admin.subscriptions.unlimited') }}
+                  </span>
+                </div>
+              </template>
+
+              <template v-else>
               <!-- Daily Usage -->
               <div v-if="row.group?.daily_limit_usd" class="usage-row">
                 <div class="flex items-center gap-2">
@@ -321,6 +447,7 @@
                   {{ t('admin.subscriptions.unlimited') }}
                 </span>
               </div>
+              </template>
             </div>
           </template>
 
@@ -649,7 +776,7 @@ import { adminAPI } from '@/api/admin'
 import type { UserSubscription, Group, GroupPlatform, SubscriptionType } from '@/types'
 import type { SimpleUser } from '@/api/admin/usage'
 import type { Column } from '@/components/common/types'
-import { formatDateOnly } from '@/utils/format'
+import { formatDateOnly, formatTokensK } from '@/utils/format'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import TablePageLayout from '@/components/layout/TablePageLayout.vue'
 import DataTable from '@/components/common/DataTable.vue'
@@ -1195,6 +1322,35 @@ const getProgressClass = (used: number | null | undefined, limit: number | null)
   if (percentage >= 90) return 'bg-red-500'
   if (percentage >= 70) return 'bg-orange-500'
   return 'bg-green-500'
+}
+
+const isTokenQuotaSubscription = (subscription: UserSubscription): boolean =>
+  subscription.group?.subscription_type === 'token_quota'
+
+const hasTokenQuotaLimits = (subscription: UserSubscription): boolean => {
+  const group = subscription.group
+  return !!(group?.token_quota && group.token_quota > 0) ||
+    !!(group?.token_quota_daily && group.token_quota_daily > 0) ||
+    !!(group?.token_quota_weekly && group.token_quota_weekly > 0) ||
+    !!(group?.token_quota_monthly && group.token_quota_monthly > 0)
+}
+
+const getTokenUsageTotal = (subscription: UserSubscription): number =>
+  isTokenQuotaSubscription(subscription) ? (subscription.token_usage_total || 0) : 0
+
+const getTokenUsageDaily = (subscription: UserSubscription): number =>
+  isTokenQuotaSubscription(subscription) ? (subscription.token_usage_daily || 0) : (subscription.daily_usage_usd || 0)
+
+const getTokenUsageWeekly = (subscription: UserSubscription): number =>
+  isTokenQuotaSubscription(subscription) ? (subscription.token_usage_weekly || 0) : (subscription.weekly_usage_usd || 0)
+
+const getTokenUsageMonthly = (subscription: UserSubscription): number =>
+  isTokenQuotaSubscription(subscription) ? (subscription.token_usage_monthly || 0) : (subscription.monthly_usage_usd || 0)
+
+const formatTokenUsage = (used: number, limit: number | null): string => {
+  const usedValue = formatTokensK(Math.max(0, Math.round(used || 0)))
+  const limitValue = limit && limit > 0 ? formatTokensK(limit) : '∞'
+  return `${usedValue} / ${limitValue}`
 }
 
 // Format reset time based on window start and period type
