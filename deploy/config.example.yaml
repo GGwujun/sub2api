@@ -98,6 +98,7 @@ security:
       - "generativelanguage.googleapis.com"
       - "cloudcode-pa.googleapis.com"
       - "*.openai.azure.com"
+      - "open.bigmodel.cn"
     # Allowed hosts for pricing data download
     # 允许下载定价数据的主机列表
     pricing_hosts:
