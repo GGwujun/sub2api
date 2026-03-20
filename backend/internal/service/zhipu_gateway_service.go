@@ -28,6 +28,63 @@ const (
 	defaultZhipuBaseURL = "https://api.z.ai/api/coding/paas/v4"
 )
 
+// normalizeZhipuTools ensures each tool has a "type" field with default "function".
+// Zhipu API requires "type" field in tools, but some clients may omit it.
+func normalizeZhipuTools(body []byte) []byte {
+	tools := gjson.GetBytes(body, "tools")
+	if !tools.Exists() || !tools.IsArray() || len(tools.Array()) == 0 {
+		return body
+	}
+
+	// Check if normalization is needed
+	needsNorm := false
+	for _, t := range tools.Array() {
+		if !t.IsObject() {
+			continue
+		}
+		toolType := t.Get("type")
+		if !toolType.Exists() || strings.TrimSpace(toolType.String()) == "" {
+			needsNorm = true
+			break
+		}
+	}
+
+	if !needsNorm {
+		return body
+	}
+
+	// Parse and normalize
+	var req map[string]any
+	if err := json.Unmarshal(body, &req); err != nil {
+		return body
+	}
+
+	rawTools, _ := req["tools"].([]any)
+	if rawTools == nil {
+		return body
+	}
+
+	normalized := make([]any, 0, len(rawTools))
+	for _, t := range rawTools {
+		toolMap, ok := t.(map[string]any)
+		if !ok {
+			normalized = append(normalized, t)
+			continue
+		}
+		if _, hasType := toolMap["type"]; !hasType || strings.TrimSpace(toolMap["type"].(string)) == "" {
+			toolMap["type"] = "function"
+		}
+		normalized = append(normalized, toolMap)
+	}
+	req["tools"] = normalized
+
+	normalizedBody, err := json.Marshal(req)
+	if err != nil {
+		return body
+	}
+	return normalizedBody
+}
+
 // ZhipuAccountSwitchError 账号切换信号
 // 当账号限流时间超过阈值时，通知上层切换账号
 type ZhipuAccountSwitchError struct {
@@ -462,6 +519,9 @@ func (s *ZhipuGatewayService) urlValidationOptions() urlvalidator.ValidationOpti
 
 // doForward 执行实际的转发请求（单次尝试）
 func (s *ZhipuGatewayService) doForward(ctx context.Context, account *Account, body []byte, attempt int) (*ZhipuForwardResult, error) {
+	// Normalize tools: ensure each tool has a "type" field
+	body = normalizeZhipuTools(body)
+
 	// Get base URL from account or use default
 	baseURL := s.getAccountBaseURL(account)
 
@@ -671,6 +731,9 @@ func (s *ZhipuGatewayService) isStreamError(err error, result *ZhipuForwardResul
 
 // doForwardStream 执行实际的流式转发请求（单次尝试）
 func (s *ZhipuGatewayService) doForwardStream(ctx context.Context, account *Account, body []byte, w http.ResponseWriter, attempt int) (*ZhipuForwardResult, error) {
+	// Normalize tools: ensure each tool has a "type" field
+	body = normalizeZhipuTools(body)
+
 	// 日志：开始流式转发
 	logger.L().Debug("zhipu.forward_stream_attempt",
 		zap.Int64("account_id", account.ID),

@@ -141,6 +141,20 @@ func RegisterGatewayRoutes(
 		zhipuV1.GET("/models", h.ZhipuGateway.Models)
 	}
 
+	// Zhipu /v1/v1 兼容路由（处理某些客户端配置导致的重复前缀）
+	zhipuV1Alias := r.Group("/zhipu/v1/v1")
+	zhipuV1Alias.Use(bodyLimit)
+	zhipuV1Alias.Use(clientRequestID)
+	zhipuV1Alias.Use(opsErrorLogger)
+	zhipuV1Alias.Use(middleware.ForcePlatform(service.PlatformZhipu))
+	zhipuV1Alias.Use(gin.HandlerFunc(apiKeyAuth))
+	zhipuV1Alias.Use(requireGroupAnthropic)
+	{
+		zhipuV1Alias.POST("/chat/completions", h.ZhipuGateway.ChatCompletions)
+		zhipuV1Alias.POST("/messages", h.ZhipuGateway.ChatCompletions) // Anthropic 协议
+		zhipuV1Alias.GET("/models", h.ZhipuGateway.Models)
+	}
+
 	// Kimi 专用路由（强制使用 kimi 平台）
 	kimiV1 := r.Group("/kimi/v1")
 	kimiV1.Use(bodyLimit)
