@@ -89,6 +89,12 @@ func (f fakeAPIKeyRepo) ListKeysByGroupID(ctx context.Context, groupID int64) ([
 func (f fakeAPIKeyRepo) IncrementQuotaUsed(ctx context.Context, id int64, amount float64) (float64, error) {
 	return 0, errors.New("not implemented")
 }
+func (f fakeAPIKeyRepo) IncrementTokenQuotaUsed(ctx context.Context, id int64, tokens int64) (int64, error) {
+	return 0, errors.New("not implemented")
+}
+func (f fakeAPIKeyRepo) IncrementTokenQuotaWindows(ctx context.Context, id int64, tokens int64) error {
+	return errors.New("not implemented")
+}
 func (f fakeAPIKeyRepo) UpdateLastUsed(ctx context.Context, id int64, usedAt time.Time) error {
 	if f.updateLastUsed != nil {
 		return f.updateLastUsed(ctx, id, usedAt)
@@ -178,6 +184,9 @@ func (f fakeGoogleSubscriptionRepo) ResetMonthlyUsage(ctx context.Context, id in
 	return errors.New("not implemented")
 }
 func (f fakeGoogleSubscriptionRepo) IncrementUsage(ctx context.Context, id int64, costUSD float64) error {
+	return errors.New("not implemented")
+}
+func (f fakeGoogleSubscriptionRepo) IncrementTokenUsage(ctx context.Context, id int64, tokens int64) error {
 	return errors.New("not implemented")
 }
 func (f fakeGoogleSubscriptionRepo) BatchUpdateExpiredStatus(ctx context.Context) (int64, error) {
@@ -682,5 +691,5 @@ func TestApiKeyAuthWithSubscriptionGoogle_SubscriptionLimitExceededReturns429(t 
 	require.NoError(t, json.Unmarshal(rec.Body.Bytes(), &resp))
 	require.Equal(t, http.StatusTooManyRequests, resp.Error.Code)
 	require.Equal(t, "RESOURCE_EXHAUSTED", resp.Error.Status)
-	require.Contains(t, resp.Error.Message, "daily usage limit exceeded")
+	require.Contains(t, resp.Error.Message, "每日用量已用完")
 }

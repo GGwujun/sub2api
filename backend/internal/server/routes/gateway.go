@@ -42,38 +42,16 @@ func RegisterGatewayRoutes(
 	gateway.Use(opsErrorLogger)
 	gateway.Use(gin.HandlerFunc(apiKeyAuth))
 	gateway.Use(requireGroupAnthropic)
-	{
-		// /v1/messages: auto-route based on group platform
-		gateway.POST("/messages", func(c *gin.Context) {
-			if platform := getGroupPlatform(c); platform == service.PlatformOpenAI {
-				h.OpenAIGateway.Messages(c)
-				return
-			}
-			h.Gateway.Messages(c)
-		})
-		// /v1/messages/count_tokens: OpenAI groups get 404
-		gateway.POST("/messages/count_tokens", func(c *gin.Context) {
-			if platform := getGroupPlatform(c); platform == service.PlatformOpenAI {
-				c.JSON(http.StatusNotFound, gin.H{
-					"type": "error",
-					"error": gin.H{
-						"type":    "not_found_error",
-						"message": "Token counting is not supported for this platform",
-					},
-				})
-				return
-			}
-			h.Gateway.CountTokens(c)
-		})
-		gateway.GET("/models", h.Gateway.Models)
-		gateway.GET("/usage", h.Gateway.Usage)
-		// OpenAI Responses API
-		gateway.POST("/responses", h.OpenAIGateway.Responses)
-		gateway.POST("/responses/*subpath", h.OpenAIGateway.Responses)
-		gateway.GET("/responses", h.OpenAIGateway.ResponsesWebSocket)
-		// OpenAI Chat Completions API
-		gateway.POST("/chat/completions", h.OpenAIGateway.ChatCompletions)
-	}
+	registerGatewayV1Routes(gateway, h)
+
+	// /v1 的兼容别名（用于处理重复前缀配置导致的 /v1/v1/...）
+	gatewayAlias := r.Group("/v1/v1")
+	gatewayAlias.Use(bodyLimit)
+	gatewayAlias.Use(clientRequestID)
+	gatewayAlias.Use(opsErrorLogger)
+	gatewayAlias.Use(gin.HandlerFunc(apiKeyAuth))
+	gatewayAlias.Use(requireGroupAnthropic)
+	registerGatewayV1Routes(gatewayAlias, h)
 
 	// Gemini 原生 API 兼容层（Gemini SDK/CLI 直连）
 	gemini := r.Group("/v1beta")
@@ -159,6 +137,7 @@ func RegisterGatewayRoutes(
 	zhipuV1.Use(requireGroupAnthropic)
 	{
 		zhipuV1.POST("/chat/completions", h.ZhipuGateway.ChatCompletions)
+		zhipuV1.POST("/messages", h.ZhipuGateway.ChatCompletions) // Anthropic 协议
 		zhipuV1.GET("/models", h.ZhipuGateway.Models)
 	}
 
@@ -189,6 +168,39 @@ func RegisterGatewayRoutes(
 		minimaxV1.POST("/messages", h.MiniMaxGateway.ChatCompletions) // Anthropic 协议
 		minimaxV1.GET("/models", h.MiniMaxGateway.Models)
 	}
+}
+
+func registerGatewayV1Routes(gateway *gin.RouterGroup, h *handler.Handlers) {
+	// /v1/messages: auto-route based on group platform
+	gateway.POST("/messages", func(c *gin.Context) {
+		if platform := getGroupPlatform(c); platform == service.PlatformOpenAI {
+			h.OpenAIGateway.Messages(c)
+			return
+		}
+		h.Gateway.Messages(c)
+	})
+	// /v1/messages/count_tokens: OpenAI groups get 404
+	gateway.POST("/messages/count_tokens", func(c *gin.Context) {
+		if platform := getGroupPlatform(c); platform == service.PlatformOpenAI {
+			c.JSON(http.StatusNotFound, gin.H{
+				"type": "error",
+				"error": gin.H{
+					"type":    "not_found_error",
+					"message": "Token counting is not supported for this platform",
+				},
+			})
+			return
+		}
+		h.Gateway.CountTokens(c)
+	})
+	gateway.GET("/models", h.Gateway.Models)
+	gateway.GET("/usage", h.Gateway.Usage)
+	// OpenAI Responses API
+	gateway.POST("/responses", h.OpenAIGateway.Responses)
+	gateway.POST("/responses/*subpath", h.OpenAIGateway.Responses)
+	gateway.GET("/responses", h.OpenAIGateway.ResponsesWebSocket)
+	// OpenAI Chat Completions API
+	gateway.POST("/chat/completions", h.OpenAIGateway.ChatCompletions)
 }
 
 // getGroupPlatform extracts the group platform from the API Key stored in context.
