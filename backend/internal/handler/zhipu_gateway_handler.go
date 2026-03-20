@@ -102,6 +102,10 @@ func (h *ZhipuGatewayHandler) ChatCompletions(c *gin.Context) {
 	// Parse model and stream flag
 	model := gjson.GetBytes(body, "model").String()
 	stream := gjson.GetBytes(body, "stream").Bool()
+	logger.FromContext(ctx).Info("zhipu.request_parsed",
+		zap.String("model", model),
+		zap.Bool("stream", stream),
+	)
 
 	if model == "" {
 		h.errorResponse(c, http.StatusBadRequest, "invalid_request_error", "model is required")

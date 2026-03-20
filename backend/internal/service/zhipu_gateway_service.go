@@ -28,28 +28,27 @@ const (
 	defaultZhipuBaseURL = "https://api.z.ai/api/coding/paas/v4"
 )
 
-// normalizeZhipuTools ensures each tool has a "type" field with default "function".
-// Zhipu API requires "type" field in tools, but some clients may omit it.
+// normalizeZhipuTools adds "type": "function" if missing from tools.
+// This is needed because some clients (like Claude Code) may send tools without type field.
 func normalizeZhipuTools(body []byte) []byte {
 	tools := gjson.GetBytes(body, "tools")
 	if !tools.Exists() || !tools.IsArray() || len(tools.Array()) == 0 {
 		return body
 	}
 
-	// Check if normalization is needed
-	needsNorm := false
+	// Check if any tool is missing type
+	hasMissingType := false
 	for _, t := range tools.Array() {
 		if !t.IsObject() {
 			continue
 		}
 		toolType := t.Get("type")
 		if !toolType.Exists() || strings.TrimSpace(toolType.String()) == "" {
-			needsNorm = true
+			hasMissingType = true
 			break
 		}
 	}
-
-	if !needsNorm {
+	if !hasMissingType {
 		return body
 	}
 
@@ -71,7 +70,7 @@ func normalizeZhipuTools(body []byte) []byte {
 			normalized = append(normalized, t)
 			continue
 		}
-		if _, hasType := toolMap["type"]; !hasType || strings.TrimSpace(toolMap["type"].(string)) == "" {
+		if _, hasType := toolMap["type"]; !hasType {
 			toolMap["type"] = "function"
 		}
 		normalized = append(normalized, toolMap)
@@ -519,14 +518,21 @@ func (s *ZhipuGatewayService) urlValidationOptions() urlvalidator.ValidationOpti
 
 // doForward 执行实际的转发请求（单次尝试）
 func (s *ZhipuGatewayService) doForward(ctx context.Context, account *Account, body []byte, attempt int) (*ZhipuForwardResult, error) {
-	// Normalize tools: ensure each tool has a "type" field
-	body = normalizeZhipuTools(body)
-
 	// Get base URL from account or use default
 	baseURL := s.getAccountBaseURL(account)
 
-	// Build target URL (Zhipu uses /chat/completions)
-	targetURL := strings.TrimSuffix(baseURL, "/") + "/chat/completions"
+	// Build target URL
+	// Zhipu has two APIs:
+	// - Anthropic-compatible: /v1/messages (when base URL contains /anthropic)
+	// - OpenAI-compatible: /chat/completions (when base URL contains /coding or /paas)
+	var targetURL string
+	if strings.Contains(baseURL, "/anthropic") {
+		// Anthropic API: https://open.bigmodel.cn/api/anthropic/v1/messages
+		targetURL = strings.TrimSuffix(baseURL, "/") + "/v1/messages"
+	} else {
+		// OpenAI API: https://open.bigmodel.cn/api/coding/paas/v4/chat/completions
+		targetURL = strings.TrimSuffix(baseURL, "/") + "/chat/completions"
+	}
 
 	// Validate URL
 	allowInsecure := s.cfg != nil && s.cfg.Security.URLAllowlist.AllowInsecureHTTP
@@ -731,9 +737,6 @@ func (s *ZhipuGatewayService) isStreamError(err error, result *ZhipuForwardResul
 
 // doForwardStream 执行实际的流式转发请求（单次尝试）
 func (s *ZhipuGatewayService) doForwardStream(ctx context.Context, account *Account, body []byte, w http.ResponseWriter, attempt int) (*ZhipuForwardResult, error) {
-	// Normalize tools: ensure each tool has a "type" field
-	body = normalizeZhipuTools(body)
-
 	// 日志：开始流式转发
 	logger.L().Debug("zhipu.forward_stream_attempt",
 		zap.Int64("account_id", account.ID),
@@ -745,7 +748,17 @@ func (s *ZhipuGatewayService) doForwardStream(ctx context.Context, account *Acco
 	baseURL := s.getAccountBaseURL(account)
 
 	// Build target URL
-	targetURL := strings.TrimSuffix(baseURL, "/") + "/chat/completions"
+	// Zhipu has two APIs:
+	// - Anthropic-compatible: /v1/messages (when base URL contains /anthropic)
+	// - OpenAI-compatible: /chat/completions (default)
+	var targetURL string
+	if strings.Contains(baseURL, "/anthropic") {
+		// Anthropic API: https://open.bigmodel.cn/api/anthropic/v1/messages
+		targetURL = strings.TrimSuffix(baseURL, "/") + "/v1/messages"
+	} else {
+		// OpenAI API: https://open.bigmodel.cn/api/coding/paas/v4/chat/completions
+		targetURL = strings.TrimSuffix(baseURL, "/") + "/chat/completions"
+	}
 
 	// Validate URL
 	allowInsecure := s.cfg != nil && s.cfg.Security.URLAllowlist.AllowInsecureHTTP
@@ -795,7 +808,7 @@ func (s *ZhipuGatewayService) doForwardStream(ctx context.Context, account *Acco
 
 	// Stream response and collect usage
 	var collectedUsage *ZhipuUsage
-	requestID := ""
+	var requestID string
 	scanner := bufio.NewScanner(resp.Body)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -1315,7 +1328,17 @@ func (s *ZhipuGatewayService) TestConnection(ctx context.Context, account *Accou
 	baseURL := s.getAccountBaseURL(account)
 
 	// 构建测试请求URL
-	targetURL := strings.TrimSuffix(baseURL, "/") + "/chat/completions"
+	// Zhipu has two APIs:
+	// - Anthropic-compatible: /v1/messages (when base URL contains /anthropic)
+	// - OpenAI-compatible: /chat/completions
+	var targetURL string
+	if strings.Contains(baseURL, "/anthropic") {
+		// Anthropic API: https://open.bigmodel.cn/api/anthropic/v1/messages
+		targetURL = strings.TrimSuffix(baseURL, "/") + "/v1/messages"
+	} else {
+		// OpenAI API: https://open.bigmodel.cn/api/coding/paas/v4/chat/completions
+		targetURL = strings.TrimSuffix(baseURL, "/") + "/chat/completions"
+	}
 
 	// 验证URL
 	allowInsecure := s.cfg != nil && s.cfg.Security.URLAllowlist.AllowInsecureHTTP

@@ -169,6 +169,20 @@ func RegisterGatewayRoutes(
 		kimiV1.GET("/models", h.KimiGateway.Models)
 	}
 
+	// Kimi /v1/v1 兼容路由
+	kimiV1Alias := r.Group("/kimi/v1/v1")
+	kimiV1Alias.Use(bodyLimit)
+	kimiV1Alias.Use(clientRequestID)
+	kimiV1Alias.Use(opsErrorLogger)
+	kimiV1Alias.Use(middleware.ForcePlatform(service.PlatformKimi))
+	kimiV1Alias.Use(gin.HandlerFunc(apiKeyAuth))
+	kimiV1Alias.Use(requireGroupAnthropic)
+	{
+		kimiV1Alias.POST("/chat/completions", h.KimiGateway.ChatCompletions)
+		kimiV1Alias.POST("/messages", h.KimiGateway.ChatCompletions) // Anthropic 协议
+		kimiV1Alias.GET("/models", h.KimiGateway.Models)
+	}
+
 	// MiniMaxCode 专用路由（强制使用 minimaxCode 平台）
 	minimaxV1 := r.Group("/minimaxCode/v1")
 	minimaxV1.Use(bodyLimit)
@@ -181,6 +195,20 @@ func RegisterGatewayRoutes(
 		minimaxV1.POST("/chat/completions", h.MiniMaxGateway.ChatCompletions)
 		minimaxV1.POST("/messages", h.MiniMaxGateway.ChatCompletions) // Anthropic 协议
 		minimaxV1.GET("/models", h.MiniMaxGateway.Models)
+	}
+
+	// MiniMaxCode /v1/v1 兼容路由
+	minimaxV1Alias := r.Group("/minimaxCode/v1/v1")
+	minimaxV1Alias.Use(bodyLimit)
+	minimaxV1Alias.Use(clientRequestID)
+	minimaxV1Alias.Use(opsErrorLogger)
+	minimaxV1Alias.Use(middleware.ForcePlatform(service.PlatformMiniMaxCode))
+	minimaxV1Alias.Use(gin.HandlerFunc(apiKeyAuth))
+	minimaxV1Alias.Use(requireGroupAnthropic)
+	{
+		minimaxV1Alias.POST("/chat/completions", h.MiniMaxGateway.ChatCompletions)
+		minimaxV1Alias.POST("/messages", h.MiniMaxGateway.ChatCompletions) // Anthropic 协议
+		minimaxV1Alias.GET("/models", h.MiniMaxGateway.Models)
 	}
 }
 
