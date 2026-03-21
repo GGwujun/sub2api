@@ -474,13 +474,13 @@ func (s *AccountTestService) testZAIAccountConnection(c *gin.Context, account *A
 	// Get base URL
 	baseURL := account.GetCredential("base_url")
 	if baseURL == "" {
-		baseURL = "https://api.z.ai/api/coding/paas/v4"
+		baseURL = "https://open.bigmodel.cn/api"
 	}
 	normalizedBaseURL, err := s.validateUpstreamBaseURL(baseURL)
 	if err != nil {
 		return s.sendErrorAndEnd(c, fmt.Sprintf("Invalid base URL: %s", err.Error()))
 	}
-	apiURL := strings.TrimSuffix(normalizedBaseURL, "/") + "/chat/completions"
+	apiURL := strings.TrimSuffix(normalizedBaseURL, "/") + "/coding/paas/v4/chat/completions"
 
 	// Set SSE headers
 	c.Writer.Header().Set("Content-Type", "text/event-stream")

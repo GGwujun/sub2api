@@ -828,7 +828,7 @@ func (a *Account) GetZAIBaseURL() string {
 			return baseURL
 		}
 	}
-	return "https://api.z.ai/api/coding/paas/v4"
+	return "https://open.bigmodel.cn/api"
 }
 
 // GetZAIAPIKey returns the API key for Z.AI
