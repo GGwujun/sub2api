@@ -391,6 +391,7 @@ const currentFiles = computed((): FileConfig[] => {
   }
   const apiBase = ensureV1(baseRoot)
   const zhipuBase = `${baseRoot}/zhipu/v1`
+  const zhipuClaudeBase = `${baseRoot}/zhipu/claude`
   const kimiBase = `${baseRoot}/kimi/v1`
   const minimaxBase = `${baseRoot}/minimaxCode/v1`
   const antigravityBase = ensureV1(`${baseRoot}/antigravity`)
@@ -442,7 +443,7 @@ const currentFiles = computed((): FileConfig[] => {
     case 'gemini':
       return [generateGeminiCliContent(baseUrl, apiKey)]
     case 'zai':
-      return generateAnthropicFiles(zhipuBase, apiKey)
+      return generateAnthropicFiles(zhipuClaudeBase, apiKey)
     case 'kimi':
       return generateAnthropicFiles(kimiBase, apiKey, { ENABLE_TOOL_SEARCH: 'false' })
     case 'minimaxCode':
