@@ -137,8 +137,23 @@ func RegisterGatewayRoutes(
 	zhipuV1.Use(requireGroupAnthropic)
 	{
 		zhipuV1.POST("/chat/completions", h.ZhipuGateway.ChatCompletions)
-		zhipuV1.POST("/messages", h.ZhipuGateway.ChatCompletions) // Anthropic 协议
+		zhipuV1.POST("/messages", h.ZhipuGateway.ChatCompletions) // 兼容入口；默认按 OpenAI 通道处理
 		zhipuV1.GET("/models", h.ZhipuGateway.Models)
+	}
+
+	// Zhipu Claude 专用路由（用于 Claude Code 等 Anthropic 协议客户端）
+	zhipuClaude := r.Group("/zhipu/claude")
+	zhipuClaude.Use(bodyLimit)
+	zhipuClaude.Use(clientRequestID)
+	zhipuClaude.Use(opsErrorLogger)
+	zhipuClaude.Use(middleware.ForcePlatform(service.PlatformZhipu))
+	zhipuClaude.Use(gin.HandlerFunc(apiKeyAuth))
+	zhipuClaude.Use(requireGroupAnthropic)
+	{
+		zhipuClaude.POST("/v1/messages", h.ZhipuGateway.ChatCompletions)
+		zhipuClaude.POST("/messages", h.ZhipuGateway.ChatCompletions)
+		zhipuClaude.GET("/v1/models", h.ZhipuGateway.Models)
+		zhipuClaude.GET("/models", h.ZhipuGateway.Models)
 	}
 
 	// Zhipu /v1/v1 兼容路由（处理某些客户端配置导致的重复前缀）

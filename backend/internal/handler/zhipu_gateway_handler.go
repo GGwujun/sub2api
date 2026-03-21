@@ -73,10 +73,14 @@ func (h *ZhipuGatewayHandler) ChatCompletions(c *gin.Context) {
 	subscription, _ := middleware2.GetSubscriptionFromContext(c)
 
 	ctx := c.Request.Context()
+	variant := service.ResolveZhipuRouteVariantByPath(c.FullPath(), c.Request.URL.Path)
+	ctx = service.WithZhipuRouteVariant(ctx, variant)
+	c.Request = c.Request.WithContext(ctx)
 	logger.FromContext(ctx).Info("zhipu.chat_completions",
 		zap.Int64("user_id", subject.UserID),
 		zap.Int64("api_key_id", apiKey.ID),
 		zap.Any("group_id", apiKey.GroupID),
+		zap.String("route_variant", variant),
 	)
 
 	// Check billing eligibility

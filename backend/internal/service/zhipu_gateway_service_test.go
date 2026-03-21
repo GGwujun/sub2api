@@ -383,3 +383,50 @@ func TestZhipuGatewayService_TestConnection_EmptyResponse(t *testing.T) {
 	require.NotNil(t, result)
 	require.Equal(t, "Connected (empty response)", result.Text)
 }
+
+func TestZhipuGatewayService_BuildTargetURL_ByRouteVariant(t *testing.T) {
+	svc := &ZhipuGatewayService{}
+
+	openAIURL := svc.buildTargetURL(
+		WithZhipuRouteVariant(context.Background(), ZhipuRouteVariantOpenAI),
+		"https://open.bigmodel.cn/api",
+	)
+	require.Equal(t, "https://open.bigmodel.cn/api/coding/paas/v4/chat/completions", openAIURL)
+
+	claudeURL := svc.buildTargetURL(
+		WithZhipuRouteVariant(context.Background(), ZhipuRouteVariantClaude),
+		"https://open.bigmodel.cn/api",
+	)
+	require.Equal(t, "https://open.bigmodel.cn/api/anthropic/v1/messages", claudeURL)
+}
+
+func TestZhipuGatewayService_BuildTargetURL_LegacyBaseURLCompatibility(t *testing.T) {
+	svc := &ZhipuGatewayService{}
+
+	openAILegacy := svc.buildTargetURL(
+		WithZhipuRouteVariant(context.Background(), ZhipuRouteVariantOpenAI),
+		"https://open.bigmodel.cn/api/coding/paas/v4",
+	)
+	require.Equal(t, "https://open.bigmodel.cn/api/coding/paas/v4/chat/completions", openAILegacy)
+
+	claudeLegacy := svc.buildTargetURL(
+		WithZhipuRouteVariant(context.Background(), ZhipuRouteVariantClaude),
+		"https://open.bigmodel.cn/api/anthropic",
+	)
+	require.Equal(t, "https://open.bigmodel.cn/api/anthropic/v1/messages", claudeLegacy)
+}
+
+func TestZhipuGatewayService_RoutePathToFinalTargetURL(t *testing.T) {
+	svc := &ZhipuGatewayService{}
+	baseURL := "https://open.bigmodel.cn/api"
+
+	claudeVariant := ResolveZhipuRouteVariantByPath("/zhipu/claude/v1/messages", "/zhipu/claude/v1/messages")
+	claudeURL := svc.buildTargetURL(WithZhipuRouteVariant(context.Background(), claudeVariant), baseURL)
+	require.Equal(t, ZhipuRouteVariantClaude, claudeVariant)
+	require.Equal(t, "https://open.bigmodel.cn/api/anthropic/v1/messages", claudeURL)
+
+	openAIVariant := ResolveZhipuRouteVariantByPath("/zhipu/v1/chat/completions", "/zhipu/v1/chat/completions")
+	openAIURL := svc.buildTargetURL(WithZhipuRouteVariant(context.Background(), openAIVariant), baseURL)
+	require.Equal(t, ZhipuRouteVariantOpenAI, openAIVariant)
+	require.Equal(t, "https://open.bigmodel.cn/api/coding/paas/v4/chat/completions", openAIURL)
+}

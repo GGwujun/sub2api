@@ -24,9 +24,43 @@ import (
 )
 
 const (
-	// Zhipu API endpoint (Z.AI Coding Plan 专用 API)
-	defaultZhipuBaseURL = "https://api.z.ai/api/coding/paas/v4"
+	// Zhipu API endpoint (Coding/PAAS)
+	defaultZhipuBaseURL = "https://open.bigmodel.cn/api"
+
+	ZhipuRouteVariantOpenAI = "openai"
+	ZhipuRouteVariantClaude = "claude"
 )
+
+type zhipuRouteVariantCtxKey struct{}
+
+func WithZhipuRouteVariant(ctx context.Context, variant string) context.Context {
+	if strings.TrimSpace(variant) == "" {
+		variant = ZhipuRouteVariantOpenAI
+	}
+	return context.WithValue(ctx, zhipuRouteVariantCtxKey{}, variant)
+}
+
+func zhipuRouteVariantFromContext(ctx context.Context) string {
+	if ctx == nil {
+		return ZhipuRouteVariantOpenAI
+	}
+	v, _ := ctx.Value(zhipuRouteVariantCtxKey{}).(string)
+	v = strings.TrimSpace(v)
+	if v == "" {
+		return ZhipuRouteVariantOpenAI
+	}
+	return v
+}
+
+func ResolveZhipuRouteVariantByPath(fullPath, requestPath string) string {
+	if strings.HasPrefix(fullPath, "/zhipu/claude") {
+		return ZhipuRouteVariantClaude
+	}
+	if strings.HasPrefix(requestPath, "/zhipu/claude") {
+		return ZhipuRouteVariantClaude
+	}
+	return ZhipuRouteVariantOpenAI
+}
 
 // normalizeZhipuTools adds "type": "function" if missing from tools.
 // This is needed because some clients (like Claude Code) may send tools without type field.
@@ -521,18 +555,8 @@ func (s *ZhipuGatewayService) doForward(ctx context.Context, account *Account, b
 	// Get base URL from account or use default
 	baseURL := s.getAccountBaseURL(account)
 
-	// Build target URL
-	// Zhipu has two APIs:
-	// - Anthropic-compatible: /v1/messages (when base URL contains /anthropic)
-	// - OpenAI-compatible: /chat/completions (when base URL contains /coding or /paas)
-	var targetURL string
-	if strings.Contains(baseURL, "/anthropic") {
-		// Anthropic API: https://open.bigmodel.cn/api/anthropic/v1/messages
-		targetURL = strings.TrimSuffix(baseURL, "/") + "/v1/messages"
-	} else {
-		// OpenAI API: https://open.bigmodel.cn/api/coding/paas/v4/chat/completions
-		targetURL = strings.TrimSuffix(baseURL, "/") + "/chat/completions"
-	}
+	// Build target URL by ingress route variant.
+	targetURL := s.buildTargetURL(ctx, baseURL)
 
 	// Validate URL
 	allowInsecure := s.cfg != nil && s.cfg.Security.URLAllowlist.AllowInsecureHTTP
@@ -747,18 +771,8 @@ func (s *ZhipuGatewayService) doForwardStream(ctx context.Context, account *Acco
 	// Get base URL from account or use default
 	baseURL := s.getAccountBaseURL(account)
 
-	// Build target URL
-	// Zhipu has two APIs:
-	// - Anthropic-compatible: /v1/messages (when base URL contains /anthropic)
-	// - OpenAI-compatible: /chat/completions (default)
-	var targetURL string
-	if strings.Contains(baseURL, "/anthropic") {
-		// Anthropic API: https://open.bigmodel.cn/api/anthropic/v1/messages
-		targetURL = strings.TrimSuffix(baseURL, "/") + "/v1/messages"
-	} else {
-		// OpenAI API: https://open.bigmodel.cn/api/coding/paas/v4/chat/completions
-		targetURL = strings.TrimSuffix(baseURL, "/") + "/chat/completions"
-	}
+	// Build target URL by ingress route variant.
+	targetURL := s.buildTargetURL(ctx, baseURL)
 
 	// Validate URL
 	allowInsecure := s.cfg != nil && s.cfg.Security.URLAllowlist.AllowInsecureHTTP
@@ -1025,6 +1039,23 @@ func (s *ZhipuGatewayService) getAccountBaseURL(account *Account) string {
 		return s.cfg.Gateway.Zhipu.BaseURL
 	}
 	return defaultZhipuBaseURL
+}
+
+func (s *ZhipuGatewayService) buildTargetURL(ctx context.Context, baseURL string) string {
+	trimmedBase := strings.TrimSuffix(strings.TrimSpace(baseURL), "/")
+	variant := zhipuRouteVariantFromContext(ctx)
+
+	if variant == ZhipuRouteVariantClaude {
+		if strings.Contains(trimmedBase, "/anthropic") {
+			return trimmedBase + "/v1/messages"
+		}
+		return trimmedBase + "/anthropic/v1/messages"
+	}
+
+	if strings.Contains(trimmedBase, "/coding/paas/") {
+		return trimmedBase + "/chat/completions"
+	}
+	return trimmedBase + "/coding/paas/v4/chat/completions"
 }
 
 // getAccountAPIKey returns the API key for the account
@@ -1327,18 +1358,8 @@ func (s *ZhipuGatewayService) TestConnection(ctx context.Context, account *Accou
 	// 获取base URL
 	baseURL := s.getAccountBaseURL(account)
 
-	// 构建测试请求URL
-	// Zhipu has two APIs:
-	// - Anthropic-compatible: /v1/messages (when base URL contains /anthropic)
-	// - OpenAI-compatible: /chat/completions
-	var targetURL string
-	if strings.Contains(baseURL, "/anthropic") {
-		// Anthropic API: https://open.bigmodel.cn/api/anthropic/v1/messages
-		targetURL = strings.TrimSuffix(baseURL, "/") + "/v1/messages"
-	} else {
-		// OpenAI API: https://open.bigmodel.cn/api/coding/paas/v4/chat/completions
-		targetURL = strings.TrimSuffix(baseURL, "/") + "/chat/completions"
-	}
+	// 构建测试请求URL（默认走 OpenAI 兼容通道）
+	targetURL := s.buildTargetURL(WithZhipuRouteVariant(ctx, ZhipuRouteVariantOpenAI), baseURL)
 
 	// 验证URL
 	allowInsecure := s.cfg != nil && s.cfg.Security.URLAllowlist.AllowInsecureHTTP
