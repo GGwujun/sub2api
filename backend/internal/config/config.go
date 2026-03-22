@@ -65,6 +65,7 @@ type Config struct {
 	JWT                     JWTConfig                     `mapstructure:"jwt"`
 	Totp                    TotpConfig                    `mapstructure:"totp"`
 	LinuxDo                 LinuxDoConnectConfig          `mapstructure:"linuxdo_connect"`
+	WeCom                   WeComConfig                   `mapstructure:"wecom"`
 	Default                 DefaultConfig                 `mapstructure:"default"`
 	RateLimit               RateLimitConfig               `mapstructure:"rate_limit"`
 	Pricing                 PricingConfig                 `mapstructure:"pricing"`
@@ -183,6 +184,41 @@ type LinuxDoConnectConfig struct {
 	UserInfoEmailPath    string `mapstructure:"userinfo_email_path"`
 	UserInfoIDPath       string `mapstructure:"userinfo_id_path"`
 	UserInfoUsernamePath string `mapstructure:"userinfo_username_path"`
+}
+
+// WeComConfig 企业微信应用配置
+type WeComConfig struct {
+	Enabled        bool               `mapstructure:"enabled"`
+	CorpID         string             `mapstructure:"corp_id"`
+	AgentID        int64              `mapstructure:"agent_id"`
+	Secret         string             `mapstructure:"secret"`
+	Token          string             `mapstructure:"token"`
+	EncodingAESKey string             `mapstructure:"encoding_aes_key"`
+	Menu           WeComMenuConfig    `mapstructure:"menu"`
+	Message        WeComMessageConfig `mapstructure:"message"`
+}
+
+// WeComMenuConfig 自定义菜单配置
+type WeComMenuConfig struct {
+	RootName string          `mapstructure:"root_name"`
+	Items    []WeComMenuItem `mapstructure:"items"`
+}
+
+// WeComMenuItem 子菜单项配置
+type WeComMenuItem struct {
+	Name         string  `mapstructure:"name"`
+	Key          string  `mapstructure:"key"`
+	GroupID      int64   `mapstructure:"group_id"`
+	ValidityDays int     `mapstructure:"validity_days"`
+	RedeemValue  float64 `mapstructure:"redeem_value"`
+}
+
+// WeComMessageConfig 消息模板配置
+type WeComMessageConfig struct {
+	GuideURL   string `mapstructure:"guide_url"`
+	UsageURL   string `mapstructure:"usage_url"`
+	Notice     string `mapstructure:"notice"`
+	Disclaimer string `mapstructure:"disclaimer"`
 }
 
 // TokenRefreshConfig OAuth token自动刷新配置

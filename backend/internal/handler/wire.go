@@ -71,6 +71,7 @@ func ProvideSettingHandler(settingService *service.SettingService, buildInfo Bui
 // ProvideHandlers creates the Handlers struct
 func ProvideHandlers(
 	authHandler *AuthHandler,
+	wecomHandler *WeComHandler,
 	userHandler *UserHandler,
 	apiKeyHandler *APIKeyHandler,
 	usageHandler *UsageHandler,
@@ -92,6 +93,7 @@ func ProvideHandlers(
 ) *Handlers {
 	return &Handlers{
 		Auth:           authHandler,
+		WeCom:          wecomHandler,
 		User:           userHandler,
 		APIKey:         apiKeyHandler,
 		Usage:          usageHandler,
@@ -115,6 +117,7 @@ func ProvideHandlers(
 var ProviderSet = wire.NewSet(
 	// Top-level handlers
 	NewAuthHandler,
+	NewWeComHandler,
 	NewUserHandler,
 	NewAPIKeyHandler,
 	NewUsageHandler,
@@ -127,6 +130,7 @@ var ProviderSet = wire.NewSet(
 	NewZhipuGatewayHandler,
 	NewKimiGatewayHandler,
 	NewMiniMaxGatewayHandler,
+	NewSoraClientHandler,
 	NewTotpHandler,
 	ProvideSettingHandler,
 

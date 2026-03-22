@@ -108,6 +108,7 @@ func registerRoutes(
 
 	// 注册各模块路由
 	routes.RegisterAuthRoutes(v1, h, jwtAuth, redisClient)
+	routes.RegisterWeComRoutes(v1, h, adminAuth)
 	routes.RegisterUserRoutes(v1, h, jwtAuth)
 	routes.RegisterSoraClientRoutes(v1, h, jwtAuth)
 	routes.RegisterAdminRoutes(v1, h, adminAuth)

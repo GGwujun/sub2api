@@ -33,6 +33,7 @@ type AdminHandlers struct {
 // Handlers contains all HTTP handlers
 type Handlers struct {
 	Auth           *AuthHandler
+	WeCom          *WeComHandler
 	User           *UserHandler
 	APIKey         *APIKeyHandler
 	Usage          *UsageHandler
