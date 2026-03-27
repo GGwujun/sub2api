@@ -7325,7 +7325,6 @@ type postUsageBillingParams struct {
 	IsSubscriptionBill    bool // 是否订阅计费（费用限额）
 	IsTokenQuotaBill      bool // 是否 Token 配额计费
 	RequestPayloadHash    string
-	IsSubscriptionBill    bool
 	AccountRateMultiplier float64
 	APIKeyService         APIKeyQuotaUpdater
 }
@@ -7374,9 +7373,6 @@ func postUsageBilling(ctx context.Context, p *postUsageBillingParams, deps *bill
 	// 2. API Key 费用配额（只有非 Token 配额模式才处理）
 	if !p.IsTokenQuotaBill && cost.ActualCost > 0 && p.APIKey.Quota > 0 && p.APIKeyService != nil {
 		if err := p.APIKeyService.UpdateQuotaUsed(ctx, p.APIKey.ID, cost.ActualCost); err != nil {
-	// 2. API Key 配额
-	if cost.ActualCost > 0 && p.APIKey.Quota > 0 && p.APIKeyService != nil {
-		if err := p.APIKeyService.UpdateQuotaUsed(billingCtx, p.APIKey.ID, cost.ActualCost); err != nil {
 			slog.Error("update api key quota failed", "api_key_id", p.APIKey.ID, "error", err)
 		}
 	}

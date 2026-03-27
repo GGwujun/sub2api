@@ -54,57 +54,6 @@ func RegisterGatewayRoutes(
 	gatewayAlias.Use(gin.HandlerFunc(apiKeyAuth))
 	gatewayAlias.Use(requireGroupAnthropic)
 	registerGatewayV1Routes(gatewayAlias, h)
-	{
-		// /v1/messages: auto-route based on group platform
-		gateway.POST("/messages", func(c *gin.Context) {
-			if getGroupPlatform(c) == service.PlatformOpenAI {
-				h.OpenAIGateway.Messages(c)
-				return
-			}
-			h.Gateway.Messages(c)
-		})
-		// /v1/messages/count_tokens: OpenAI groups get 404
-		gateway.POST("/messages/count_tokens", func(c *gin.Context) {
-			if getGroupPlatform(c) == service.PlatformOpenAI {
-				c.JSON(http.StatusNotFound, gin.H{
-					"type": "error",
-					"error": gin.H{
-						"type":    "not_found_error",
-						"message": "Token counting is not supported for this platform",
-					},
-				})
-				return
-			}
-			h.Gateway.CountTokens(c)
-		})
-		gateway.GET("/models", h.Gateway.Models)
-		gateway.GET("/usage", h.Gateway.Usage)
-		// OpenAI Responses API: auto-route based on group platform
-		gateway.POST("/responses", func(c *gin.Context) {
-			if getGroupPlatform(c) == service.PlatformOpenAI {
-				h.OpenAIGateway.Responses(c)
-				return
-			}
-			h.Gateway.Responses(c)
-		})
-		gateway.POST("/responses/*subpath", func(c *gin.Context) {
-			if getGroupPlatform(c) == service.PlatformOpenAI {
-				h.OpenAIGateway.Responses(c)
-				return
-			}
-			h.Gateway.Responses(c)
-		})
-		gateway.GET("/responses", h.OpenAIGateway.ResponsesWebSocket)
-		// OpenAI Chat Completions API: auto-route based on group platform
-		gateway.POST("/chat/completions", func(c *gin.Context) {
-			if getGroupPlatform(c) == service.PlatformOpenAI {
-				h.OpenAIGateway.ChatCompletions(c)
-				return
-			}
-			h.Gateway.ChatCompletions(c)
-		})
-	}
-
 	// Gemini 原生 API 兼容层（Gemini SDK/CLI 直连）
 	gemini := r.Group("/v1beta")
 	gemini.Use(bodyLimit)
@@ -322,11 +271,29 @@ func registerGatewayV1Routes(gateway *gin.RouterGroup, h *handler.Handlers) {
 	gateway.GET("/models", h.Gateway.Models)
 	gateway.GET("/usage", h.Gateway.Usage)
 	// OpenAI Responses API
-	gateway.POST("/responses", h.OpenAIGateway.Responses)
-	gateway.POST("/responses/*subpath", h.OpenAIGateway.Responses)
+	gateway.POST("/responses", func(c *gin.Context) {
+		if platform := getGroupPlatform(c); platform == service.PlatformOpenAI {
+			h.OpenAIGateway.Responses(c)
+			return
+		}
+		h.Gateway.Responses(c)
+	})
+	gateway.POST("/responses/*subpath", func(c *gin.Context) {
+		if platform := getGroupPlatform(c); platform == service.PlatformOpenAI {
+			h.OpenAIGateway.Responses(c)
+			return
+		}
+		h.Gateway.Responses(c)
+	})
 	gateway.GET("/responses", h.OpenAIGateway.ResponsesWebSocket)
 	// OpenAI Chat Completions API
-	gateway.POST("/chat/completions", h.OpenAIGateway.ChatCompletions)
+	gateway.POST("/chat/completions", func(c *gin.Context) {
+		if platform := getGroupPlatform(c); platform == service.PlatformOpenAI {
+			h.OpenAIGateway.ChatCompletions(c)
+			return
+		}
+		h.Gateway.ChatCompletions(c)
+	})
 }
 
 // getGroupPlatform extracts the group platform from the API Key stored in context.
