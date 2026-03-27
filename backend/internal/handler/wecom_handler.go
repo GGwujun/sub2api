@@ -17,7 +17,7 @@ import (
 const (
 	defaultGuideURL   = "https://www.kdocs.cn/l/cejYQ4grndXr?source=wiki"
 	defaultUsageURL   = "https://ai.dsx-family.site/subscriptions"
-	defaultNoticeText = "这是请求地址和密钥：请查看教程，创建完密钥后，查看使用密钥就可以看到"
+	defaultNoticeText = "请查看教程，创建完密钥后，查看使用密钥就可以看到查看请求地址和API key的使用方法了哦~"
 	defaultDisclaimer = "卡密（API Key）为虚拟商品，一旦发出，无法退换。感谢您的理解！"
 )
 

@@ -1,0 +1,37 @@
+ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS token_usage_total BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS token_usage_daily BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS token_usage_weekly BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS token_usage_monthly BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS token_daily_window_start TIMESTAMPTZ;
+ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS token_weekly_window_start TIMESTAMPTZ;
+ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS token_monthly_window_start TIMESTAMPTZ;
+
+ALTER TABLE groups DROP COLUMN IF EXISTS token_quota;
+ALTER TABLE groups ADD COLUMN token_quota BIGINT;
+ALTER TABLE groups DROP COLUMN IF EXISTS token_quota_daily;
+ALTER TABLE groups ADD COLUMN token_quota_daily BIGINT;
+ALTER TABLE groups DROP COLUMN IF EXISTS token_quota_weekly;
+ALTER TABLE groups ADD COLUMN token_quota_weekly BIGINT;
+ALTER TABLE groups DROP COLUMN IF EXISTS token_quota_monthly;
+ALTER TABLE groups ADD COLUMN token_quota_monthly BIGINT;
+
+ALTER TABLE api_keys ADD COLUMN IF NOT EXISTS token_quota BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE api_keys ADD COLUMN IF NOT EXISTS token_quota_used BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE api_keys DROP COLUMN IF EXISTS token_quota_daily;
+ALTER TABLE api_keys ADD COLUMN token_quota_daily BIGINT;
+ALTER TABLE api_keys DROP COLUMN IF EXISTS token_quota_daily_used;
+ALTER TABLE api_keys ADD COLUMN token_quota_daily_used BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE api_keys DROP COLUMN IF EXISTS token_quota_daily_start;
+ALTER TABLE api_keys ADD COLUMN token_quota_daily_start TIMESTAMP WITH TIME ZONE;
+ALTER TABLE api_keys DROP COLUMN IF EXISTS token_quota_weekly;
+ALTER TABLE api_keys ADD COLUMN token_quota_weekly BIGINT;
+ALTER TABLE api_keys DROP COLUMN IF EXISTS token_quota_weekly_used;
+ALTER TABLE api_keys ADD COLUMN token_quota_weekly_used BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE api_keys DROP COLUMN IF EXISTS token_quota_weekly_start;
+ALTER TABLE api_keys ADD COLUMN token_quota_weekly_start TIMESTAMP WITH TIME ZONE;
+ALTER TABLE api_keys DROP COLUMN IF EXISTS token_quota_monthly;
+ALTER TABLE api_keys ADD COLUMN token_quota_monthly BIGINT;
+ALTER TABLE api_keys DROP COLUMN IF EXISTS token_quota_monthly_used;
+ALTER TABLE api_keys ADD COLUMN token_quota_monthly_used BIGINT NOT NULL DEFAULT 0;
+ALTER TABLE api_keys DROP COLUMN IF EXISTS token_quota_monthly_start;
+ALTER TABLE api_keys ADD COLUMN token_quota_monthly_start TIMESTAMP WITH TIME ZONE;

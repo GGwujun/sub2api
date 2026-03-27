@@ -822,46 +822,15 @@ linuxdo_connect:
   userinfo_username_path: ""
 
 # =============================================================================
-# WeCom (企业微信) App Integration
-# 企业微信应用对接配置
+# Channel Content Message Template
+# 渠道内容消息模板（用于 /api/v1/channel/content/generate 返回 content）
 # =============================================================================
 wecom:
-  enabled: false
-  # 企业ID
-  corp_id: ""
-  # 应用AgentID
-  agent_id: 0
-  # 应用Secret
-  secret: ""
-  # 回调Token
-  token: ""
-  # EncodingAESKey (43位)
-  encoding_aes_key: ""
-  # 自定义菜单配置
-  menu:
-    # 根菜单名称（为空时使用顶级菜单）
-    root_name: "智普订阅"
-    items:
-      - name: "智普-10m token"
-        key: "ZHIPU_10M"
-        group_id: 0
-        validity_days: 30
-        redeem_value: 10
-      - name: "智普-20m token"
-        key: "ZHIPU_20M"
-        group_id: 0
-        validity_days: 30
-        redeem_value: 10
-      - name: "智普-50m token"
-        key: "ZHIPU_50M"
-        group_id: 0
-        validity_days: 30
-        redeem_value: 10
   # 回复消息配置
   message:
     guide_url: "https://www.kdocs.cn/l/cejYQ4grndXr?source=wiki"
     usage_url: "https://ai.dsx-family.site/subscriptions"
-    notice: "这是请求地址和密钥：请查看教程，创建完密钥后，查看使用密钥就可以看到"
+    notice: "请查看教程，创建完密钥后，查看使用密钥就可以看到查看请求地址和API key的使用方法了哦~"
     disclaimer: "卡密（API Key）为虚拟商品，一旦发出，无法退换。感谢您的理解！"
 
 # =============================================================================
