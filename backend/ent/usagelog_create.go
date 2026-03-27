@@ -57,6 +57,34 @@ func (_c *UsageLogCreate) SetModel(v string) *UsageLogCreate {
 	return _c
 }
 
+// SetRequestedModel sets the "requested_model" field.
+func (_c *UsageLogCreate) SetRequestedModel(v string) *UsageLogCreate {
+	_c.mutation.SetRequestedModel(v)
+	return _c
+}
+
+// SetNillableRequestedModel sets the "requested_model" field if the given value is not nil.
+func (_c *UsageLogCreate) SetNillableRequestedModel(v *string) *UsageLogCreate {
+	if v != nil {
+		_c.SetRequestedModel(*v)
+	}
+	return _c
+}
+
+// SetUpstreamModel sets the "upstream_model" field.
+func (_c *UsageLogCreate) SetUpstreamModel(v string) *UsageLogCreate {
+	_c.mutation.SetUpstreamModel(v)
+	return _c
+}
+
+// SetNillableUpstreamModel sets the "upstream_model" field if the given value is not nil.
+func (_c *UsageLogCreate) SetNillableUpstreamModel(v *string) *UsageLogCreate {
+	if v != nil {
+		_c.SetUpstreamModel(*v)
+	}
+	return _c
+}
+
 // SetGroupID sets the "group_id" field.
 func (_c *UsageLogCreate) SetGroupID(v int64) *UsageLogCreate {
 	_c.mutation.SetGroupID(v)
@@ -596,6 +624,16 @@ func (_c *UsageLogCreate) check() error {
 			return &ValidationError{Name: "model", err: fmt.Errorf(`ent: validator failed for field "UsageLog.model": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.RequestedModel(); ok {
+		if err := usagelog.RequestedModelValidator(v); err != nil {
+			return &ValidationError{Name: "requested_model", err: fmt.Errorf(`ent: validator failed for field "UsageLog.requested_model": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.UpstreamModel(); ok {
+		if err := usagelog.UpstreamModelValidator(v); err != nil {
+			return &ValidationError{Name: "upstream_model", err: fmt.Errorf(`ent: validator failed for field "UsageLog.upstream_model": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.InputTokens(); !ok {
 		return &ValidationError{Name: "input_tokens", err: errors.New(`ent: missing required field "UsageLog.input_tokens"`)}
 	}
@@ -713,6 +751,14 @@ func (_c *UsageLogCreate) createSpec() (*UsageLog, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Model(); ok {
 		_spec.SetField(usagelog.FieldModel, field.TypeString, value)
 		_node.Model = value
+	}
+	if value, ok := _c.mutation.RequestedModel(); ok {
+		_spec.SetField(usagelog.FieldRequestedModel, field.TypeString, value)
+		_node.RequestedModel = &value
+	}
+	if value, ok := _c.mutation.UpstreamModel(); ok {
+		_spec.SetField(usagelog.FieldUpstreamModel, field.TypeString, value)
+		_node.UpstreamModel = &value
 	}
 	if value, ok := _c.mutation.InputTokens(); ok {
 		_spec.SetField(usagelog.FieldInputTokens, field.TypeInt, value)
@@ -1008,6 +1054,42 @@ func (u *UsageLogUpsert) SetModel(v string) *UsageLogUpsert {
 // UpdateModel sets the "model" field to the value that was provided on create.
 func (u *UsageLogUpsert) UpdateModel() *UsageLogUpsert {
 	u.SetExcluded(usagelog.FieldModel)
+	return u
+}
+
+// SetRequestedModel sets the "requested_model" field.
+func (u *UsageLogUpsert) SetRequestedModel(v string) *UsageLogUpsert {
+	u.Set(usagelog.FieldRequestedModel, v)
+	return u
+}
+
+// UpdateRequestedModel sets the "requested_model" field to the value that was provided on create.
+func (u *UsageLogUpsert) UpdateRequestedModel() *UsageLogUpsert {
+	u.SetExcluded(usagelog.FieldRequestedModel)
+	return u
+}
+
+// ClearRequestedModel clears the value of the "requested_model" field.
+func (u *UsageLogUpsert) ClearRequestedModel() *UsageLogUpsert {
+	u.SetNull(usagelog.FieldRequestedModel)
+	return u
+}
+
+// SetUpstreamModel sets the "upstream_model" field.
+func (u *UsageLogUpsert) SetUpstreamModel(v string) *UsageLogUpsert {
+	u.Set(usagelog.FieldUpstreamModel, v)
+	return u
+}
+
+// UpdateUpstreamModel sets the "upstream_model" field to the value that was provided on create.
+func (u *UsageLogUpsert) UpdateUpstreamModel() *UsageLogUpsert {
+	u.SetExcluded(usagelog.FieldUpstreamModel)
+	return u
+}
+
+// ClearUpstreamModel clears the value of the "upstream_model" field.
+func (u *UsageLogUpsert) ClearUpstreamModel() *UsageLogUpsert {
+	u.SetNull(usagelog.FieldUpstreamModel)
 	return u
 }
 
@@ -1597,6 +1679,48 @@ func (u *UsageLogUpsertOne) SetModel(v string) *UsageLogUpsertOne {
 func (u *UsageLogUpsertOne) UpdateModel() *UsageLogUpsertOne {
 	return u.Update(func(s *UsageLogUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// SetRequestedModel sets the "requested_model" field.
+func (u *UsageLogUpsertOne) SetRequestedModel(v string) *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetRequestedModel(v)
+	})
+}
+
+// UpdateRequestedModel sets the "requested_model" field to the value that was provided on create.
+func (u *UsageLogUpsertOne) UpdateRequestedModel() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateRequestedModel()
+	})
+}
+
+// ClearRequestedModel clears the value of the "requested_model" field.
+func (u *UsageLogUpsertOne) ClearRequestedModel() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearRequestedModel()
+	})
+}
+
+// SetUpstreamModel sets the "upstream_model" field.
+func (u *UsageLogUpsertOne) SetUpstreamModel(v string) *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetUpstreamModel(v)
+	})
+}
+
+// UpdateUpstreamModel sets the "upstream_model" field to the value that was provided on create.
+func (u *UsageLogUpsertOne) UpdateUpstreamModel() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateUpstreamModel()
+	})
+}
+
+// ClearUpstreamModel clears the value of the "upstream_model" field.
+func (u *UsageLogUpsertOne) ClearUpstreamModel() *UsageLogUpsertOne {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearUpstreamModel()
 	})
 }
 
@@ -2431,6 +2555,48 @@ func (u *UsageLogUpsertBulk) SetModel(v string) *UsageLogUpsertBulk {
 func (u *UsageLogUpsertBulk) UpdateModel() *UsageLogUpsertBulk {
 	return u.Update(func(s *UsageLogUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// SetRequestedModel sets the "requested_model" field.
+func (u *UsageLogUpsertBulk) SetRequestedModel(v string) *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetRequestedModel(v)
+	})
+}
+
+// UpdateRequestedModel sets the "requested_model" field to the value that was provided on create.
+func (u *UsageLogUpsertBulk) UpdateRequestedModel() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateRequestedModel()
+	})
+}
+
+// ClearRequestedModel clears the value of the "requested_model" field.
+func (u *UsageLogUpsertBulk) ClearRequestedModel() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearRequestedModel()
+	})
+}
+
+// SetUpstreamModel sets the "upstream_model" field.
+func (u *UsageLogUpsertBulk) SetUpstreamModel(v string) *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.SetUpstreamModel(v)
+	})
+}
+
+// UpdateUpstreamModel sets the "upstream_model" field to the value that was provided on create.
+func (u *UsageLogUpsertBulk) UpdateUpstreamModel() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.UpdateUpstreamModel()
+	})
+}
+
+// ClearUpstreamModel clears the value of the "upstream_model" field.
+func (u *UsageLogUpsertBulk) ClearUpstreamModel() *UsageLogUpsertBulk {
+	return u.Update(func(s *UsageLogUpsert) {
+		s.ClearUpstreamModel()
 	})
 }
 

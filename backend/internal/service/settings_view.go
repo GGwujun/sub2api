@@ -6,6 +6,7 @@ type SystemSettings struct {
 	RegistrationEmailSuffixWhitelist []string
 	PromoCodeEnabled                 bool
 	PasswordResetEnabled             bool
+	FrontendURL                      string
 	InvitationCodeEnabled            bool
 	TotpEnabled                      bool // TOTP 双因素认证
 
@@ -42,6 +43,7 @@ type SystemSettings struct {
 	PurchaseSubscriptionURL     string
 	SoraClientEnabled           bool
 	CustomMenuItems             string // JSON array of custom menu items
+	CustomEndpoints             string // JSON array of custom endpoints
 
 	DefaultConcurrency   int
 	DefaultBalance       float64
@@ -68,9 +70,17 @@ type SystemSettings struct {
 
 	// Claude Code version check
 	MinClaudeCodeVersion string
+	MaxClaudeCodeVersion string
 
 	// 分组隔离：允许未分组 Key 调度（默认 false → 403）
 	AllowUngroupedKeyScheduling bool
+
+	// Backend 模式：禁用用户注册和自助服务，仅管理员可登录
+	BackendModeEnabled bool
+
+	// Gateway forwarding behavior
+	EnableFingerprintUnification bool // 是否统一 OAuth 账号的指纹头（默认 true）
+	EnableMetadataPassthrough    bool // 是否透传客户端原始 metadata（默认 false）
 }
 
 type DefaultSubscriptionSetting struct {
@@ -101,8 +111,10 @@ type PublicSettings struct {
 	PurchaseSubscriptionURL     string
 	SoraClientEnabled           bool
 	CustomMenuItems             string // JSON array of custom menu items
+	CustomEndpoints             string // JSON array of custom endpoints
 
 	LinuxDoOAuthEnabled bool
+	BackendModeEnabled  bool
 	Version             string
 }
 
@@ -180,9 +192,11 @@ func DefaultStreamTimeoutSettings() *StreamTimeoutSettings {
 
 // RectifierSettings 请求整流器配置
 type RectifierSettings struct {
-	Enabled                  bool `json:"enabled"`                    // 总开关
-	ThinkingSignatureEnabled bool `json:"thinking_signature_enabled"` // Thinking 签名整流
-	ThinkingBudgetEnabled    bool `json:"thinking_budget_enabled"`    // Thinking Budget 整流
+	Enabled                  bool     `json:"enabled"`                    // 总开关
+	ThinkingSignatureEnabled bool     `json:"thinking_signature_enabled"` // Thinking 签名整流
+	ThinkingBudgetEnabled    bool     `json:"thinking_budget_enabled"`    // Thinking Budget 整流
+	APIKeySignatureEnabled   bool     `json:"apikey_signature_enabled"`   // API Key 签名整流开关
+	APIKeySignaturePatterns  []string `json:"apikey_signature_patterns"`  // API Key 自定义匹配关键词
 }
 
 // DefaultRectifierSettings 返回默认的整流器配置（全部启用）
@@ -200,22 +214,39 @@ const (
 	BetaPolicyActionFilter = "filter" // 过滤，从 beta header 中移除该 token
 	BetaPolicyActionBlock  = "block"  // 拦截，直接返回错误
 
-	BetaPolicyScopeAll    = "all"    // 所有账号类型
-	BetaPolicyScopeOAuth  = "oauth"  // 仅 OAuth 账号
-	BetaPolicyScopeAPIKey = "apikey" // 仅 API Key 账号
+	BetaPolicyScopeAll     = "all"     // 所有账号类型
+	BetaPolicyScopeOAuth   = "oauth"   // 仅 OAuth 账号
+	BetaPolicyScopeAPIKey  = "apikey"  // 仅 API Key 账号
+	BetaPolicyScopeBedrock = "bedrock" // 仅 AWS Bedrock 账号
 )
 
 // BetaPolicyRule 单条 Beta 策略规则
 type BetaPolicyRule struct {
 	BetaToken    string `json:"beta_token"`              // beta token 值
 	Action       string `json:"action"`                  // "pass" | "filter" | "block"
-	Scope        string `json:"scope"`                   // "all" | "oauth" | "apikey"
+	Scope        string `json:"scope"`                   // "all" | "oauth" | "apikey" | "bedrock"
 	ErrorMessage string `json:"error_message,omitempty"` // 自定义错误消息 (action=block 时生效)
 }
 
 // BetaPolicySettings Beta 策略配置
 type BetaPolicySettings struct {
 	Rules []BetaPolicyRule `json:"rules"`
+}
+
+// OverloadCooldownSettings 529过载冷却配置
+type OverloadCooldownSettings struct {
+	// Enabled 是否在收到529时暂停账号调度
+	Enabled bool `json:"enabled"`
+	// CooldownMinutes 冷却时长（分钟）
+	CooldownMinutes int `json:"cooldown_minutes"`
+}
+
+// DefaultOverloadCooldownSettings 返回默认的过载冷却配置（启用，10分钟）
+func DefaultOverloadCooldownSettings() *OverloadCooldownSettings {
+	return &OverloadCooldownSettings{
+		Enabled:         true,
+		CooldownMinutes: 10,
+	}
 }
 
 // DefaultBetaPolicySettings 返回默认的 Beta 策略配置

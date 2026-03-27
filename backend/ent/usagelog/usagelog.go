@@ -24,6 +24,10 @@ const (
 	FieldRequestID = "request_id"
 	// FieldModel holds the string denoting the model field in the database.
 	FieldModel = "model"
+	// FieldRequestedModel holds the string denoting the requested_model field in the database.
+	FieldRequestedModel = "requested_model"
+	// FieldUpstreamModel holds the string denoting the upstream_model field in the database.
+	FieldUpstreamModel = "upstream_model"
 	// FieldGroupID holds the string denoting the group_id field in the database.
 	FieldGroupID = "group_id"
 	// FieldSubscriptionID holds the string denoting the subscription_id field in the database.
@@ -135,6 +139,8 @@ var Columns = []string{
 	FieldAccountID,
 	FieldRequestID,
 	FieldModel,
+	FieldRequestedModel,
+	FieldUpstreamModel,
 	FieldGroupID,
 	FieldSubscriptionID,
 	FieldInputTokens,
@@ -179,6 +185,10 @@ var (
 	RequestIDValidator func(string) error
 	// ModelValidator is a validator for the "model" field. It is called by the builders before save.
 	ModelValidator func(string) error
+	// RequestedModelValidator is a validator for the "requested_model" field. It is called by the builders before save.
+	RequestedModelValidator func(string) error
+	// UpstreamModelValidator is a validator for the "upstream_model" field. It is called by the builders before save.
+	UpstreamModelValidator func(string) error
 	// DefaultInputTokens holds the default value on creation for the "input_tokens" field.
 	DefaultInputTokens int
 	// DefaultOutputTokens holds the default value on creation for the "output_tokens" field.
@@ -256,6 +266,16 @@ func ByRequestID(opts ...sql.OrderTermOption) OrderOption {
 // ByModel orders the results by the model field.
 func ByModel(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldModel, opts...).ToFunc()
+}
+
+// ByRequestedModel orders the results by the requested_model field.
+func ByRequestedModel(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRequestedModel, opts...).ToFunc()
+}
+
+// ByUpstreamModel orders the results by the upstream_model field.
+func ByUpstreamModel(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpstreamModel, opts...).ToFunc()
 }
 
 // ByGroupID orders the results by the group_id field.

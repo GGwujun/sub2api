@@ -99,6 +99,7 @@ func TestChatCompletionsToResponses_ToolCalls(t *testing.T) {
 	// Check function_call item
 	assert.Equal(t, "function_call", items[1].Type)
 	assert.Equal(t, "call_1", items[1].CallID)
+	assert.Empty(t, items[1].ID)
 	assert.Equal(t, "ping", items[1].Name)
 
 	// Check function_call_output item
@@ -180,6 +181,35 @@ func TestChatCompletionsToResponses_ImageURL(t *testing.T) {
 	assert.Equal(t, "data:image/png;base64,abc123", parts[1].ImageURL)
 }
 
+func TestChatCompletionsToResponses_SystemArrayContent(t *testing.T) {
+	req := &ChatCompletionsRequest{
+		Model: "gpt-4o",
+		Messages: []ChatMessage{
+			{Role: "system", Content: json.RawMessage(`[{"type":"text","text":"You are a careful visual assistant."}]`)},
+			{Role: "user", Content: json.RawMessage(`[{"type":"text","text":"Describe this image"},{"type":"image_url","image_url":{"url":"data:image/png;base64,abc123"}}]`)},
+		},
+	}
+
+	resp, err := ChatCompletionsToResponses(req)
+	require.NoError(t, err)
+
+	var items []ResponsesInputItem
+	require.NoError(t, json.Unmarshal(resp.Input, &items))
+	require.Len(t, items, 2)
+
+	var systemParts []ResponsesContentPart
+	require.NoError(t, json.Unmarshal(items[0].Content, &systemParts))
+	require.Len(t, systemParts, 1)
+	assert.Equal(t, "input_text", systemParts[0].Type)
+	assert.Equal(t, "You are a careful visual assistant.", systemParts[0].Text)
+
+	var userParts []ResponsesContentPart
+	require.NoError(t, json.Unmarshal(items[1].Content, &userParts))
+	require.Len(t, userParts, 2)
+	assert.Equal(t, "input_image", userParts[1].Type)
+	assert.Equal(t, "data:image/png;base64,abc123", userParts[1].ImageURL)
+}
+
 func TestChatCompletionsToResponses_LegacyFunctions(t *testing.T) {
 	req := &ChatCompletionsRequest{
 		Model: "gpt-4o",
@@ -252,6 +282,55 @@ func TestChatCompletionsToResponses_AssistantWithTextAndToolCalls(t *testing.T) 
 	assert.Equal(t, "user", items[0].Role)
 	assert.Equal(t, "assistant", items[1].Role)
 	assert.Equal(t, "function_call", items[2].Type)
+	assert.Empty(t, items[2].ID)
+}
+
+func TestChatCompletionsToResponses_AssistantArrayContentPreserved(t *testing.T) {
+	req := &ChatCompletionsRequest{
+		Model: "gpt-4o",
+		Messages: []ChatMessage{
+			{Role: "user", Content: json.RawMessage(`"Hi"`)},
+			{Role: "assistant", Content: json.RawMessage(`[{"type":"text","text":"A"},{"type":"text","text":"B"}]`)},
+		},
+	}
+
+	resp, err := ChatCompletionsToResponses(req)
+	require.NoError(t, err)
+
+	var items []ResponsesInputItem
+	require.NoError(t, json.Unmarshal(resp.Input, &items))
+	require.Len(t, items, 2)
+	assert.Equal(t, "assistant", items[1].Role)
+
+	var parts []ResponsesContentPart
+	require.NoError(t, json.Unmarshal(items[1].Content, &parts))
+	require.Len(t, parts, 1)
+	assert.Equal(t, "output_text", parts[0].Type)
+	assert.Equal(t, "AB", parts[0].Text)
+}
+
+func TestChatCompletionsToResponses_AssistantThinkingTagPreserved(t *testing.T) {
+	req := &ChatCompletionsRequest{
+		Model: "gpt-4o",
+		Messages: []ChatMessage{
+			{Role: "user", Content: json.RawMessage(`"Hi"`)},
+			{Role: "assistant", Content: json.RawMessage(`[{"type":"thinking","thinking":"internal plan"},{"type":"text","text":"final answer"}]`)},
+		},
+	}
+
+	resp, err := ChatCompletionsToResponses(req)
+	require.NoError(t, err)
+
+	var items []ResponsesInputItem
+	require.NoError(t, json.Unmarshal(resp.Input, &items))
+	require.Len(t, items, 2)
+
+	var parts []ResponsesContentPart
+	require.NoError(t, json.Unmarshal(items[1].Content, &parts))
+	require.Len(t, parts, 1)
+	assert.Equal(t, "output_text", parts[0].Type)
+	assert.Contains(t, parts[0].Text, "<thinking>internal plan</thinking>")
+	assert.Contains(t, parts[0].Text, "final answer")
 }
 
 // ---------------------------------------------------------------------------
@@ -344,8 +423,47 @@ func TestResponsesToChatCompletions_Reasoning(t *testing.T) {
 
 	var content string
 	require.NoError(t, json.Unmarshal(chat.Choices[0].Message.Content, &content))
-	// Reasoning summary is prepended to text
-	assert.Equal(t, "I thought about it.The answer is 42.", content)
+	assert.Equal(t, "The answer is 42.", content)
+	assert.Equal(t, "I thought about it.", chat.Choices[0].Message.ReasoningContent)
+}
+
+func TestChatCompletionsToResponses_ToolArrayContent(t *testing.T) {
+	req := &ChatCompletionsRequest{
+		Model: "gpt-4o",
+		Messages: []ChatMessage{
+			{Role: "user", Content: json.RawMessage(`"Use the tool"`)},
+			{
+				Role: "assistant",
+				ToolCalls: []ChatToolCall{
+					{
+						ID:   "call_1",
+						Type: "function",
+						Function: ChatFunctionCall{
+							Name:      "inspect_image",
+							Arguments: `{}`,
+						},
+					},
+				},
+			},
+			{
+				Role:       "tool",
+				ToolCallID: "call_1",
+				Content: json.RawMessage(
+					`[{"type":"text","text":"image width: 100"},{"type":"image_url","image_url":{"url":"data:image/png;base64,ignored"}},{"type":"text","text":"; image height: 200"}]`,
+				),
+			},
+		},
+	}
+
+	resp, err := ChatCompletionsToResponses(req)
+	require.NoError(t, err)
+
+	var items []ResponsesInputItem
+	require.NoError(t, json.Unmarshal(resp.Input, &items))
+	require.Len(t, items, 3)
+	assert.Equal(t, "function_call_output", items[2].Type)
+	assert.Equal(t, "call_1", items[2].CallID)
+	assert.Equal(t, "image width: 100; image height: 200", items[2].Output)
 }
 
 func TestResponsesToChatCompletions_Incomplete(t *testing.T) {
@@ -582,8 +700,35 @@ func TestResponsesEventToChatChunks_ReasoningDelta(t *testing.T) {
 		Delta: "Thinking...",
 	}, state)
 	require.Len(t, chunks, 1)
+	require.NotNil(t, chunks[0].Choices[0].Delta.ReasoningContent)
+	assert.Equal(t, "Thinking...", *chunks[0].Choices[0].Delta.ReasoningContent)
+
+	chunks = ResponsesEventToChatChunks(&ResponsesStreamEvent{
+		Type: "response.reasoning_summary_text.done",
+	}, state)
+	require.Len(t, chunks, 0)
+}
+
+func TestResponsesEventToChatChunks_ReasoningThenTextAutoCloseTag(t *testing.T) {
+	state := NewResponsesEventToChatState()
+	state.Model = "gpt-4o"
+	state.SentRole = true
+
+	chunks := ResponsesEventToChatChunks(&ResponsesStreamEvent{
+		Type:  "response.reasoning_summary_text.delta",
+		Delta: "plan",
+	}, state)
+	require.Len(t, chunks, 1)
+	require.NotNil(t, chunks[0].Choices[0].Delta.ReasoningContent)
+	assert.Equal(t, "plan", *chunks[0].Choices[0].Delta.ReasoningContent)
+
+	chunks = ResponsesEventToChatChunks(&ResponsesStreamEvent{
+		Type:  "response.output_text.delta",
+		Delta: "answer",
+	}, state)
+	require.Len(t, chunks, 1)
 	require.NotNil(t, chunks[0].Choices[0].Delta.Content)
-	assert.Equal(t, "Thinking...", *chunks[0].Choices[0].Delta.Content)
+	assert.Equal(t, "answer", *chunks[0].Choices[0].Delta.Content)
 }
 
 func TestFinalizeResponsesChatStream(t *testing.T) {

@@ -1,11 +1,15 @@
 package admin
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/Wei-Shaw/sub2api/internal/handler/dto"
 	"github.com/Wei-Shaw/sub2api/internal/pkg/response"
+	"github.com/Wei-Shaw/sub2api/internal/pkg/timezone"
 	"github.com/Wei-Shaw/sub2api/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -13,13 +17,66 @@ import (
 
 // GroupHandler handles admin group management
 type GroupHandler struct {
-	adminService service.AdminService
+	adminService         service.AdminService
+	dashboardService     *service.DashboardService
+	groupCapacityService *service.GroupCapacityService
+}
+
+type optionalLimitField struct {
+	set   bool
+	value *float64
+}
+
+func (f *optionalLimitField) UnmarshalJSON(data []byte) error {
+	f.set = true
+
+	trimmed := bytes.TrimSpace(data)
+	if bytes.Equal(trimmed, []byte("null")) {
+		f.value = nil
+		return nil
+	}
+
+	var number float64
+	if err := json.Unmarshal(trimmed, &number); err == nil {
+		f.value = &number
+		return nil
+	}
+
+	var text string
+	if err := json.Unmarshal(trimmed, &text); err == nil {
+		text = strings.TrimSpace(text)
+		if text == "" {
+			f.value = nil
+			return nil
+		}
+		number, err = strconv.ParseFloat(text, 64)
+		if err != nil {
+			return fmt.Errorf("invalid numeric limit value %q: %w", text, err)
+		}
+		f.value = &number
+		return nil
+	}
+
+	return fmt.Errorf("invalid limit value: %s", string(trimmed))
+}
+
+func (f optionalLimitField) ToServiceInput() *float64 {
+	if !f.set {
+		return nil
+	}
+	if f.value != nil {
+		return f.value
+	}
+	zero := 0.0
+	return &zero
 }
 
 // NewGroupHandler creates a new admin group handler
-func NewGroupHandler(adminService service.AdminService) *GroupHandler {
+func NewGroupHandler(adminService service.AdminService, dashboardService *service.DashboardService, groupCapacityService *service.GroupCapacityService) *GroupHandler {
 	return &GroupHandler{
-		adminService: adminService,
+		adminService:         adminService,
+		dashboardService:     dashboardService,
+		groupCapacityService: groupCapacityService,
 	}
 }
 
@@ -329,6 +386,33 @@ func (h *GroupHandler) GetStats(c *gin.Context) {
 	_ = groupID // TODO: implement actual stats
 }
 
+// GetUsageSummary returns today's and cumulative cost for all groups.
+// GET /api/v1/admin/groups/usage-summary?timezone=Asia/Shanghai
+func (h *GroupHandler) GetUsageSummary(c *gin.Context) {
+	userTZ := c.Query("timezone")
+	now := timezone.NowInUserLocation(userTZ)
+	todayStart := timezone.StartOfDayInUserLocation(now, userTZ)
+
+	results, err := h.dashboardService.GetGroupUsageSummary(c.Request.Context(), todayStart)
+	if err != nil {
+		response.Error(c, 500, "Failed to get group usage summary")
+		return
+	}
+
+	response.Success(c, results)
+}
+
+// GetCapacitySummary returns aggregated capacity (concurrency/sessions/RPM) for all active groups.
+// GET /api/v1/admin/groups/capacity-summary
+func (h *GroupHandler) GetCapacitySummary(c *gin.Context) {
+	results, err := h.groupCapacityService.GetAllGroupCapacity(c.Request.Context())
+	if err != nil {
+		response.Error(c, 500, "Failed to get group capacity summary")
+		return
+	}
+	response.Success(c, results)
+}
+
 // GetGroupAPIKeys handles getting API keys in a group
 // GET /api/v1/admin/groups/:id/api-keys
 func (h *GroupHandler) GetGroupAPIKeys(c *gin.Context) {
@@ -351,6 +435,72 @@ func (h *GroupHandler) GetGroupAPIKeys(c *gin.Context) {
 		outKeys = append(outKeys, *dto.APIKeyFromService(&keys[i]))
 	}
 	response.Paginated(c, outKeys, total, page, pageSize)
+}
+
+// GetGroupRateMultipliers handles getting rate multipliers for users in a group
+// GET /api/v1/admin/groups/:id/rate-multipliers
+func (h *GroupHandler) GetGroupRateMultipliers(c *gin.Context) {
+	groupID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		response.BadRequest(c, "Invalid group ID")
+		return
+	}
+
+	entries, err := h.adminService.GetGroupRateMultipliers(c.Request.Context(), groupID)
+	if err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+
+	if entries == nil {
+		entries = []service.UserGroupRateEntry{}
+	}
+	response.Success(c, entries)
+}
+
+// ClearGroupRateMultipliers handles clearing all rate multipliers for a group
+// DELETE /api/v1/admin/groups/:id/rate-multipliers
+func (h *GroupHandler) ClearGroupRateMultipliers(c *gin.Context) {
+	groupID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		response.BadRequest(c, "Invalid group ID")
+		return
+	}
+
+	if err := h.adminService.ClearGroupRateMultipliers(c.Request.Context(), groupID); err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+
+	response.Success(c, gin.H{"message": "Rate multipliers cleared successfully"})
+}
+
+// BatchSetGroupRateMultipliersRequest represents batch set rate multipliers request
+type BatchSetGroupRateMultipliersRequest struct {
+	Entries []service.GroupRateMultiplierInput `json:"entries" binding:"required"`
+}
+
+// BatchSetGroupRateMultipliers handles batch setting rate multipliers for a group
+// PUT /api/v1/admin/groups/:id/rate-multipliers
+func (h *GroupHandler) BatchSetGroupRateMultipliers(c *gin.Context) {
+	groupID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		response.BadRequest(c, "Invalid group ID")
+		return
+	}
+
+	var req BatchSetGroupRateMultipliersRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, "Invalid request: "+err.Error())
+		return
+	}
+
+	if err := h.adminService.BatchSetGroupRateMultipliers(c.Request.Context(), groupID, req.Entries); err != nil {
+		response.ErrorFrom(c, err)
+		return
+	}
+
+	response.Success(c, gin.H{"message": "Rate multipliers updated successfully"})
 }
 
 // UpdateSortOrderRequest represents the request to update group sort orders

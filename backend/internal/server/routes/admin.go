@@ -58,6 +58,9 @@ func RegisterAdminRoutes(
 		// 数据管理
 		registerDataManagementRoutes(admin, h)
 
+		// 数据库备份恢复
+		registerBackupRoutes(admin, h)
+
 		// 运维监控（Ops）
 		registerOpsRoutes(admin, h)
 
@@ -192,8 +195,10 @@ func registerDashboardRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		dashboard.GET("/groups", h.Admin.Dashboard.GetGroupStats)
 		dashboard.GET("/api-keys-trend", h.Admin.Dashboard.GetAPIKeyUsageTrend)
 		dashboard.GET("/users-trend", h.Admin.Dashboard.GetUserUsageTrend)
+		dashboard.GET("/users-ranking", h.Admin.Dashboard.GetUserSpendingRanking)
 		dashboard.POST("/users-usage", h.Admin.Dashboard.GetBatchUsersUsage)
 		dashboard.POST("/api-keys-usage", h.Admin.Dashboard.GetBatchAPIKeysUsage)
+		dashboard.GET("/user-breakdown", h.Admin.Dashboard.GetUserBreakdown)
 		dashboard.POST("/aggregation/backfill", h.Admin.Dashboard.BackfillAggregation)
 	}
 }
@@ -210,6 +215,7 @@ func registerUserManagementRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		users.GET("/:id/api-keys", h.Admin.User.GetUserAPIKeys)
 		users.GET("/:id/usage", h.Admin.User.GetUserUsage)
 		users.GET("/:id/balance-history", h.Admin.User.GetBalanceHistory)
+		users.POST("/:id/replace-group", h.Admin.User.ReplaceGroup)
 
 		// User attribute values
 		users.GET("/:id/attributes", h.Admin.UserAttribute.GetUserAttributes)
@@ -222,12 +228,17 @@ func registerGroupRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 	{
 		groups.GET("", h.Admin.Group.List)
 		groups.GET("/all", h.Admin.Group.GetAll)
+		groups.GET("/usage-summary", h.Admin.Group.GetUsageSummary)
+		groups.GET("/capacity-summary", h.Admin.Group.GetCapacitySummary)
 		groups.PUT("/sort-order", h.Admin.Group.UpdateSortOrder)
 		groups.GET("/:id", h.Admin.Group.GetByID)
 		groups.POST("", h.Admin.Group.Create)
 		groups.PUT("/:id", h.Admin.Group.Update)
 		groups.DELETE("/:id", h.Admin.Group.Delete)
 		groups.GET("/:id/stats", h.Admin.Group.GetStats)
+		groups.GET("/:id/rate-multipliers", h.Admin.Group.GetGroupRateMultipliers)
+		groups.PUT("/:id/rate-multipliers", h.Admin.Group.BatchSetGroupRateMultipliers)
+		groups.DELETE("/:id/rate-multipliers", h.Admin.Group.ClearGroupRateMultipliers)
 		groups.GET("/:id/api-keys", h.Admin.Group.GetGroupAPIKeys)
 	}
 }
@@ -246,6 +257,7 @@ func registerAccountRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		accounts.POST("/:id/test", h.Admin.Account.Test)
 		accounts.POST("/:id/recover-state", h.Admin.Account.RecoverState)
 		accounts.POST("/:id/refresh", h.Admin.Account.Refresh)
+		accounts.POST("/:id/set-privacy", h.Admin.Account.SetPrivacy)
 		accounts.POST("/:id/refresh-tier", h.Admin.Account.RefreshTier)
 		accounts.GET("/:id/stats", h.Admin.Account.GetStats)
 		accounts.POST("/:id/clear-error", h.Admin.Account.ClearError)
@@ -392,6 +404,9 @@ func registerSettingsRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		adminSettings.GET("/admin-api-key", h.Admin.Setting.GetAdminAPIKey)
 		adminSettings.POST("/admin-api-key/regenerate", h.Admin.Setting.RegenerateAdminAPIKey)
 		adminSettings.DELETE("/admin-api-key", h.Admin.Setting.DeleteAdminAPIKey)
+		// 529过载冷却配置
+		adminSettings.GET("/overload-cooldown", h.Admin.Setting.GetOverloadCooldownSettings)
+		adminSettings.PUT("/overload-cooldown", h.Admin.Setting.UpdateOverloadCooldownSettings)
 		// 流超时处理配置
 		adminSettings.GET("/stream-timeout", h.Admin.Setting.GetStreamTimeoutSettings)
 		adminSettings.PUT("/stream-timeout", h.Admin.Setting.UpdateStreamTimeoutSettings)
@@ -433,6 +448,30 @@ func registerDataManagementRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
 		dataManagement.POST("/backups", h.Admin.DataManagement.CreateBackupJob)
 		dataManagement.GET("/backups", h.Admin.DataManagement.ListBackupJobs)
 		dataManagement.GET("/backups/:job_id", h.Admin.DataManagement.GetBackupJob)
+	}
+}
+
+func registerBackupRoutes(admin *gin.RouterGroup, h *handler.Handlers) {
+	backup := admin.Group("/backups")
+	{
+		// S3 存储配置
+		backup.GET("/s3-config", h.Admin.Backup.GetS3Config)
+		backup.PUT("/s3-config", h.Admin.Backup.UpdateS3Config)
+		backup.POST("/s3-config/test", h.Admin.Backup.TestS3Connection)
+
+		// 定时备份配置
+		backup.GET("/schedule", h.Admin.Backup.GetSchedule)
+		backup.PUT("/schedule", h.Admin.Backup.UpdateSchedule)
+
+		// 备份操作
+		backup.POST("", h.Admin.Backup.CreateBackup)
+		backup.GET("", h.Admin.Backup.ListBackups)
+		backup.GET("/:id", h.Admin.Backup.GetBackup)
+		backup.DELETE("/:id", h.Admin.Backup.DeleteBackup)
+		backup.GET("/:id/download-url", h.Admin.Backup.GetDownloadURL)
+
+		// 恢复操作
+		backup.POST("/:id/restore", h.Admin.Backup.RestoreBackup)
 	}
 }
 
