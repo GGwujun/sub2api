@@ -2118,22 +2118,22 @@ const syncFormFromAccount = (newAccount: Account | null) => {
 
   loadTempUnschedRules(credentials)
 
-      // Initialize API Key fields for apikey type
-      if (newAccount.type === 'apikey' && newAccount.credentials) {
-        const credentials = newAccount.credentials as Record<string, unknown>
-        const platformDefaultUrl =
-          newAccount.platform === 'openai' || newAccount.platform === 'sora'
-            ? 'https://api.openai.com'
-            : newAccount.platform === 'gemini'
-              ? 'https://generativelanguage.googleapis.com'
-			  : newAccount.platform === 'zai'
-				? 'https://open.bigmodel.cn/api'
-                : newAccount.platform === 'kimi'
-                  ? 'https://api.kimi.com/coding/v1'
-                  : newAccount.platform === 'minimaxCode'
-                    ? 'https://api.minimaxi.com/anthropic'
-                    : 'https://api.anthropic.com'
-        editBaseUrl.value = (credentials.base_url as string) || platformDefaultUrl
+  // Initialize API Key fields for apikey type
+  if (newAccount.type === 'apikey' && newAccount.credentials) {
+    const credentials = newAccount.credentials as Record<string, unknown>
+    const platformDefaultUrl =
+      newAccount.platform === 'openai' || newAccount.platform === 'sora'
+        ? 'https://api.openai.com'
+        : newAccount.platform === 'gemini'
+          ? 'https://generativelanguage.googleapis.com'
+          : newAccount.platform === 'zai'
+            ? 'https://open.bigmodel.cn/api'
+            : newAccount.platform === 'kimi'
+              ? 'https://api.kimi.com/coding/v1'
+              : newAccount.platform === 'minimaxCode'
+                ? 'https://api.minimaxi.com/anthropic'
+                : 'https://api.anthropic.com'
+    editBaseUrl.value = (credentials.base_url as string) || platformDefaultUrl
 
     // Load model mappings and detect mode
     const existingMappings = credentials.model_mapping as Record<string, string> | undefined
@@ -2149,19 +2149,15 @@ const syncFormFromAccount = (newAccount: Account | null) => {
         allowedModels.value = entries.map(([from]) => from)
         modelMappings.value = []
       } else {
-        const platformDefaultUrl =
-          newAccount.platform === 'openai' || newAccount.platform === 'sora'
-            ? 'https://api.openai.com'
-            : newAccount.platform === 'gemini'
-              ? 'https://generativelanguage.googleapis.com'
-			  : newAccount.platform === 'zai'
-				? 'https://open.bigmodel.cn/api'
-                : newAccount.platform === 'kimi'
-                  ? 'https://api.kimi.com/coding/v1'
-                  : newAccount.platform === 'minimaxCode'
-                    ? 'https://api.minimaxi.com/anthropic'
-                    : 'https://api.anthropic.com'
-        editBaseUrl.value = platformDefaultUrl
+        modelRestrictionMode.value = 'mapping'
+        modelMappings.value = entries.map(([from, to]) => ({ from, to }))
+        allowedModels.value = []
+      }
+    } else {
+      modelRestrictionMode.value = 'whitelist'
+      allowedModels.value = []
+      modelMappings.value = []
+    }
 
     // Load pool mode
     poolModeEnabled.value = credentials.pool_mode === true
