@@ -62,62 +62,6 @@ func ResolveZhipuRouteVariantByPath(fullPath, requestPath string) string {
 	return ZhipuRouteVariantOpenAI
 }
 
-// normalizeZhipuTools adds "type": "function" if missing from tools.
-// This is needed because some clients (like Claude Code) may send tools without type field.
-func normalizeZhipuTools(body []byte) []byte {
-	tools := gjson.GetBytes(body, "tools")
-	if !tools.Exists() || !tools.IsArray() || len(tools.Array()) == 0 {
-		return body
-	}
-
-	// Check if any tool is missing type
-	hasMissingType := false
-	for _, t := range tools.Array() {
-		if !t.IsObject() {
-			continue
-		}
-		toolType := t.Get("type")
-		if !toolType.Exists() || strings.TrimSpace(toolType.String()) == "" {
-			hasMissingType = true
-			break
-		}
-	}
-	if !hasMissingType {
-		return body
-	}
-
-	// Parse and normalize
-	var req map[string]any
-	if err := json.Unmarshal(body, &req); err != nil {
-		return body
-	}
-
-	rawTools, _ := req["tools"].([]any)
-	if rawTools == nil {
-		return body
-	}
-
-	normalized := make([]any, 0, len(rawTools))
-	for _, t := range rawTools {
-		toolMap, ok := t.(map[string]any)
-		if !ok {
-			normalized = append(normalized, t)
-			continue
-		}
-		if _, hasType := toolMap["type"]; !hasType {
-			toolMap["type"] = "function"
-		}
-		normalized = append(normalized, toolMap)
-	}
-	req["tools"] = normalized
-
-	normalizedBody, err := json.Marshal(req)
-	if err != nil {
-		return body
-	}
-	return normalizedBody
-}
-
 // ZhipuAccountSwitchError 账号切换信号
 // 当账号限流时间超过阈值时，通知上层切换账号
 type ZhipuAccountSwitchError struct {
@@ -168,11 +112,6 @@ func (m *zhipuRetryMetrics) recordRetryAttempt(backoff time.Duration) {
 // recordRetryExhausted 记录重试用尽
 func (m *zhipuRetryMetrics) recordRetryExhausted() {
 	m.retryExhausted.Add(1)
-}
-
-// recordNonRetryableFastFallback 记录非重试性错误快速降级
-func (m *zhipuRetryMetrics) recordNonRetryableFastFallback() {
-	m.nonRetryableFastFallback.Add(1)
 }
 
 // SnapshotZhipuRetryMetrics 获取重试指标快照
@@ -592,7 +531,11 @@ func (s *ZhipuGatewayService) doForward(ctx context.Context, account *Account, b
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			logger.FromContext(ctx).Warn("zhipu.close_response_body_failed", zap.Error(closeErr))
+		}
+	}()
 
 	// Read response body
 	respBody, err := io.ReadAll(resp.Body)
@@ -809,7 +752,11 @@ func (s *ZhipuGatewayService) doForwardStream(ctx context.Context, account *Acco
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			logger.FromContext(ctx).Warn("zhipu.close_stream_body_failed", zap.Error(closeErr))
+		}
+	}()
 
 	var firstTokenMs *int
 	var durationMs *int
@@ -1066,11 +1013,6 @@ func (s *ZhipuGatewayService) getAccountAPIKey(account *Account) string {
 	return ""
 }
 
-// getTimeout returns the HTTP client timeout（从配置读取）
-func (s *ZhipuGatewayService) getTimeout() time.Duration {
-	return s.getZhipuRequestTimeout()
-}
-
 // copyRequestHeaders copies relevant headers from the original request
 func (s *ZhipuGatewayService) copyRequestHeaders(original *http.Request, target *http.Request) {
 	// Copy user-agent if present
@@ -1085,8 +1027,8 @@ func (s *ZhipuGatewayService) copyRequestHeaders(original *http.Request, target 
 }
 
 // DefaultZhipuModels returns the default list of Zhipu models
-func DefaultZhipuModels() []map[string]interface{} {
-	return []map[string]interface{}{
+func DefaultZhipuModels() []map[string]any {
+	return []map[string]any{
 		{"id": "glm-4", "object": "model", "owned_by": "zai"},
 		{"id": "glm-4v", "object": "model", "owned_by": "zai"},
 		{"id": "glm-4-plus", "object": "model", "owned_by": "zai"},
@@ -1110,7 +1052,7 @@ func DefaultZhipuModels() []map[string]interface{} {
 }
 
 // ListModels returns the list of available Zhipu models
-func (s *ZhipuGatewayService) ListModels() []map[string]interface{} {
+func (s *ZhipuGatewayService) ListModels() []map[string]any {
 	return DefaultZhipuModels()
 }
 
@@ -1375,7 +1317,7 @@ func (s *ZhipuGatewayService) TestConnection(ctx context.Context, account *Accou
 	}
 
 	// 构建测试请求体
-	testRequest := map[string]interface{}{
+	testRequest := map[string]any{
 		"model": modelID,
 		"messages": []map[string]string{
 			{"role": "user", "content": "Hi"},
@@ -1406,7 +1348,11 @@ func (s *ZhipuGatewayService) TestConnection(ctx context.Context, account *Accou
 	if err != nil {
 		return nil, fmt.Errorf("test request failed: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			logger.FromContext(ctx).Warn("zhipu.close_test_connection_body_failed", zap.Error(closeErr))
+		}
+	}()
 
 	// 读取响应
 	respBody, err := io.ReadAll(resp.Body)
@@ -1504,14 +1450,6 @@ func (s *ZhipuGatewayService) getZhipuRetryJitterRatio() float64 {
 		return s.cfg.Gateway.Zhipu.RetryJitterRatio
 	}
 	return 0.2 // 默认0.2
-}
-
-// getZhipuRequestTimeout 获取请求超时时间（从配置读取）
-func (s *ZhipuGatewayService) getZhipuRequestTimeout() time.Duration {
-	if s.cfg != nil && s.cfg.Gateway.Zhipu.RequestTimeoutSeconds > 0 {
-		return time.Duration(s.cfg.Gateway.Zhipu.RequestTimeoutSeconds) * time.Second
-	}
-	return 300 * time.Second // 默认5分钟
 }
 
 // getStickySessionAccountID 获取粘性会话绑定的账号ID

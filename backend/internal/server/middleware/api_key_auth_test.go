@@ -585,6 +585,14 @@ func (r *stubApiKeyRepo) IncrementQuotaUsed(ctx context.Context, id int64, amoun
 	return 0, errors.New("not implemented")
 }
 
+func (r *stubApiKeyRepo) IncrementTokenQuotaUsed(ctx context.Context, id int64, tokens int64) (int64, error) {
+	return 0, errors.New("not implemented")
+}
+
+func (r *stubApiKeyRepo) IncrementTokenQuotaWindows(ctx context.Context, id int64, tokens int64) error {
+	return errors.New("not implemented")
+}
+
 func (r *stubApiKeyRepo) UpdateLastUsed(ctx context.Context, id int64, usedAt time.Time) error {
 	if r.updateLastUsed != nil {
 		return r.updateLastUsed(ctx, id, usedAt)
@@ -702,6 +710,10 @@ func (r *stubUserSubscriptionRepo) ResetMonthlyUsage(ctx context.Context, id int
 }
 
 func (r *stubUserSubscriptionRepo) IncrementUsage(ctx context.Context, id int64, costUSD float64) error {
+	return errors.New("not implemented")
+}
+
+func (r *stubUserSubscriptionRepo) IncrementTokenUsage(ctx context.Context, id int64, tokens int64) error {
 	return errors.New("not implemented")
 }
 

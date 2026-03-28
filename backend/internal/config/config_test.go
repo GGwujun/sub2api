@@ -1,6 +1,8 @@
 package config
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -12,12 +14,22 @@ import (
 func resetViperWithJWTSecret(t *testing.T) {
 	t.Helper()
 	viper.Reset()
-	t.Setenv("JWT_SECRET", strings.Repeat("x", 32))
+	resetViperForLoadTest(t, strings.Repeat("x", 32))
+}
+
+func resetViperForLoadTest(t *testing.T, jwtSecret string) {
+	t.Helper()
+	viper.Reset()
+	t.Setenv("JWT_SECRET", jwtSecret)
+	t.Setenv("DATA_DIR", t.TempDir())
+	configPath := filepath.Join(os.Getenv("DATA_DIR"), "config.yaml")
+	if err := os.WriteFile(configPath, []byte("server: {}\n"), 0o600); err != nil {
+		t.Fatalf("write isolated config.yaml: %v", err)
+	}
 }
 
 func TestLoadForBootstrapAllowsMissingJWTSecret(t *testing.T) {
-	viper.Reset()
-	t.Setenv("JWT_SECRET", "")
+	resetViperForLoadTest(t, "")
 
 	cfg, err := LoadForBootstrap()
 	if err != nil {
@@ -296,8 +308,8 @@ func TestLoadDefaultDatabaseSSLMode(t *testing.T) {
 		t.Fatalf("Load() error: %v", err)
 	}
 
-	if cfg.Database.SSLMode != "prefer" {
-		t.Fatalf("Database.SSLMode = %q, want %q", cfg.Database.SSLMode, "prefer")
+	if cfg.Database.SSLMode != "disable" {
+		t.Fatalf("Database.SSLMode = %q, want %q", cfg.Database.SSLMode, "disable")
 	}
 }
 

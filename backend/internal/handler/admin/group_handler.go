@@ -1,9 +1,6 @@
 package admin
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -20,55 +17,6 @@ type GroupHandler struct {
 	adminService         service.AdminService
 	dashboardService     *service.DashboardService
 	groupCapacityService *service.GroupCapacityService
-}
-
-type optionalLimitField struct {
-	set   bool
-	value *float64
-}
-
-func (f *optionalLimitField) UnmarshalJSON(data []byte) error {
-	f.set = true
-
-	trimmed := bytes.TrimSpace(data)
-	if bytes.Equal(trimmed, []byte("null")) {
-		f.value = nil
-		return nil
-	}
-
-	var number float64
-	if err := json.Unmarshal(trimmed, &number); err == nil {
-		f.value = &number
-		return nil
-	}
-
-	var text string
-	if err := json.Unmarshal(trimmed, &text); err == nil {
-		text = strings.TrimSpace(text)
-		if text == "" {
-			f.value = nil
-			return nil
-		}
-		number, err = strconv.ParseFloat(text, 64)
-		if err != nil {
-			return fmt.Errorf("invalid numeric limit value %q: %w", text, err)
-		}
-		f.value = &number
-		return nil
-	}
-
-	return fmt.Errorf("invalid limit value: %s", string(trimmed))
-}
-
-func (f optionalLimitField) ToServiceInput() *float64 {
-	if !f.set {
-		return nil
-	}
-	if f.value != nil {
-		return f.value
-	}
-	zero := 0.0
-	return &zero
 }
 
 // NewGroupHandler creates a new admin group handler

@@ -86,6 +86,8 @@ func TestAPIContracts(t *testing.T) {
 					"last_used_at": null,
 					"quota": 0,
 					"quota_used": 0,
+					"token_quota": 0,
+					"token_quota_used": 0,
 					"rate_limit_5h": 0,
 					"rate_limit_1d": 0,
 					"rate_limit_7d": 0,
@@ -133,9 +135,11 @@ func TestAPIContracts(t *testing.T) {
 							"ip_whitelist": null,
 							"ip_blacklist": null,
 							"last_used_at": null,
-							"quota": 0,
-							"quota_used": 0,
-							"rate_limit_5h": 0,
+						"quota": 0,
+						"quota_used": 0,
+						"token_quota": 0,
+						"token_quota_used": 0,
+						"rate_limit_5h": 0,
 							"rate_limit_1d": 0,
 							"rate_limit_7d": 0,
 							"usage_5h": 0,
@@ -198,6 +202,10 @@ func TestAPIContracts(t *testing.T) {
 						"is_exclusive": false,
 						"status": "active",
 						"subscription_type": "standard",
+						"token_quota": null,
+						"token_quota_daily": null,
+						"token_quota_weekly": null,
+						"token_quota_monthly": null,
 						"daily_limit_usd": null,
 						"weekly_limit_usd": null,
 						"monthly_limit_usd": null,
@@ -264,6 +272,10 @@ func TestAPIContracts(t *testing.T) {
 						"daily_usage_usd": 1.23,
 						"weekly_usage_usd": 2.34,
 						"monthly_usage_usd": 3.45,
+						"token_usage_total": 0,
+						"token_usage_daily": 0,
+						"token_usage_weekly": 0,
+						"token_usage_monthly": 0,
 						"created_at": "2025-01-02T03:04:05Z",
 						"updated_at": "2025-01-02T03:04:05Z"
 					}
@@ -527,8 +539,9 @@ func TestAPIContracts(t *testing.T) {
 					"fallback_model_anthropic": "claude-3-5-sonnet-20241022",
 					"fallback_model_antigravity": "gemini-2.5-pro",
 					"fallback_model_gemini": "gemini-2.5-pro",
+					"fallback_model_kimi": "k2p5",
 						"fallback_model_openai": "gpt-4o",
-						"fallback_model_zhipu": "glm-4",
+						"fallback_model_zai": "glm-4",
 						"enable_identity_patch": true,
 						"identity_patch_prompt": "",
 						"sora_client_enabled": false,
@@ -1328,6 +1341,11 @@ func (stubUserSubscriptionRepo) ResetMonthlyUsage(ctx context.Context, id int64,
 func (stubUserSubscriptionRepo) IncrementUsage(ctx context.Context, id int64, costUSD float64) error {
 	return errors.New("not implemented")
 }
+
+func (stubUserSubscriptionRepo) IncrementTokenUsage(ctx context.Context, id int64, tokens int64) error {
+	return errors.New("not implemented")
+}
+
 func (stubUserSubscriptionRepo) BatchUpdateExpiredStatus(ctx context.Context) (int64, error) {
 	return 0, errors.New("not implemented")
 }
@@ -1548,6 +1566,14 @@ func (r *stubApiKeyRepo) ListKeysByGroupID(ctx context.Context, groupID int64) (
 
 func (r *stubApiKeyRepo) IncrementQuotaUsed(ctx context.Context, id int64, amount float64) (float64, error) {
 	return 0, errors.New("not implemented")
+}
+
+func (r *stubApiKeyRepo) IncrementTokenQuotaUsed(ctx context.Context, id int64, tokens int64) (int64, error) {
+	return 0, errors.New("not implemented")
+}
+
+func (r *stubApiKeyRepo) IncrementTokenQuotaWindows(ctx context.Context, id int64, tokens int64) error {
+	return errors.New("not implemented")
 }
 
 func (r *stubApiKeyRepo) UpdateLastUsed(ctx context.Context, id int64, usedAt time.Time) error {

@@ -96,7 +96,11 @@ func (h *ZhipuGatewayHandler) ChatCompletions(c *gin.Context) {
 		h.errorResponse(c, http.StatusBadRequest, "invalid_request_error", "Failed to read request body")
 		return
 	}
-	defer c.Request.Body.Close()
+	defer func() {
+		if closeErr := c.Request.Body.Close(); closeErr != nil {
+			logger.FromContext(ctx).Warn("zhipu.close_request_body_failed", zap.Error(closeErr))
+		}
+	}()
 
 	if len(body) == 0 {
 		h.errorResponse(c, http.StatusBadRequest, "invalid_request_error", "Request body is empty")
@@ -244,7 +248,9 @@ func (h *ZhipuGatewayHandler) forwardNonStream(c *gin.Context, account *service.
 	}
 
 	c.Status(result.StatusCode)
-	c.Writer.Write(result.Body)
+	if _, err := c.Writer.Write(result.Body); err != nil {
+		return nil, err
+	}
 
 	return result, nil
 }
@@ -359,11 +365,6 @@ func (h *ZhipuGatewayHandler) applyErrorPassthrough(
 	if h.errorPassthroughService == nil {
 		return defaultStatus, defaultCode, defaultMessage
 	}
-
-	// 使用错误透传规则
-	status = defaultStatus
-	code = defaultCode
-	message = defaultMessage
 
 	rule := h.errorPassthroughService.MatchRule(service.PlatformZhipu, upstreamStatus, responseBody)
 	if rule == nil {

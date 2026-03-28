@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"io"
 	"log"
 	"os"
 	"strings"
@@ -51,6 +50,8 @@ func TestStdLogBridgeRoutesLevels(t *testing.T) {
 	}
 	os.Stdout = stdoutW
 	os.Stderr = stderrW
+	stdoutCh := readPipeAsync(stdoutR)
+	stderrCh := readPipeAsync(stderrR)
 	t.Cleanup(func() {
 		os.Stdout = origStdout
 		os.Stderr = origStderr
@@ -81,10 +82,8 @@ func TestStdLogBridgeRoutesLevels(t *testing.T) {
 
 	_ = stdoutW.Close()
 	_ = stderrW.Close()
-	stdoutBytes, _ := io.ReadAll(stdoutR)
-	stderrBytes, _ := io.ReadAll(stderrR)
-	stdoutText := string(stdoutBytes)
-	stderrText := string(stderrBytes)
+	stdoutText := <-stdoutCh
+	stderrText := <-stderrCh
 
 	if !strings.Contains(stdoutText, "service started") {
 		t.Fatalf("stdout missing info log: %s", stdoutText)
@@ -113,6 +112,8 @@ func TestLegacyPrintfRoutesLevels(t *testing.T) {
 	}
 	os.Stdout = stdoutW
 	os.Stderr = stderrW
+	stdoutCh := readPipeAsync(stdoutR)
+	stderrCh := readPipeAsync(stderrR)
 	t.Cleanup(func() {
 		os.Stdout = origStdout
 		os.Stderr = origStderr
@@ -143,10 +144,8 @@ func TestLegacyPrintfRoutesLevels(t *testing.T) {
 
 	_ = stdoutW.Close()
 	_ = stderrW.Close()
-	stdoutBytes, _ := io.ReadAll(stdoutR)
-	stderrBytes, _ := io.ReadAll(stderrR)
-	stdoutText := string(stdoutBytes)
-	stderrText := string(stderrBytes)
+	stdoutText := <-stdoutCh
+	stderrText := <-stderrCh
 
 	if !strings.Contains(stdoutText, "request started") {
 		t.Fatalf("stdout missing info log: %s", stdoutText)

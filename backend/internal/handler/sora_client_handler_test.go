@@ -1046,6 +1046,12 @@ func (r *stubAPIKeyRepoForHandler) ListKeysByGroupID(context.Context, int64) ([]
 func (r *stubAPIKeyRepoForHandler) IncrementQuotaUsed(_ context.Context, _ int64, _ float64) (float64, error) {
 	return 0, nil
 }
+func (r *stubAPIKeyRepoForHandler) IncrementTokenQuotaUsed(_ context.Context, _ int64, _ int64) (int64, error) {
+	return 0, nil
+}
+func (r *stubAPIKeyRepoForHandler) IncrementTokenQuotaWindows(_ context.Context, _ int64, _ int64) error {
+	return nil
+}
 func (r *stubAPIKeyRepoForHandler) UpdateLastUsed(context.Context, int64, time.Time) error {
 	return nil
 }

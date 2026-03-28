@@ -9,6 +9,32 @@ import (
 	"testing"
 )
 
+func readPipeAsync(r *os.File) <-chan string {
+	ch := make(chan string, 1)
+	go func() {
+		data, _ := io.ReadAll(r)
+		ch <- string(data)
+	}()
+	return ch
+}
+
+func reinitLoggerForTest(t *testing.T) {
+	t.Helper()
+	if err := Init(InitOptions{
+		Level:       "info",
+		Format:      "json",
+		ServiceName: "sub2api",
+		Environment: "test",
+		Output: OutputOptions{
+			ToStdout: false,
+			ToFile:   false,
+		},
+		Sampling: SamplingOptions{Enabled: false},
+	}); err != nil {
+		t.Fatalf("reinit logger: %v", err)
+	}
+}
+
 func TestInit_DualOutput(t *testing.T) {
 	tmpDir := t.TempDir()
 	logPath := filepath.Join(tmpDir, "logs", "sub2api.log")
@@ -25,6 +51,8 @@ func TestInit_DualOutput(t *testing.T) {
 	}
 	os.Stdout = stdoutW
 	os.Stderr = stderrW
+	stdoutCh := readPipeAsync(stdoutR)
+	stderrCh := readPipeAsync(stderrR)
 	t.Cleanup(func() {
 		os.Stdout = origStdout
 		os.Stderr = origStderr
@@ -61,10 +89,8 @@ func TestInit_DualOutput(t *testing.T) {
 
 	_ = stdoutW.Close()
 	_ = stderrW.Close()
-	stdoutBytes, _ := io.ReadAll(stdoutR)
-	stderrBytes, _ := io.ReadAll(stderrR)
-	stdoutText := string(stdoutBytes)
-	stderrText := string(stderrBytes)
+	stdoutText := <-stdoutCh
+	stderrText := <-stderrCh
 
 	if !strings.Contains(stdoutText, "dual-output-info") {
 		t.Fatalf("stdout missing info log: %s", stdoutText)
@@ -81,6 +107,8 @@ func TestInit_DualOutput(t *testing.T) {
 	if !strings.Contains(fileText, "dual-output-info") || !strings.Contains(fileText, "dual-output-warn") {
 		t.Fatalf("file missing logs: %s", fileText)
 	}
+
+	reinitLoggerForTest(t)
 }
 
 func TestInit_FileOutputFailureDowngrade(t *testing.T) {
@@ -142,6 +170,7 @@ func TestInit_CallerShouldPointToCallsite(t *testing.T) {
 	}
 	os.Stdout = stdoutW
 	os.Stderr = stderrW
+	stdoutCh := readPipeAsync(stdoutR)
 	t.Cleanup(func() {
 		os.Stdout = origStdout
 		os.Stderr = origStderr
@@ -168,7 +197,7 @@ func TestInit_CallerShouldPointToCallsite(t *testing.T) {
 	L().Info("caller-check")
 	Sync()
 	_ = stdoutW.Close()
-	logBytes, _ := io.ReadAll(stdoutR)
+	logBytes := []byte(<-stdoutCh)
 
 	var line string
 	for _, item := range strings.Split(string(logBytes), "\n") {

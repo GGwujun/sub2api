@@ -7347,7 +7347,7 @@ func postUsageBilling(ctx context.Context, p *postUsageBillingParams, deps *bill
 	if p.IsTokenQuotaBill {
 		// 1. 更新订阅 Token 使用量
 		if p.TotalTokens > 0 && p.Subscription != nil {
-			if err := deps.userSubRepo.IncrementTokenUsage(ctx, p.Subscription.ID, p.TotalTokens); err != nil {
+			if err := deps.userSubRepo.IncrementTokenUsage(billingCtx, p.Subscription.ID, p.TotalTokens); err != nil {
 				slog.Error("increment subscription token usage failed", "subscription_id", p.Subscription.ID, "tokens", p.TotalTokens, "error", err)
 			}
 		}
@@ -7372,7 +7372,7 @@ func postUsageBilling(ctx context.Context, p *postUsageBillingParams, deps *bill
 
 	// 2. API Key 费用配额（只有非 Token 配额模式才处理）
 	if !p.IsTokenQuotaBill && cost.ActualCost > 0 && p.APIKey.Quota > 0 && p.APIKeyService != nil {
-		if err := p.APIKeyService.UpdateQuotaUsed(ctx, p.APIKey.ID, cost.ActualCost); err != nil {
+		if err := p.APIKeyService.UpdateQuotaUsed(billingCtx, p.APIKey.ID, cost.ActualCost); err != nil {
 			slog.Error("update api key quota failed", "api_key_id", p.APIKey.ID, "error", err)
 		}
 	}
@@ -7381,7 +7381,7 @@ func postUsageBilling(ctx context.Context, p *postUsageBillingParams, deps *bill
 	// Token 配额模式：只有 API Key 或 Group 配置了 Token 配额时才生效
 	hasTokenQuota := p.APIKey.HasTokenQuota()
 	if p.TotalTokens > 0 && hasTokenQuota && p.APIKeyService != nil {
-		if err := p.APIKeyService.UpdateTokenQuotaUsed(ctx, p.APIKey.ID, p.TotalTokens); err != nil {
+		if err := p.APIKeyService.UpdateTokenQuotaUsed(billingCtx, p.APIKey.ID, p.TotalTokens); err != nil {
 			slog.Error("update api key token quota failed", "api_key_id", p.APIKey.ID, "tokens", p.TotalTokens, "error", err)
 		}
 	}

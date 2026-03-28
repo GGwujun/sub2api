@@ -213,7 +213,11 @@ func (s *MiniMaxGatewayService) Forward(ctx context.Context, account *Account, b
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			logger.FromContext(ctx).Warn("minimax.close_response_body_failed", zap.Error(closeErr))
+		}
+	}()
 
 	// 读取响应
 	respBody, err := io.ReadAll(resp.Body)
@@ -300,7 +304,11 @@ func (s *MiniMaxGatewayService) ForwardStream(ctx context.Context, account *Acco
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			logger.FromContext(ctx).Warn("minimax.close_stream_body_failed", zap.Error(closeErr))
+		}
+	}()
 
 	// 设置响应头
 	writer.Header().Set("Content-Type", "text/event-stream")
@@ -317,7 +325,6 @@ func (s *MiniMaxGatewayService) ForwardStream(ctx context.Context, account *Acco
 
 	// 流式传输
 	var collectedUsage *MiniMaxUsage
-	var currentEvent string
 	requestID := ""
 	scanner := bufio.NewScanner(resp.Body)
 	for scanner.Scan() {
@@ -331,8 +338,6 @@ func (s *MiniMaxGatewayService) ForwardStream(ctx context.Context, account *Acco
 		// SSE 事件格式: event: xxx \n data: {...}
 		// 记录当前事件类型
 		if strings.HasPrefix(line, "event:") {
-			currentEvent = strings.TrimPrefix(line, "event:")
-			currentEvent = strings.TrimSpace(currentEvent)
 			continue
 		}
 
@@ -404,7 +409,9 @@ func (s *MiniMaxGatewayService) ForwardStream(ctx context.Context, account *Acco
 		}
 
 		// 写入响应
-		writer.Write([]byte(line + "\n"))
+		if _, err := writer.Write([]byte(line + "\n")); err != nil {
+			return nil, fmt.Errorf("failed to write stream response: %w", err)
+		}
 		writer.Flush()
 	}
 
@@ -625,15 +632,6 @@ func checkHeadersForMiniMaxUsage(headers http.Header) *MiniMaxUsage {
 	return usage
 }
 
-// getHeaderKeys 获取响应头的 key 列表（用于调试）
-func getMiniMaxHeaderKeys(headers http.Header) []string {
-	keys := make([]string, 0, len(headers))
-	for k := range headers {
-		keys = append(keys, k)
-	}
-	return keys
-}
-
 // extractUsage 提取使用量信息
 // 兼容 Anthropic 格式的多种 usage 位置：
 // 1. usage.input_tokens / usage.output_tokens (最常用)
@@ -681,12 +679,6 @@ func (s *MiniMaxGatewayService) extractUsage(body []byte) *MiniMaxUsage {
 		usage.TotalTokens = int(totalTokens)
 	} else if usage.PromptTokens > 0 || usage.CompletionTokens > 0 {
 		usage.TotalTokens = usage.PromptTokens + usage.CompletionTokens
-	}
-
-	// ✅ 可选：解析 reasoning_tokens（用于审计，不影响计费）
-	if reasoningTokens := gjson.GetBytes(body, "usage.completion_tokens_details.reasoning_tokens").Int(); reasoningTokens > 0 {
-		// 目前仅记录日志，不修改 completion tokens
-		// 如果需要将 reasoning_tokens 纳入计费，可在此处处理
 	}
 
 	return usage
@@ -890,16 +882,16 @@ func (s *MiniMaxGatewayService) LogResponse(ctx context.Context, accountID int64
 }
 
 // ListModels 返回可用的模型列表
-func (s *MiniMaxGatewayService) ListModels() []map[string]interface{} {
+func (s *MiniMaxGatewayService) ListModels() []map[string]any {
 	return DefaultMiniMaxModels()
 }
 
 // DefaultMiniMaxModels 返回默认的 MiniMax 模型列表
-func DefaultMiniMaxModels() []map[string]interface{} {
-	models := make([]map[string]interface{}, 0, len(defaultMiniMaxPricing))
+func DefaultMiniMaxModels() []map[string]any {
+	models := make([]map[string]any, 0, len(defaultMiniMaxPricing))
 
 	for model := range defaultMiniMaxPricing {
-		models = append(models, map[string]interface{}{
+		models = append(models, map[string]any{
 			"id":       model,
 			"object":   "model",
 			"created":  time.Now().Unix(),
@@ -930,7 +922,11 @@ func (s *MiniMaxGatewayService) TestConnection(ctx context.Context, account *Acc
 	if err != nil {
 		return fmt.Errorf("failed to send request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if closeErr := resp.Body.Close(); closeErr != nil {
+			logger.FromContext(ctx).Warn("minimax.close_test_connection_body_failed", zap.Error(closeErr))
+		}
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
@@ -953,7 +949,7 @@ func (s *MiniMaxGatewayService) ValidateAndSetBaseURL(account *Account, baseURL 
 
 	// 设置到账号extra中
 	if account.Extra == nil {
-		account.Extra = make(map[string]interface{})
+		account.Extra = make(map[string]any)
 	}
 	account.Extra["base_url"] = baseURL
 
