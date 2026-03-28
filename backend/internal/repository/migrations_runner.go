@@ -159,6 +159,10 @@ func applyMigrationsFS(ctx context.Context, db *sql.DB, fsys fs.FS) error {
 		if content == "" {
 			continue // 跳过空文件
 		}
+		executableContent := extractExecutableMigrationContent(content)
+		if executableContent == "" {
+			continue
+		}
 
 		// 计算文件内容的 SHA256 校验和，用于检测文件是否被修改。
 		// 这是一种防篡改机制：如果有人修改了已应用的迁移文件，系统会拒绝启动。
@@ -193,7 +197,7 @@ func applyMigrationsFS(ctx context.Context, db *sql.DB, fsys fs.FS) error {
 			return fmt.Errorf("check migration %s: %w", name, rowErr)
 		}
 
-		nonTx, err := validateMigrationExecutionMode(name, content)
+		nonTx, err := validateMigrationExecutionMode(name, executableContent)
 		if err != nil {
 			return fmt.Errorf("validate migration %s: %w", name, err)
 		}
@@ -201,7 +205,7 @@ func applyMigrationsFS(ctx context.Context, db *sql.DB, fsys fs.FS) error {
 		if nonTx {
 			// *_notx.sql：用于 CREATE/DROP INDEX CONCURRENTLY 场景，必须非事务执行。
 			// 逐条语句执行，避免将多条 CONCURRENTLY 语句放入同一个隐式事务块。
-			statements := splitSQLStatements(content)
+			statements := splitSQLStatements(executableContent)
 			for i, stmt := range statements {
 				trimmed := strings.TrimSpace(stmt)
 				if trimmed == "" {
@@ -227,7 +231,7 @@ func applyMigrationsFS(ctx context.Context, db *sql.DB, fsys fs.FS) error {
 		}
 
 		// 执行迁移 SQL
-		if _, err := tx.ExecContext(ctx, content); err != nil {
+		if _, err := tx.ExecContext(ctx, executableContent); err != nil {
 			_ = tx.Rollback()
 			return fmt.Errorf("apply migration %s: %w", name, err)
 		}
@@ -246,6 +250,43 @@ func applyMigrationsFS(ctx context.Context, db *sql.DB, fsys fs.FS) error {
 	}
 
 	return nil
+}
+
+func extractExecutableMigrationContent(content string) string {
+	trimmed := strings.TrimSpace(content)
+	if trimmed == "" || !strings.Contains(trimmed, "-- +goose ") {
+		return trimmed
+	}
+
+	var builder strings.Builder
+	insideUp := false
+	hasGooseDirective := false
+
+	for _, line := range strings.Split(trimmed, "\n") {
+		lineTrimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(lineTrimmed, "-- +goose ") {
+			hasGooseDirective = true
+			directive := strings.TrimSpace(strings.TrimPrefix(lineTrimmed, "-- +goose "))
+			switch {
+			case strings.HasPrefix(directive, "Up"):
+				insideUp = true
+			case strings.HasPrefix(directive, "Down"):
+				insideUp = false
+			}
+			continue
+		}
+
+		if insideUp {
+			builder.WriteString(line)
+			builder.WriteString("\n")
+		}
+	}
+
+	if !hasGooseDirective {
+		return trimmed
+	}
+
+	return strings.TrimSpace(builder.String())
 }
 
 func ensureAtlasBaselineAligned(ctx context.Context, db *sql.DB, fsys fs.FS) error {

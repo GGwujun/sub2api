@@ -1,9 +1,12 @@
 package setup
 
 import (
+	"context"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/DATA-DOG/go-sqlmock"
 )
 
 func TestDecideAdminBootstrap(t *testing.T) {
@@ -86,4 +89,51 @@ func TestWriteConfigFileKeepsDefaultUserConcurrency(t *testing.T) {
 	if !strings.Contains(string(data), "user_concurrency: 5") {
 		t.Fatalf("config missing default user concurrency, got:\n%s", string(data))
 	}
+}
+
+func TestValidateSetupSchema(t *testing.T) {
+	t.Run("passes when token schema columns exist", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("sqlmock.New() error = %v", err)
+		}
+		defer func() { _ = db.Close() }()
+
+		for _, item := range setupRequiredSchemaColumns {
+			mock.ExpectQuery("SELECT EXISTS ").
+				WithArgs(item.table, item.column).
+				WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
+		}
+
+		if err := validateSetupSchema(context.Background(), db); err != nil {
+			t.Fatalf("validateSetupSchema() error = %v", err)
+		}
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Fatalf("ExpectationsWereMet() error = %v", err)
+		}
+	})
+
+	t.Run("fails when token schema column is missing", func(t *testing.T) {
+		db, mock, err := sqlmock.New()
+		if err != nil {
+			t.Fatalf("sqlmock.New() error = %v", err)
+		}
+		defer func() { _ = db.Close() }()
+
+		first := setupRequiredSchemaColumns[0]
+		mock.ExpectQuery("SELECT EXISTS ").
+			WithArgs(first.table, first.column).
+			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(false))
+
+		err = validateSetupSchema(context.Background(), db)
+		if err == nil {
+			t.Fatalf("validateSetupSchema() error = nil, want missing schema error")
+		}
+		if !strings.Contains(err.Error(), first.table+"."+first.column) {
+			t.Fatalf("validateSetupSchema() error = %v, want missing column reference", err)
+		}
+		if err := mock.ExpectationsWereMet(); err != nil {
+			t.Fatalf("ExpectationsWereMet() error = %v", err)
+		}
+	})
 }

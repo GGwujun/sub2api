@@ -347,7 +347,51 @@ func initializeDatabase(cfg *SetupConfig) error {
 
 	migrationCtx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
-	return repository.ApplyMigrations(migrationCtx, db)
+	if err := repository.ApplyMigrations(migrationCtx, db); err != nil {
+		return err
+	}
+	return validateSetupSchema(migrationCtx, db)
+}
+
+type requiredSchemaColumn struct {
+	table  string
+	column string
+}
+
+var setupRequiredSchemaColumns = []requiredSchemaColumn{
+	{table: "api_keys", column: "token_quota"},
+	{table: "api_keys", column: "token_quota_daily"},
+	{table: "groups", column: "token_quota"},
+	{table: "groups", column: "token_quota_daily"},
+	{table: "user_subscriptions", column: "token_usage_total"},
+	{table: "user_subscriptions", column: "token_daily_window_start"},
+}
+
+func validateSetupSchema(ctx context.Context, db *sql.DB) error {
+	for _, item := range setupRequiredSchemaColumns {
+		exists, err := columnExists(ctx, db, item.table, item.column)
+		if err != nil {
+			return fmt.Errorf("validate %s.%s: %w", item.table, item.column, err)
+		}
+		if !exists {
+			return fmt.Errorf("setup schema is incomplete: missing %s.%s after migrations", item.table, item.column)
+		}
+	}
+	return nil
+}
+
+func columnExists(ctx context.Context, db *sql.DB, tableName, columnName string) (bool, error) {
+	var exists bool
+	err := db.QueryRowContext(ctx, `
+		SELECT EXISTS (
+			SELECT 1
+			FROM information_schema.columns
+			WHERE table_schema = 'public'
+			  AND table_name = $1
+			  AND column_name = $2
+		)
+	`, tableName, columnName).Scan(&exists)
+	return exists, err
 }
 
 func createAdminUser(cfg *SetupConfig) (bool, string, error) {

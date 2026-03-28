@@ -35,6 +35,27 @@ func TestMigrationsRunner_IsIdempotent_AndSchemaIsUpToDate(t *testing.T) {
 
 	// api_keys: key length should be 128
 	requireColumn(t, tx, "api_keys", "key", "character varying", 128, false)
+	requireColumn(t, tx, "api_keys", "token_quota", "bigint", 0, false)
+	requireColumn(t, tx, "api_keys", "token_quota_used", "bigint", 0, false)
+	requireColumn(t, tx, "api_keys", "token_quota_daily", "bigint", 0, true)
+	requireColumn(t, tx, "api_keys", "token_quota_daily_used", "bigint", 0, false)
+	requireColumn(t, tx, "api_keys", "token_quota_daily_start", "timestamp with time zone", 0, true)
+	requireColumn(t, tx, "api_keys", "token_quota_weekly", "bigint", 0, true)
+	requireColumn(t, tx, "api_keys", "token_quota_weekly_used", "bigint", 0, false)
+	requireColumn(t, tx, "api_keys", "token_quota_weekly_start", "timestamp with time zone", 0, true)
+	requireColumn(t, tx, "api_keys", "token_quota_monthly", "bigint", 0, true)
+	requireColumn(t, tx, "api_keys", "token_quota_monthly_used", "bigint", 0, false)
+	requireColumn(t, tx, "api_keys", "token_quota_monthly_start", "timestamp with time zone", 0, true)
+	requireIndex(t, tx, "api_keys", "idx_api_keys_token_quota")
+	requireIndex(t, tx, "api_keys", "idx_api_keys_token_quota_daily")
+	requireIndex(t, tx, "api_keys", "idx_api_keys_token_quota_weekly")
+	requireIndex(t, tx, "api_keys", "idx_api_keys_token_quota_monthly")
+
+	// groups: token quota columns must exist for token-quota billing mode
+	requireColumn(t, tx, "groups", "token_quota", "bigint", 0, true)
+	requireColumn(t, tx, "groups", "token_quota_daily", "bigint", 0, true)
+	requireColumn(t, tx, "groups", "token_quota_weekly", "bigint", 0, true)
+	requireColumn(t, tx, "groups", "token_quota_monthly", "bigint", 0, true)
 
 	// redeem_codes: subscription fields
 	requireColumn(t, tx, "redeem_codes", "group_id", "bigint", 0, true)
@@ -76,6 +97,20 @@ func TestMigrationsRunner_IsIdempotent_AndSchemaIsUpToDate(t *testing.T) {
 
 	// user_subscriptions: deleted_at for soft delete support (migration 012)
 	requireColumn(t, tx, "user_subscriptions", "deleted_at", "timestamp with time zone", 0, true)
+	requireColumn(t, tx, "user_subscriptions", "token_usage_total", "bigint", 0, false)
+	requireColumn(t, tx, "user_subscriptions", "token_usage_daily", "bigint", 0, false)
+	requireColumn(t, tx, "user_subscriptions", "token_usage_weekly", "bigint", 0, false)
+	requireColumn(t, tx, "user_subscriptions", "token_usage_monthly", "bigint", 0, false)
+	requireColumn(t, tx, "user_subscriptions", "token_daily_window_start", "timestamp with time zone", 0, true)
+	requireColumn(t, tx, "user_subscriptions", "token_weekly_window_start", "timestamp with time zone", 0, true)
+	requireColumn(t, tx, "user_subscriptions", "token_monthly_window_start", "timestamp with time zone", 0, true)
+
+	// schema_migrations should include token-related migration files used by setup bootstrap
+	requireMigrationApplied(t, tx, "072_add_api_key_token_quota.sql")
+	requireMigrationApplied(t, tx, "073_add_api_key_token_quota_windows.sql")
+	requireMigrationApplied(t, tx, "074_add_group_token_quota.sql")
+	requireMigrationApplied(t, tx, "075_add_subscription_token_usage.sql")
+	requireMigrationApplied(t, tx, "076_hotfix_groups_token_quota_columns.sql")
 
 	// orphan_allowed_groups_audit table should exist (migration 013)
 	var orphanAuditRegclass sql.NullString
@@ -104,6 +139,21 @@ SELECT EXISTS (
 `, table, index).Scan(&exists)
 	require.NoError(t, err, "query pg_indexes for %s.%s", table, index)
 	require.True(t, exists, "expected index %s on %s", index, table)
+}
+
+func requireMigrationApplied(t *testing.T, tx *sql.Tx, filename string) {
+	t.Helper()
+
+	var exists bool
+	err := tx.QueryRowContext(context.Background(), `
+SELECT EXISTS (
+	SELECT 1
+	FROM schema_migrations
+	WHERE filename = $1
+)
+`, filename).Scan(&exists)
+	require.NoError(t, err, "query schema_migrations for %s", filename)
+	require.True(t, exists, "expected migration %s to be applied", filename)
 }
 
 func requireColumn(t *testing.T, tx *sql.Tx, table, column, dataType string, maxLen int, nullable bool) {
