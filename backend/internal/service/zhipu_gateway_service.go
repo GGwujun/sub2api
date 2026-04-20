@@ -578,14 +578,38 @@ func (s *ZhipuGatewayService) doForward(ctx context.Context, account *Account, b
 func extractZhipuUsage(body []byte) *ZhipuUsage {
 	usage := &ZhipuUsage{}
 
-	if promptTokens := gjson.GetBytes(body, "usage.prompt_tokens").Int(); promptTokens > 0 {
-		usage.PromptTokens = int(promptTokens)
+	inputPaths := []string{
+		"usage.input_tokens",
+		"usage.prompt_tokens",
+		"message.usage.input_tokens",
+		"message.usage.prompt_tokens",
 	}
-	if completionTokens := gjson.GetBytes(body, "usage.completion_tokens").Int(); completionTokens > 0 {
-		usage.CompletionTokens = int(completionTokens)
+	for _, path := range inputPaths {
+		if promptTokens := gjson.GetBytes(body, path).Int(); promptTokens > 0 {
+			usage.PromptTokens = int(promptTokens)
+			break
+		}
 	}
+
+	outputPaths := []string{
+		"usage.output_tokens",
+		"usage.completion_tokens",
+		"message.usage.output_tokens",
+		"message.usage.completion_tokens",
+	}
+	for _, path := range outputPaths {
+		if completionTokens := gjson.GetBytes(body, path).Int(); completionTokens > 0 {
+			usage.CompletionTokens = int(completionTokens)
+			break
+		}
+	}
+
 	if totalTokens := gjson.GetBytes(body, "usage.total_tokens").Int(); totalTokens > 0 {
 		usage.TotalTokens = int(totalTokens)
+	} else if totalTokens := gjson.GetBytes(body, "message.usage.total_tokens").Int(); totalTokens > 0 {
+		usage.TotalTokens = int(totalTokens)
+	} else if usage.PromptTokens > 0 || usage.CompletionTokens > 0 {
+		usage.TotalTokens = usage.PromptTokens + usage.CompletionTokens
 	}
 
 	// Return nil if no usage info found
@@ -597,11 +621,37 @@ func extractZhipuUsage(body []byte) *ZhipuUsage {
 }
 
 func extractZhipuRequestID(body []byte) string {
-	requestID := strings.TrimSpace(gjson.GetBytes(body, "request_id").String())
-	if requestID != "" {
-		return requestID
+	for _, path := range []string{"request_id", "id", "message.id"} {
+		requestID := strings.TrimSpace(gjson.GetBytes(body, path).String())
+		if requestID != "" {
+			return requestID
+		}
 	}
-	return strings.TrimSpace(gjson.GetBytes(body, "id").String())
+	return ""
+}
+
+func mergeZhipuUsage(dst **ZhipuUsage, patch *ZhipuUsage) {
+	if patch == nil {
+		return
+	}
+	if *dst == nil {
+		*dst = &ZhipuUsage{}
+	}
+
+	current := *dst
+	if patch.PromptTokens > current.PromptTokens {
+		current.PromptTokens = patch.PromptTokens
+	}
+	if patch.CompletionTokens > current.CompletionTokens {
+		current.CompletionTokens = patch.CompletionTokens
+	}
+	if patch.TotalTokens > current.TotalTokens {
+		current.TotalTokens = patch.TotalTokens
+	}
+	computedTotal := current.PromptTokens + current.CompletionTokens
+	if computedTotal > current.TotalTokens {
+		current.TotalTokens = computedTotal
+	}
 }
 
 // ForwardStream forwards a streaming request to Zhipu API with retry support
@@ -794,7 +844,7 @@ func (s *ZhipuGatewayService) doForwardStream(ctx context.Context, account *Acco
 				}
 				usage := extractZhipuUsage(payloadBytes)
 				if usage != nil {
-					collectedUsage = usage
+					mergeZhipuUsage(&collectedUsage, usage)
 				}
 				if requestID == "" {
 					requestID = extractZhipuRequestID(payloadBytes)
