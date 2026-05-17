@@ -12,7 +12,7 @@ import (
 // stripMessageCacheControl 移除 $.messages[*].content[*].cache_control。
 // 与 Parrot _strip_message_cache_control 语义一致。
 //
-// 为什么必须整体清空：客户端（特别是 Claude Code）经常把 cache_control 打在
+// 旧策略为什么整体清空：客户端（特别是 Claude Code）经常把 cache_control 打在
 // "当前最后一条 user message" 上；下一轮对话 messages 追加后，原本的最后一条
 // 变成中间某条，cache_control 还挂着就导致"前缀签名变化"，破坏缓存命中。
 // 统一由代理重新打断点（addMessageCacheBreakpoints）才能在多轮间稳定。

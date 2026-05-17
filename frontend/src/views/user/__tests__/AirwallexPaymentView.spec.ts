@@ -84,7 +84,7 @@ describe('AirwallexPaymentView', () => {
     window.localStorage.clear()
   })
 
-  it('restores local payment snapshot instead of exposing client_secret in URL', async () => {
+  it('从本地恢复快照读取支付参数，避免在 URL 中暴露 client_secret', async () => {
     routeState.query = {
       order_id: '101',
       out_trade_no: 'sub2_awx_101',
@@ -118,7 +118,7 @@ describe('AirwallexPaymentView', () => {
     expect(successUrl.searchParams.get('resume_token')).toBe('resume-awx')
   })
 
-  it('rejects reading Airwallex payment secrets directly from query string', async () => {
+  it('拒绝只从 URL query 读取 Airwallex 支付密钥', async () => {
     routeState.query = {
       order_id: '101',
       intent_id: 'int_from_query',

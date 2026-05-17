@@ -62,6 +62,9 @@ export const PAYMENT_CURRENCY_OPTIONS: TypeOption[] = [
   { value: 'NZD', label: 'NZD' },
 ]
 
+// 与后端当前集成的 stripe-go v85.0.0 的 stripe.APIVersion 保持一致。
+export const STRIPE_SDK_API_VERSION = '2026-03-25.dahlia'
+
 /** Preferred popup size for payment gateways. Alipay's standard checkout
  * (QR + account login panel) needs ~1200×900 to render without any scrolling. */
 const PAYMENT_POPUP_PREFERRED_WIDTH = 1250
@@ -97,8 +100,8 @@ export const PROVIDER_CALLBACK_PATHS: Record<string, CallbackPaths> = {
   easypay: { notifyUrl: WEBHOOK_PATHS.easypay, returnUrl: RETURN_PATH },
   alipay: { notifyUrl: WEBHOOK_PATHS.alipay, returnUrl: RETURN_PATH },
   wxpay: { notifyUrl: WEBHOOK_PATHS.wxpay },
-  // stripe: no callback URL config needed (webhook is separate)
-  // airwallex: no callback URL config needed (webhook is configured in Airwallex)
+  // stripe: 不需要回调 URL 配置，Webhook 单独配置。
+  // airwallex: 不需要回调 URL 配置，Webhook 在空中云汇后台配置。
 }
 
 /** Per-provider config fields (excludes notifyUrl/returnUrl which are handled separately). */

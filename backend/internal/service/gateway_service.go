@@ -1255,13 +1255,11 @@ func (s *GatewayService) applyClaudeCodeOAuthMimicryToBody(
 	body, _ = normalizeClaudeOAuthRequestBody(body, model, normalizeOpts)
 
 	// Phase D+E+F: messages cache 策略 + 工具名混淆 + tools[-1] 断点
-	// 对齐 Parrot transform_request 里剩余的字段级改写。三步顺序有语义约束：
-	//   1) strip：先清除客户端的 messages[*].cache_control（多轮稳定性）
-	//   2) breakpoints：再注入 2 个断点（最后一条 + 倒数第二个 user turn）
-	//   3) tool rewrite：最后改 tools[*].name / tool_choice.name 并在 tools[-1]
+	// 对齐 Parrot transform_request 里剩余的字段级改写。顺序有语义约束：
+	//   1) messages cache：仅在配置开启时清除客户端断点并注入代理断点
+	//   2) tool rewrite：最后改 tools[*].name / tool_choice.name 并在 tools[-1]
 	//      上打断点；mapping 存入 gin.Context 供响应侧 bytes.Replace 还原。
-	body = stripMessageCacheControl(body)
-	body = addMessageCacheBreakpoints(body)
+	body = s.rewriteMessageCacheControlIfEnabled(ctx, body)
 
 	if rw := buildToolNameRewriteFromBody(body); rw != nil {
 		body = applyToolNameRewriteToBody(body, rw)
@@ -4448,11 +4446,10 @@ func (s *GatewayService) Forward(ctx context.Context, c *gin.Context, account *A
 
 		body, reqModel = normalizeClaudeOAuthRequestBody(body, reqModel, normalizeOpts)
 
-		// D/E/F: messages cache 策略 + 工具名混淆 + tools[-1] 断点
+		// D/E/F: 可选 messages cache 策略 + 工具名混淆 + tools[-1] 断点
 		// 与 forward_as_chat_completions / forward_as_responses 路径对齐，
-		// 保证原生 /v1/messages 路径也经过完整的 Parrot 字段级改写。
-		body = stripMessageCacheControl(body)
-		body = addMessageCacheBreakpoints(body)
+		// 原生 /v1/messages 路径也走同一套可配置字段级改写。
+		body = s.rewriteMessageCacheControlIfEnabled(ctx, body)
 		if rw := buildToolNameRewriteFromBody(body); rw != nil {
 			body = applyToolNameRewriteToBody(body, rw)
 			c.Set(toolNameRewriteKey, rw)
@@ -8851,8 +8848,7 @@ func (s *GatewayService) ForwardCountTokens(ctx context.Context, c *gin.Context,
 		normalizeOpts := claudeOAuthNormalizeOptions{stripSystemCacheControl: true}
 		body, reqModel = normalizeClaudeOAuthRequestBody(body, reqModel, normalizeOpts)
 
-		body = stripMessageCacheControl(body)
-		body = addMessageCacheBreakpoints(body)
+		body = s.rewriteMessageCacheControlIfEnabled(ctx, body)
 		if rw := buildToolNameRewriteFromBody(body); rw != nil {
 			body = applyToolNameRewriteToBody(body, rw)
 		} else {

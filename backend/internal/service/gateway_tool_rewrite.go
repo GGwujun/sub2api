@@ -168,10 +168,11 @@ func buildToolNameRewriteFromBody(body []byte) *ToolNameRewrite {
 }
 
 // applyToolNameRewriteToBody 把已构造的 ToolNameRewrite 应用到 body 上：
+//
 //   - 改写 $.tools[*].name（仅对 shouldMimicToolName 通过的 tool）
+//   - 改写 $.tool_choice.name（仅当 $.tool_choice.type == "tool"）
 //   - 改写 $.messages[*].content[*].name（仅当 type == "tool_use"）
 //   - 在 $.tools[last].cache_control 上打 ephemeral 缓存断点
-//   - 改写 $.tool_choice.name（仅当 $.tool_choice.type == "tool"）
 //
 // 响应侧 bytes.Replace 会连带还原假名 → 真名。
 func applyToolNameRewriteToBody(body []byte, rw *ToolNameRewrite) []byte {
