@@ -150,7 +150,15 @@
 
       <template #table>
         <div class="overflow-x-auto">
-          <DataTable :columns="columns" :data="usageLogs" :loading="loading">
+          <DataTable
+            :columns="columns"
+            :data="usageLogs"
+            :loading="loading"
+            :server-side-sort="true"
+            default-sort-key="created_at"
+            default-sort-order="desc"
+            @sort="handleSort"
+          >
             <template #cell-api_key="{ row }">
               <span class="text-sm text-gray-900 dark:text-white">{{
                 row.api_key?.name || '-'
@@ -182,9 +190,16 @@
             </span>
           </template>
 
+          <template #cell-billing_mode="{ row }">
+            <span class="inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium"
+                  :class="getBillingModeBadgeClass(row.billing_mode)">
+              {{ getBillingModeLabel(row.billing_mode, t) }}
+            </span>
+          </template>
+
           <template #cell-tokens="{ row }">
-            <!-- 图片生成请求 -->
-            <div v-if="row.image_count > 0" class="flex items-center gap-1.5">
+            <!-- 图片生成请求（仅按次计费时显示图片格式） -->
+            <div v-if="row.image_count > 0 && row.billing_mode === 'image'" class="flex items-center gap-1.5">
               <svg
                 class="h-4 w-4 text-indigo-500"
                 fill="none"
@@ -434,13 +449,35 @@
               <span class="text-gray-400">{{ t('admin.usage.outputCost') }}</span>
               <span class="font-medium text-white">${{ tooltipData.output_cost.toFixed(6) }}</span>
             </div>
-            <div v-if="tooltipData && tooltipData.input_tokens > 0" class="flex items-center justify-between gap-4">
-              <span class="text-gray-400">{{ t('usage.inputTokenPrice') }}</span>
-              <span class="font-medium text-sky-300">{{ formatTokenPricePerMillion(tooltipData.input_cost, tooltipData.input_tokens) }} {{ t('usage.perMillionTokens') }}</span>
-            </div>
-            <div v-if="tooltipData && tooltipData.output_tokens > 0" class="flex items-center justify-between gap-4">
-              <span class="text-gray-400">{{ t('usage.outputTokenPrice') }}</span>
-              <span class="font-medium text-violet-300">{{ formatTokenPricePerMillion(tooltipData.output_cost, tooltipData.output_tokens) }} {{ t('usage.perMillionTokens') }}</span>
+            <!-- Token billing: show unit prices per 1M tokens -->
+            <template v-if="!tooltipData?.billing_mode || tooltipData.billing_mode === 'token'">
+              <div v-if="tooltipData && tooltipData.input_tokens > 0" class="flex items-center justify-between gap-4">
+                <span class="text-gray-400">{{ t('usage.inputTokenPrice') }}</span>
+                <span class="font-medium text-sky-300">{{ formatTokenPricePerMillion(tooltipData.input_cost, tooltipData.input_tokens) }} {{ t('usage.perMillionTokens') }}</span>
+              </div>
+              <div v-if="tooltipData && tooltipData.output_tokens > 0" class="flex items-center justify-between gap-4">
+                <span class="text-gray-400">{{ t('usage.outputTokenPrice') }}</span>
+                <span class="font-medium text-violet-300">{{ formatTokenPricePerMillion(tooltipData.output_cost, tooltipData.output_tokens) }} {{ t('usage.perMillionTokens') }}</span>
+              </div>
+            </template>
+            <!-- Per-request / image billing: show unit price -->
+            <template v-else-if="tooltipData?.billing_mode === 'image'">
+              <div class="flex items-center justify-between gap-4">
+                <span class="text-gray-400">{{ t('usage.imageCount') }}</span>
+                <span class="font-medium text-white">{{ tooltipData.image_count }}{{ t('usage.imageUnit') }} ({{ tooltipData.image_size || '2K' }})</span>
+              </div>
+              <div class="flex items-center justify-between gap-4">
+                <span class="text-gray-400">{{ t('usage.imageUnitPrice') }}</span>
+                <span class="font-medium text-sky-300">${{ imageUnitPrice(tooltipData).toFixed(6) }}</span>
+              </div>
+              <div class="flex items-center justify-between gap-4">
+                <span class="text-gray-400">{{ t('usage.imageTotalPrice') }}</span>
+                <span class="font-medium text-white">${{ tooltipData.total_cost?.toFixed(6) || '0.000000' }}</span>
+              </div>
+            </template>
+            <div v-else class="flex items-center justify-between gap-4">
+              <span class="text-gray-400">{{ t('usage.unitPrice') }}</span>
+              <span class="font-medium text-sky-300">${{ tooltipData?.total_cost?.toFixed(6) || '0.000000' }}</span>
             </div>
             <div v-if="tooltipData && tooltipData.cache_creation_cost > 0" class="flex items-center justify-between gap-4">
               <span class="text-gray-400">{{ t('admin.usage.cacheCreationCost') }}</span>
@@ -459,7 +496,7 @@
           <div class="flex items-center justify-between gap-6">
             <span class="text-gray-400">{{ t('usage.rate') }}</span>
             <span class="font-semibold text-blue-400"
-              >{{ (tooltipData?.rate_multiplier || 1).toFixed(2) }}x</span
+              >{{ formatMultiplier(tooltipData?.rate_multiplier || 1) }}x</span
             >
           </div>
           <div class="flex items-center justify-between gap-6">
@@ -499,9 +536,11 @@ import type { UsageLog, ApiKey, UsageQueryParams, UsageStatsResponse } from '@/t
 import type { Column } from '@/components/common/types'
 import { formatDateTime, formatReasoningEffort } from '@/utils/format'
 import { getPersistedPageSize } from '@/composables/usePersistedPageSize'
+import { formatCacheTokens, formatMultiplier } from '@/utils/formatters'
 import { formatTokenPricePerMillion } from '@/utils/usagePricing'
 import { getUsageServiceTierLabel } from '@/utils/usageServiceTier'
 import { resolveUsageRequestType } from '@/utils/usageRequestType'
+import { getBillingModeLabel, getBillingModeBadgeClass } from '@/utils/billingMode'
 
 const { t } = useI18n()
 const appStore = useAppStore()
@@ -527,6 +566,7 @@ const columns = computed<Column[]>(() => [
   { key: 'reasoning_effort', label: t('usage.reasoningEffort'), sortable: false },
   { key: 'endpoint', label: t('usage.endpoint'), sortable: false },
   { key: 'stream', label: t('usage.type'), sortable: false },
+  { key: 'billing_mode', label: t('admin.usage.billingMode'), sortable: false },
   { key: 'tokens', label: t('usage.tokens'), sortable: false },
   { key: 'cost', label: t('usage.cost'), sortable: false },
   { key: 'first_token', label: t('usage.firstToken'), sortable: false },
@@ -591,11 +631,22 @@ const pagination = reactive({
   total: 0,
   pages: 0
 })
+const sortState = reactive({
+  sort_by: 'created_at',
+  sort_order: 'desc' as 'asc' | 'desc'
+})
 
 const formatDuration = (ms: number | null | undefined): string => {
   if (ms == null || ms === 0) return '-'
   if (ms < 1000) return `${ms.toFixed(0)}ms`
   return `${(ms / 1000).toFixed(2)}s`
+}
+
+const imageUnitPrice = (row: UsageLog | null): number => {
+  if (!row || row.image_count <= 0) return 0
+  const total = row.total_cost ?? 0
+  const price = total / row.image_count
+  return Number.isFinite(price) ? price : 0
 }
 
 const formatUserAgent = (ua: string): string => {
@@ -617,6 +668,7 @@ const getRequestTypeBadgeClass = (log: UsageLog): string => {
   if (requestType === 'sync') return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
   return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200'
 }
+
 
 const getRequestTypeExportText = (log: UsageLog): string => {
   const requestType = resolveUsageRequestType(log)
@@ -642,15 +694,18 @@ const formatTokens = (value: number): string => {
   return value.toLocaleString()
 }
 
-// Compact format for cache tokens in table cells
-const formatCacheTokens = (value: number): string => {
-  if (value >= 1_000_000) {
-    return `${(value / 1_000_000).toFixed(1)}M`
-  } else if (value >= 1_000) {
-    return `${(value / 1_000).toFixed(1)}K`
-  }
-  return value.toLocaleString()
+type UsageTableQueryParams = UsageQueryParams & {
+  sort_by?: string
+  sort_order?: 'asc' | 'desc'
 }
+
+const buildUsageQueryParams = (page: number, pageSize: number): UsageTableQueryParams => ({
+  page,
+  page_size: pageSize,
+  ...filters.value,
+  sort_by: sortState.sort_by,
+  sort_order: sortState.sort_order
+})
 
 const loadUsageLogs = async () => {
   if (abortController) {
@@ -661,13 +716,10 @@ const loadUsageLogs = async () => {
   const { signal } = currentAbortController
   loading.value = true
   try {
-    const params: UsageQueryParams = {
-      page: pagination.page,
-      page_size: pagination.page_size,
-      ...filters.value
-    }
-
-    const response = await usageAPI.query(params, { signal })
+    const response = await usageAPI.query(
+      buildUsageQueryParams(pagination.page, pagination.page_size),
+      { signal }
+    )
     if (signal.aborted) {
       return
     }
@@ -749,6 +801,13 @@ const handlePageSizeChange = (pageSize: number) => {
   loadUsageLogs()
 }
 
+const handleSort = (key: string, order: 'asc' | 'desc') => {
+  sortState.sort_by = key
+  sortState.sort_order = order
+  pagination.page = 1
+  loadUsageLogs()
+}
+
 /**
  * Escape CSV value to prevent injection and handle special characters
  */
@@ -786,12 +845,7 @@ const exportToCSV = async () => {
     const totalRequests = Math.ceil(pagination.total / pageSize)
 
     for (let page = 1; page <= totalRequests; page++) {
-      const params: UsageQueryParams = {
-        page: page,
-        page_size: pageSize,
-        ...filters.value
-      }
-      const response = await usageAPI.query(params)
+      const response = await usageAPI.query(buildUsageQueryParams(page, pageSize))
       allLogs.push(...response.items)
     }
 
@@ -807,6 +861,7 @@ const exportToCSV = async () => {
       'Reasoning Effort',
       'Inbound Endpoint',
       'Type',
+      'Billing Mode',
       'Input Tokens',
       'Output Tokens',
       'Cache Read Tokens',
@@ -825,6 +880,7 @@ const exportToCSV = async () => {
         formatReasoningEffort(log.reasoning_effort),
         log.inbound_endpoint || '',
         getRequestTypeExportText(log),
+        getBillingModeLabel(log.billing_mode, t),
         log.input_tokens,
         log.output_tokens,
         log.cache_read_tokens,

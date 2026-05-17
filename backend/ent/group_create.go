@@ -18,6 +18,7 @@ import (
 	"github.com/Wei-Shaw/sub2api/ent/usagelog"
 	"github.com/Wei-Shaw/sub2api/ent/user"
 	"github.com/Wei-Shaw/sub2api/ent/usersubscription"
+	"github.com/Wei-Shaw/sub2api/internal/domain"
 )
 
 // GroupCreate is the builder for creating a Group entity.
@@ -272,6 +273,48 @@ func (_c *GroupCreate) SetNillableDefaultValidityDays(v *int) *GroupCreate {
 	return _c
 }
 
+// SetAllowImageGeneration sets the "allow_image_generation" field.
+func (_c *GroupCreate) SetAllowImageGeneration(v bool) *GroupCreate {
+	_c.mutation.SetAllowImageGeneration(v)
+	return _c
+}
+
+// SetNillableAllowImageGeneration sets the "allow_image_generation" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableAllowImageGeneration(v *bool) *GroupCreate {
+	if v != nil {
+		_c.SetAllowImageGeneration(*v)
+	}
+	return _c
+}
+
+// SetImageRateIndependent sets the "image_rate_independent" field.
+func (_c *GroupCreate) SetImageRateIndependent(v bool) *GroupCreate {
+	_c.mutation.SetImageRateIndependent(v)
+	return _c
+}
+
+// SetNillableImageRateIndependent sets the "image_rate_independent" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableImageRateIndependent(v *bool) *GroupCreate {
+	if v != nil {
+		_c.SetImageRateIndependent(*v)
+	}
+	return _c
+}
+
+// SetImageRateMultiplier sets the "image_rate_multiplier" field.
+func (_c *GroupCreate) SetImageRateMultiplier(v float64) *GroupCreate {
+	_c.mutation.SetImageRateMultiplier(v)
+	return _c
+}
+
+// SetNillableImageRateMultiplier sets the "image_rate_multiplier" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableImageRateMultiplier(v *float64) *GroupCreate {
+	if v != nil {
+		_c.SetImageRateMultiplier(*v)
+	}
+	return _c
+}
+
 // SetImagePrice1k sets the "image_price_1k" field.
 func (_c *GroupCreate) SetImagePrice1k(v float64) *GroupCreate {
 	_c.mutation.SetImagePrice1k(v)
@@ -366,20 +409,6 @@ func (_c *GroupCreate) SetSoraVideoPricePerRequestHd(v float64) *GroupCreate {
 func (_c *GroupCreate) SetNillableSoraVideoPricePerRequestHd(v *float64) *GroupCreate {
 	if v != nil {
 		_c.SetSoraVideoPricePerRequestHd(*v)
-	}
-	return _c
-}
-
-// SetSoraStorageQuotaBytes sets the "sora_storage_quota_bytes" field.
-func (_c *GroupCreate) SetSoraStorageQuotaBytes(v int64) *GroupCreate {
-	_c.mutation.SetSoraStorageQuotaBytes(v)
-	return _c
-}
-
-// SetNillableSoraStorageQuotaBytes sets the "sora_storage_quota_bytes" field if the given value is not nil.
-func (_c *GroupCreate) SetNillableSoraStorageQuotaBytes(v *int64) *GroupCreate {
-	if v != nil {
-		_c.SetSoraStorageQuotaBytes(*v)
 	}
 	return _c
 }
@@ -494,6 +523,34 @@ func (_c *GroupCreate) SetNillableAllowMessagesDispatch(v *bool) *GroupCreate {
 	return _c
 }
 
+// SetRequireOauthOnly sets the "require_oauth_only" field.
+func (_c *GroupCreate) SetRequireOauthOnly(v bool) *GroupCreate {
+	_c.mutation.SetRequireOauthOnly(v)
+	return _c
+}
+
+// SetNillableRequireOauthOnly sets the "require_oauth_only" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableRequireOauthOnly(v *bool) *GroupCreate {
+	if v != nil {
+		_c.SetRequireOauthOnly(*v)
+	}
+	return _c
+}
+
+// SetRequirePrivacySet sets the "require_privacy_set" field.
+func (_c *GroupCreate) SetRequirePrivacySet(v bool) *GroupCreate {
+	_c.mutation.SetRequirePrivacySet(v)
+	return _c
+}
+
+// SetNillableRequirePrivacySet sets the "require_privacy_set" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableRequirePrivacySet(v *bool) *GroupCreate {
+	if v != nil {
+		_c.SetRequirePrivacySet(*v)
+	}
+	return _c
+}
+
 // SetDefaultMappedModel sets the "default_mapped_model" field.
 func (_c *GroupCreate) SetDefaultMappedModel(v string) *GroupCreate {
 	_c.mutation.SetDefaultMappedModel(v)
@@ -504,6 +561,34 @@ func (_c *GroupCreate) SetDefaultMappedModel(v string) *GroupCreate {
 func (_c *GroupCreate) SetNillableDefaultMappedModel(v *string) *GroupCreate {
 	if v != nil {
 		_c.SetDefaultMappedModel(*v)
+	}
+	return _c
+}
+
+// SetMessagesDispatchModelConfig sets the "messages_dispatch_model_config" field.
+func (_c *GroupCreate) SetMessagesDispatchModelConfig(v domain.OpenAIMessagesDispatchModelConfig) *GroupCreate {
+	_c.mutation.SetMessagesDispatchModelConfig(v)
+	return _c
+}
+
+// SetNillableMessagesDispatchModelConfig sets the "messages_dispatch_model_config" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableMessagesDispatchModelConfig(v *domain.OpenAIMessagesDispatchModelConfig) *GroupCreate {
+	if v != nil {
+		_c.SetMessagesDispatchModelConfig(*v)
+	}
+	return _c
+}
+
+// SetRpmLimit sets the "rpm_limit" field.
+func (_c *GroupCreate) SetRpmLimit(v int) *GroupCreate {
+	_c.mutation.SetRpmLimit(v)
+	return _c
+}
+
+// SetNillableRpmLimit sets the "rpm_limit" field if the given value is not nil.
+func (_c *GroupCreate) SetNillableRpmLimit(v *int) *GroupCreate {
+	if v != nil {
+		_c.SetRpmLimit(*v)
 	}
 	return _c
 }
@@ -673,9 +758,17 @@ func (_c *GroupCreate) defaults() error {
 		v := group.DefaultDefaultValidityDays
 		_c.mutation.SetDefaultValidityDays(v)
 	}
-	if _, ok := _c.mutation.SoraStorageQuotaBytes(); !ok {
-		v := group.DefaultSoraStorageQuotaBytes
-		_c.mutation.SetSoraStorageQuotaBytes(v)
+	if _, ok := _c.mutation.AllowImageGeneration(); !ok {
+		v := group.DefaultAllowImageGeneration
+		_c.mutation.SetAllowImageGeneration(v)
+	}
+	if _, ok := _c.mutation.ImageRateIndependent(); !ok {
+		v := group.DefaultImageRateIndependent
+		_c.mutation.SetImageRateIndependent(v)
+	}
+	if _, ok := _c.mutation.ImageRateMultiplier(); !ok {
+		v := group.DefaultImageRateMultiplier
+		_c.mutation.SetImageRateMultiplier(v)
 	}
 	if _, ok := _c.mutation.ClaudeCodeOnly(); !ok {
 		v := group.DefaultClaudeCodeOnly
@@ -701,9 +794,25 @@ func (_c *GroupCreate) defaults() error {
 		v := group.DefaultAllowMessagesDispatch
 		_c.mutation.SetAllowMessagesDispatch(v)
 	}
+	if _, ok := _c.mutation.RequireOauthOnly(); !ok {
+		v := group.DefaultRequireOauthOnly
+		_c.mutation.SetRequireOauthOnly(v)
+	}
+	if _, ok := _c.mutation.RequirePrivacySet(); !ok {
+		v := group.DefaultRequirePrivacySet
+		_c.mutation.SetRequirePrivacySet(v)
+	}
 	if _, ok := _c.mutation.DefaultMappedModel(); !ok {
 		v := group.DefaultDefaultMappedModel
 		_c.mutation.SetDefaultMappedModel(v)
+	}
+	if _, ok := _c.mutation.MessagesDispatchModelConfig(); !ok {
+		v := group.DefaultMessagesDispatchModelConfig
+		_c.mutation.SetMessagesDispatchModelConfig(v)
+	}
+	if _, ok := _c.mutation.RpmLimit(); !ok {
+		v := group.DefaultRpmLimit
+		_c.mutation.SetRpmLimit(v)
 	}
 	return nil
 }
@@ -757,8 +866,14 @@ func (_c *GroupCreate) check() error {
 	if _, ok := _c.mutation.DefaultValidityDays(); !ok {
 		return &ValidationError{Name: "default_validity_days", err: errors.New(`ent: missing required field "Group.default_validity_days"`)}
 	}
-	if _, ok := _c.mutation.SoraStorageQuotaBytes(); !ok {
-		return &ValidationError{Name: "sora_storage_quota_bytes", err: errors.New(`ent: missing required field "Group.sora_storage_quota_bytes"`)}
+	if _, ok := _c.mutation.AllowImageGeneration(); !ok {
+		return &ValidationError{Name: "allow_image_generation", err: errors.New(`ent: missing required field "Group.allow_image_generation"`)}
+	}
+	if _, ok := _c.mutation.ImageRateIndependent(); !ok {
+		return &ValidationError{Name: "image_rate_independent", err: errors.New(`ent: missing required field "Group.image_rate_independent"`)}
+	}
+	if _, ok := _c.mutation.ImageRateMultiplier(); !ok {
+		return &ValidationError{Name: "image_rate_multiplier", err: errors.New(`ent: missing required field "Group.image_rate_multiplier"`)}
 	}
 	if _, ok := _c.mutation.ClaudeCodeOnly(); !ok {
 		return &ValidationError{Name: "claude_code_only", err: errors.New(`ent: missing required field "Group.claude_code_only"`)}
@@ -778,6 +893,12 @@ func (_c *GroupCreate) check() error {
 	if _, ok := _c.mutation.AllowMessagesDispatch(); !ok {
 		return &ValidationError{Name: "allow_messages_dispatch", err: errors.New(`ent: missing required field "Group.allow_messages_dispatch"`)}
 	}
+	if _, ok := _c.mutation.RequireOauthOnly(); !ok {
+		return &ValidationError{Name: "require_oauth_only", err: errors.New(`ent: missing required field "Group.require_oauth_only"`)}
+	}
+	if _, ok := _c.mutation.RequirePrivacySet(); !ok {
+		return &ValidationError{Name: "require_privacy_set", err: errors.New(`ent: missing required field "Group.require_privacy_set"`)}
+	}
 	if _, ok := _c.mutation.DefaultMappedModel(); !ok {
 		return &ValidationError{Name: "default_mapped_model", err: errors.New(`ent: missing required field "Group.default_mapped_model"`)}
 	}
@@ -785,6 +906,12 @@ func (_c *GroupCreate) check() error {
 		if err := group.DefaultMappedModelValidator(v); err != nil {
 			return &ValidationError{Name: "default_mapped_model", err: fmt.Errorf(`ent: validator failed for field "Group.default_mapped_model": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.MessagesDispatchModelConfig(); !ok {
+		return &ValidationError{Name: "messages_dispatch_model_config", err: errors.New(`ent: missing required field "Group.messages_dispatch_model_config"`)}
+	}
+	if _, ok := _c.mutation.RpmLimit(); !ok {
+		return &ValidationError{Name: "rpm_limit", err: errors.New(`ent: missing required field "Group.rpm_limit"`)}
 	}
 	return nil
 }
@@ -885,6 +1012,18 @@ func (_c *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 		_spec.SetField(group.FieldDefaultValidityDays, field.TypeInt, value)
 		_node.DefaultValidityDays = value
 	}
+	if value, ok := _c.mutation.AllowImageGeneration(); ok {
+		_spec.SetField(group.FieldAllowImageGeneration, field.TypeBool, value)
+		_node.AllowImageGeneration = value
+	}
+	if value, ok := _c.mutation.ImageRateIndependent(); ok {
+		_spec.SetField(group.FieldImageRateIndependent, field.TypeBool, value)
+		_node.ImageRateIndependent = value
+	}
+	if value, ok := _c.mutation.ImageRateMultiplier(); ok {
+		_spec.SetField(group.FieldImageRateMultiplier, field.TypeFloat64, value)
+		_node.ImageRateMultiplier = value
+	}
 	if value, ok := _c.mutation.ImagePrice1k(); ok {
 		_spec.SetField(group.FieldImagePrice1k, field.TypeFloat64, value)
 		_node.ImagePrice1k = &value
@@ -912,10 +1051,6 @@ func (_c *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.SoraVideoPricePerRequestHd(); ok {
 		_spec.SetField(group.FieldSoraVideoPricePerRequestHd, field.TypeFloat64, value)
 		_node.SoraVideoPricePerRequestHd = &value
-	}
-	if value, ok := _c.mutation.SoraStorageQuotaBytes(); ok {
-		_spec.SetField(group.FieldSoraStorageQuotaBytes, field.TypeInt64, value)
-		_node.SoraStorageQuotaBytes = value
 	}
 	if value, ok := _c.mutation.ClaudeCodeOnly(); ok {
 		_spec.SetField(group.FieldClaudeCodeOnly, field.TypeBool, value)
@@ -953,9 +1088,25 @@ func (_c *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
 		_spec.SetField(group.FieldAllowMessagesDispatch, field.TypeBool, value)
 		_node.AllowMessagesDispatch = value
 	}
+	if value, ok := _c.mutation.RequireOauthOnly(); ok {
+		_spec.SetField(group.FieldRequireOauthOnly, field.TypeBool, value)
+		_node.RequireOauthOnly = value
+	}
+	if value, ok := _c.mutation.RequirePrivacySet(); ok {
+		_spec.SetField(group.FieldRequirePrivacySet, field.TypeBool, value)
+		_node.RequirePrivacySet = value
+	}
 	if value, ok := _c.mutation.DefaultMappedModel(); ok {
 		_spec.SetField(group.FieldDefaultMappedModel, field.TypeString, value)
 		_node.DefaultMappedModel = value
+	}
+	if value, ok := _c.mutation.MessagesDispatchModelConfig(); ok {
+		_spec.SetField(group.FieldMessagesDispatchModelConfig, field.TypeJSON, value)
+		_node.MessagesDispatchModelConfig = value
+	}
+	if value, ok := _c.mutation.RpmLimit(); ok {
+		_spec.SetField(group.FieldRpmLimit, field.TypeInt, value)
+		_node.RpmLimit = value
 	}
 	if nodes := _c.mutation.APIKeysIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1425,6 +1576,48 @@ func (u *GroupUpsert) AddDefaultValidityDays(v int) *GroupUpsert {
 	return u
 }
 
+// SetAllowImageGeneration sets the "allow_image_generation" field.
+func (u *GroupUpsert) SetAllowImageGeneration(v bool) *GroupUpsert {
+	u.Set(group.FieldAllowImageGeneration, v)
+	return u
+}
+
+// UpdateAllowImageGeneration sets the "allow_image_generation" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateAllowImageGeneration() *GroupUpsert {
+	u.SetExcluded(group.FieldAllowImageGeneration)
+	return u
+}
+
+// SetImageRateIndependent sets the "image_rate_independent" field.
+func (u *GroupUpsert) SetImageRateIndependent(v bool) *GroupUpsert {
+	u.Set(group.FieldImageRateIndependent, v)
+	return u
+}
+
+// UpdateImageRateIndependent sets the "image_rate_independent" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateImageRateIndependent() *GroupUpsert {
+	u.SetExcluded(group.FieldImageRateIndependent)
+	return u
+}
+
+// SetImageRateMultiplier sets the "image_rate_multiplier" field.
+func (u *GroupUpsert) SetImageRateMultiplier(v float64) *GroupUpsert {
+	u.Set(group.FieldImageRateMultiplier, v)
+	return u
+}
+
+// UpdateImageRateMultiplier sets the "image_rate_multiplier" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateImageRateMultiplier() *GroupUpsert {
+	u.SetExcluded(group.FieldImageRateMultiplier)
+	return u
+}
+
+// AddImageRateMultiplier adds v to the "image_rate_multiplier" field.
+func (u *GroupUpsert) AddImageRateMultiplier(v float64) *GroupUpsert {
+	u.Add(group.FieldImageRateMultiplier, v)
+	return u
+}
+
 // SetImagePrice1k sets the "image_price_1k" field.
 func (u *GroupUpsert) SetImagePrice1k(v float64) *GroupUpsert {
 	u.Set(group.FieldImagePrice1k, v)
@@ -1593,24 +1786,6 @@ func (u *GroupUpsert) ClearSoraVideoPricePerRequestHd() *GroupUpsert {
 	return u
 }
 
-// SetSoraStorageQuotaBytes sets the "sora_storage_quota_bytes" field.
-func (u *GroupUpsert) SetSoraStorageQuotaBytes(v int64) *GroupUpsert {
-	u.Set(group.FieldSoraStorageQuotaBytes, v)
-	return u
-}
-
-// UpdateSoraStorageQuotaBytes sets the "sora_storage_quota_bytes" field to the value that was provided on create.
-func (u *GroupUpsert) UpdateSoraStorageQuotaBytes() *GroupUpsert {
-	u.SetExcluded(group.FieldSoraStorageQuotaBytes)
-	return u
-}
-
-// AddSoraStorageQuotaBytes adds v to the "sora_storage_quota_bytes" field.
-func (u *GroupUpsert) AddSoraStorageQuotaBytes(v int64) *GroupUpsert {
-	u.Add(group.FieldSoraStorageQuotaBytes, v)
-	return u
-}
-
 // SetClaudeCodeOnly sets the "claude_code_only" field.
 func (u *GroupUpsert) SetClaudeCodeOnly(v bool) *GroupUpsert {
 	u.Set(group.FieldClaudeCodeOnly, v)
@@ -1755,6 +1930,30 @@ func (u *GroupUpsert) UpdateAllowMessagesDispatch() *GroupUpsert {
 	return u
 }
 
+// SetRequireOauthOnly sets the "require_oauth_only" field.
+func (u *GroupUpsert) SetRequireOauthOnly(v bool) *GroupUpsert {
+	u.Set(group.FieldRequireOauthOnly, v)
+	return u
+}
+
+// UpdateRequireOauthOnly sets the "require_oauth_only" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateRequireOauthOnly() *GroupUpsert {
+	u.SetExcluded(group.FieldRequireOauthOnly)
+	return u
+}
+
+// SetRequirePrivacySet sets the "require_privacy_set" field.
+func (u *GroupUpsert) SetRequirePrivacySet(v bool) *GroupUpsert {
+	u.Set(group.FieldRequirePrivacySet, v)
+	return u
+}
+
+// UpdateRequirePrivacySet sets the "require_privacy_set" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateRequirePrivacySet() *GroupUpsert {
+	u.SetExcluded(group.FieldRequirePrivacySet)
+	return u
+}
+
 // SetDefaultMappedModel sets the "default_mapped_model" field.
 func (u *GroupUpsert) SetDefaultMappedModel(v string) *GroupUpsert {
 	u.Set(group.FieldDefaultMappedModel, v)
@@ -1764,6 +1963,36 @@ func (u *GroupUpsert) SetDefaultMappedModel(v string) *GroupUpsert {
 // UpdateDefaultMappedModel sets the "default_mapped_model" field to the value that was provided on create.
 func (u *GroupUpsert) UpdateDefaultMappedModel() *GroupUpsert {
 	u.SetExcluded(group.FieldDefaultMappedModel)
+	return u
+}
+
+// SetMessagesDispatchModelConfig sets the "messages_dispatch_model_config" field.
+func (u *GroupUpsert) SetMessagesDispatchModelConfig(v domain.OpenAIMessagesDispatchModelConfig) *GroupUpsert {
+	u.Set(group.FieldMessagesDispatchModelConfig, v)
+	return u
+}
+
+// UpdateMessagesDispatchModelConfig sets the "messages_dispatch_model_config" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateMessagesDispatchModelConfig() *GroupUpsert {
+	u.SetExcluded(group.FieldMessagesDispatchModelConfig)
+	return u
+}
+
+// SetRpmLimit sets the "rpm_limit" field.
+func (u *GroupUpsert) SetRpmLimit(v int) *GroupUpsert {
+	u.Set(group.FieldRpmLimit, v)
+	return u
+}
+
+// UpdateRpmLimit sets the "rpm_limit" field to the value that was provided on create.
+func (u *GroupUpsert) UpdateRpmLimit() *GroupUpsert {
+	u.SetExcluded(group.FieldRpmLimit)
+	return u
+}
+
+// AddRpmLimit adds v to the "rpm_limit" field.
+func (u *GroupUpsert) AddRpmLimit(v int) *GroupUpsert {
+	u.Add(group.FieldRpmLimit, v)
 	return u
 }
 
@@ -2176,6 +2405,55 @@ func (u *GroupUpsertOne) UpdateDefaultValidityDays() *GroupUpsertOne {
 	})
 }
 
+// SetAllowImageGeneration sets the "allow_image_generation" field.
+func (u *GroupUpsertOne) SetAllowImageGeneration(v bool) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetAllowImageGeneration(v)
+	})
+}
+
+// UpdateAllowImageGeneration sets the "allow_image_generation" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateAllowImageGeneration() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateAllowImageGeneration()
+	})
+}
+
+// SetImageRateIndependent sets the "image_rate_independent" field.
+func (u *GroupUpsertOne) SetImageRateIndependent(v bool) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetImageRateIndependent(v)
+	})
+}
+
+// UpdateImageRateIndependent sets the "image_rate_independent" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateImageRateIndependent() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateImageRateIndependent()
+	})
+}
+
+// SetImageRateMultiplier sets the "image_rate_multiplier" field.
+func (u *GroupUpsertOne) SetImageRateMultiplier(v float64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetImageRateMultiplier(v)
+	})
+}
+
+// AddImageRateMultiplier adds v to the "image_rate_multiplier" field.
+func (u *GroupUpsertOne) AddImageRateMultiplier(v float64) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddImageRateMultiplier(v)
+	})
+}
+
+// UpdateImageRateMultiplier sets the "image_rate_multiplier" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateImageRateMultiplier() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateImageRateMultiplier()
+	})
+}
+
 // SetImagePrice1k sets the "image_price_1k" field.
 func (u *GroupUpsertOne) SetImagePrice1k(v float64) *GroupUpsertOne {
 	return u.Update(func(s *GroupUpsert) {
@@ -2372,27 +2650,6 @@ func (u *GroupUpsertOne) ClearSoraVideoPricePerRequestHd() *GroupUpsertOne {
 	})
 }
 
-// SetSoraStorageQuotaBytes sets the "sora_storage_quota_bytes" field.
-func (u *GroupUpsertOne) SetSoraStorageQuotaBytes(v int64) *GroupUpsertOne {
-	return u.Update(func(s *GroupUpsert) {
-		s.SetSoraStorageQuotaBytes(v)
-	})
-}
-
-// AddSoraStorageQuotaBytes adds v to the "sora_storage_quota_bytes" field.
-func (u *GroupUpsertOne) AddSoraStorageQuotaBytes(v int64) *GroupUpsertOne {
-	return u.Update(func(s *GroupUpsert) {
-		s.AddSoraStorageQuotaBytes(v)
-	})
-}
-
-// UpdateSoraStorageQuotaBytes sets the "sora_storage_quota_bytes" field to the value that was provided on create.
-func (u *GroupUpsertOne) UpdateSoraStorageQuotaBytes() *GroupUpsertOne {
-	return u.Update(func(s *GroupUpsert) {
-		s.UpdateSoraStorageQuotaBytes()
-	})
-}
-
 // SetClaudeCodeOnly sets the "claude_code_only" field.
 func (u *GroupUpsertOne) SetClaudeCodeOnly(v bool) *GroupUpsertOne {
 	return u.Update(func(s *GroupUpsert) {
@@ -2561,6 +2818,34 @@ func (u *GroupUpsertOne) UpdateAllowMessagesDispatch() *GroupUpsertOne {
 	})
 }
 
+// SetRequireOauthOnly sets the "require_oauth_only" field.
+func (u *GroupUpsertOne) SetRequireOauthOnly(v bool) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetRequireOauthOnly(v)
+	})
+}
+
+// UpdateRequireOauthOnly sets the "require_oauth_only" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateRequireOauthOnly() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateRequireOauthOnly()
+	})
+}
+
+// SetRequirePrivacySet sets the "require_privacy_set" field.
+func (u *GroupUpsertOne) SetRequirePrivacySet(v bool) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetRequirePrivacySet(v)
+	})
+}
+
+// UpdateRequirePrivacySet sets the "require_privacy_set" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateRequirePrivacySet() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateRequirePrivacySet()
+	})
+}
+
 // SetDefaultMappedModel sets the "default_mapped_model" field.
 func (u *GroupUpsertOne) SetDefaultMappedModel(v string) *GroupUpsertOne {
 	return u.Update(func(s *GroupUpsert) {
@@ -2572,6 +2857,41 @@ func (u *GroupUpsertOne) SetDefaultMappedModel(v string) *GroupUpsertOne {
 func (u *GroupUpsertOne) UpdateDefaultMappedModel() *GroupUpsertOne {
 	return u.Update(func(s *GroupUpsert) {
 		s.UpdateDefaultMappedModel()
+	})
+}
+
+// SetMessagesDispatchModelConfig sets the "messages_dispatch_model_config" field.
+func (u *GroupUpsertOne) SetMessagesDispatchModelConfig(v domain.OpenAIMessagesDispatchModelConfig) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetMessagesDispatchModelConfig(v)
+	})
+}
+
+// UpdateMessagesDispatchModelConfig sets the "messages_dispatch_model_config" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateMessagesDispatchModelConfig() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateMessagesDispatchModelConfig()
+	})
+}
+
+// SetRpmLimit sets the "rpm_limit" field.
+func (u *GroupUpsertOne) SetRpmLimit(v int) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetRpmLimit(v)
+	})
+}
+
+// AddRpmLimit adds v to the "rpm_limit" field.
+func (u *GroupUpsertOne) AddRpmLimit(v int) *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddRpmLimit(v)
+	})
+}
+
+// UpdateRpmLimit sets the "rpm_limit" field to the value that was provided on create.
+func (u *GroupUpsertOne) UpdateRpmLimit() *GroupUpsertOne {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateRpmLimit()
 	})
 }
 
@@ -3150,6 +3470,55 @@ func (u *GroupUpsertBulk) UpdateDefaultValidityDays() *GroupUpsertBulk {
 	})
 }
 
+// SetAllowImageGeneration sets the "allow_image_generation" field.
+func (u *GroupUpsertBulk) SetAllowImageGeneration(v bool) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetAllowImageGeneration(v)
+	})
+}
+
+// UpdateAllowImageGeneration sets the "allow_image_generation" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateAllowImageGeneration() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateAllowImageGeneration()
+	})
+}
+
+// SetImageRateIndependent sets the "image_rate_independent" field.
+func (u *GroupUpsertBulk) SetImageRateIndependent(v bool) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetImageRateIndependent(v)
+	})
+}
+
+// UpdateImageRateIndependent sets the "image_rate_independent" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateImageRateIndependent() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateImageRateIndependent()
+	})
+}
+
+// SetImageRateMultiplier sets the "image_rate_multiplier" field.
+func (u *GroupUpsertBulk) SetImageRateMultiplier(v float64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetImageRateMultiplier(v)
+	})
+}
+
+// AddImageRateMultiplier adds v to the "image_rate_multiplier" field.
+func (u *GroupUpsertBulk) AddImageRateMultiplier(v float64) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddImageRateMultiplier(v)
+	})
+}
+
+// UpdateImageRateMultiplier sets the "image_rate_multiplier" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateImageRateMultiplier() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateImageRateMultiplier()
+	})
+}
+
 // SetImagePrice1k sets the "image_price_1k" field.
 func (u *GroupUpsertBulk) SetImagePrice1k(v float64) *GroupUpsertBulk {
 	return u.Update(func(s *GroupUpsert) {
@@ -3346,27 +3715,6 @@ func (u *GroupUpsertBulk) ClearSoraVideoPricePerRequestHd() *GroupUpsertBulk {
 	})
 }
 
-// SetSoraStorageQuotaBytes sets the "sora_storage_quota_bytes" field.
-func (u *GroupUpsertBulk) SetSoraStorageQuotaBytes(v int64) *GroupUpsertBulk {
-	return u.Update(func(s *GroupUpsert) {
-		s.SetSoraStorageQuotaBytes(v)
-	})
-}
-
-// AddSoraStorageQuotaBytes adds v to the "sora_storage_quota_bytes" field.
-func (u *GroupUpsertBulk) AddSoraStorageQuotaBytes(v int64) *GroupUpsertBulk {
-	return u.Update(func(s *GroupUpsert) {
-		s.AddSoraStorageQuotaBytes(v)
-	})
-}
-
-// UpdateSoraStorageQuotaBytes sets the "sora_storage_quota_bytes" field to the value that was provided on create.
-func (u *GroupUpsertBulk) UpdateSoraStorageQuotaBytes() *GroupUpsertBulk {
-	return u.Update(func(s *GroupUpsert) {
-		s.UpdateSoraStorageQuotaBytes()
-	})
-}
-
 // SetClaudeCodeOnly sets the "claude_code_only" field.
 func (u *GroupUpsertBulk) SetClaudeCodeOnly(v bool) *GroupUpsertBulk {
 	return u.Update(func(s *GroupUpsert) {
@@ -3535,6 +3883,34 @@ func (u *GroupUpsertBulk) UpdateAllowMessagesDispatch() *GroupUpsertBulk {
 	})
 }
 
+// SetRequireOauthOnly sets the "require_oauth_only" field.
+func (u *GroupUpsertBulk) SetRequireOauthOnly(v bool) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetRequireOauthOnly(v)
+	})
+}
+
+// UpdateRequireOauthOnly sets the "require_oauth_only" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateRequireOauthOnly() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateRequireOauthOnly()
+	})
+}
+
+// SetRequirePrivacySet sets the "require_privacy_set" field.
+func (u *GroupUpsertBulk) SetRequirePrivacySet(v bool) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetRequirePrivacySet(v)
+	})
+}
+
+// UpdateRequirePrivacySet sets the "require_privacy_set" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateRequirePrivacySet() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateRequirePrivacySet()
+	})
+}
+
 // SetDefaultMappedModel sets the "default_mapped_model" field.
 func (u *GroupUpsertBulk) SetDefaultMappedModel(v string) *GroupUpsertBulk {
 	return u.Update(func(s *GroupUpsert) {
@@ -3546,6 +3922,41 @@ func (u *GroupUpsertBulk) SetDefaultMappedModel(v string) *GroupUpsertBulk {
 func (u *GroupUpsertBulk) UpdateDefaultMappedModel() *GroupUpsertBulk {
 	return u.Update(func(s *GroupUpsert) {
 		s.UpdateDefaultMappedModel()
+	})
+}
+
+// SetMessagesDispatchModelConfig sets the "messages_dispatch_model_config" field.
+func (u *GroupUpsertBulk) SetMessagesDispatchModelConfig(v domain.OpenAIMessagesDispatchModelConfig) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetMessagesDispatchModelConfig(v)
+	})
+}
+
+// UpdateMessagesDispatchModelConfig sets the "messages_dispatch_model_config" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateMessagesDispatchModelConfig() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateMessagesDispatchModelConfig()
+	})
+}
+
+// SetRpmLimit sets the "rpm_limit" field.
+func (u *GroupUpsertBulk) SetRpmLimit(v int) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.SetRpmLimit(v)
+	})
+}
+
+// AddRpmLimit adds v to the "rpm_limit" field.
+func (u *GroupUpsertBulk) AddRpmLimit(v int) *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.AddRpmLimit(v)
+	})
+}
+
+// UpdateRpmLimit sets the "rpm_limit" field to the value that was provided on create.
+func (u *GroupUpsertBulk) UpdateRpmLimit() *GroupUpsertBulk {
+	return u.Update(func(s *GroupUpsert) {
+		s.UpdateRpmLimit()
 	})
 }
 

@@ -2,7 +2,7 @@
   <BaseDialog
     :show="show"
     :title="t('admin.accounts.editAccount')"
-    width="normal"
+    width="wide"
     @close="handleClose"
   >
     <form
@@ -35,7 +35,7 @@
             type="text"
             class="input"
             :placeholder="
-              account.platform === 'openai' || account.platform === 'sora'
+              account.platform === 'openai'
                 ? 'https://api.openai.com'
                 : account.platform === 'gemini'
                   ? 'https://generativelanguage.googleapis.com'
@@ -58,8 +58,12 @@
             v-model="editApiKey"
             type="password"
             class="input font-mono"
+            autocomplete="new-password"
+            data-1p-ignore
+            data-lpignore="true"
+            data-bwignore="true"
             :placeholder="
-              account.platform === 'openai' || account.platform === 'sora'
+              account.platform === 'openai'
                 ? 'sk-proj-...'
                 : account.platform === 'gemini'
                   ? 'AIza...'
@@ -568,6 +572,221 @@
             placeholder="sk-..."
           />
           <p class="input-hint">{{ t('admin.accounts.leaveEmptyToKeep') }}</p>
+        </div>
+      </div>
+
+      <!-- Vertex Service Account -->
+      <div v-if="(account.platform === 'gemini' || account.platform === 'anthropic') && account.type === 'service_account'" class="space-y-4">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label class="input-label">Project ID</label>
+            <input
+              v-model="editVertexProjectId"
+              type="text"
+              class="input font-mono"
+              readonly
+              :placeholder="t('admin.accounts.vertexProjectIdPlaceholder')"
+            />
+            <p class="input-hint">{{ t('admin.accounts.vertexSaJsonEditHint') }}</p>
+          </div>
+          <div>
+            <label class="input-label">Location</label>
+            <select
+              v-model="editVertexLocation"
+              required
+              class="input font-mono"
+            >
+              <optgroup
+                v-for="group in VERTEX_LOCATION_OPTIONS"
+                :key="group.label"
+                :label="group.label"
+              >
+                <option
+                  v-for="option in group.options"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ option.label }}
+                </option>
+              </optgroup>
+            </select>
+            <p class="input-hint">{{ t('admin.accounts.vertexLocationHint') }}</p>
+          </div>
+        </div>
+
+        <!-- Model Restriction Section for Service Account -->
+        <div class="border-t border-gray-200 pt-4 dark:border-dark-600">
+          <label class="input-label">{{ t('admin.accounts.modelRestriction') }}</label>
+
+          <!-- Mode Toggle -->
+          <div class="mb-4 flex gap-2">
+            <button
+              type="button"
+              @click="modelRestrictionMode = 'whitelist'"
+              :class="[
+                'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
+                modelRestrictionMode === 'whitelist'
+                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
+              ]"
+            >
+              <svg
+                class="mr-1.5 inline h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              {{ t('admin.accounts.modelWhitelist') }}
+            </button>
+            <button
+              type="button"
+              @click="modelRestrictionMode = 'mapping'"
+              :class="[
+                'flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all',
+                modelRestrictionMode === 'mapping'
+                  ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-dark-600 dark:text-gray-400 dark:hover:bg-dark-500'
+              ]"
+            >
+              <svg
+                class="mr-1.5 inline h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                />
+              </svg>
+              {{ t('admin.accounts.modelMapping') }}
+            </button>
+          </div>
+
+          <!-- Whitelist Mode -->
+          <div v-if="modelRestrictionMode === 'whitelist'">
+            <ModelWhitelistSelector v-model="allowedModels" :platform="account?.platform || 'anthropic'" />
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              {{ t('admin.accounts.selectedModels', { count: allowedModels.length }) }}
+              <span v-if="allowedModels.length === 0">{{
+                t('admin.accounts.supportsAllModels')
+              }}</span>
+            </p>
+          </div>
+
+          <!-- Mapping Mode -->
+          <div v-else>
+            <div class="mb-3 rounded-lg bg-purple-50 p-3 dark:bg-purple-900/20">
+              <p class="text-xs text-purple-700 dark:text-purple-400">
+                <svg
+                  class="mr-1 inline h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                {{ t('admin.accounts.mapRequestModels') }}
+              </p>
+            </div>
+
+            <!-- Model Mapping List -->
+            <div v-if="modelMappings.length > 0" class="mb-3 space-y-2">
+              <div
+                v-for="(mapping, index) in modelMappings"
+                :key="getModelMappingKey(mapping)"
+                class="flex items-center gap-2"
+              >
+                <input
+                  v-model="mapping.from"
+                  type="text"
+                  class="input flex-1"
+                  :placeholder="t('admin.accounts.requestModel')"
+                />
+                <svg
+                  class="h-4 w-4 flex-shrink-0 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
+                </svg>
+                <input
+                  v-model="mapping.to"
+                  type="text"
+                  class="input flex-1"
+                  :placeholder="t('admin.accounts.actualModel')"
+                />
+                <button
+                  type="button"
+                  @click="removeModelMapping(index)"
+                  class="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                >
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              @click="addModelMapping"
+              class="mb-3 w-full rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-gray-600 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-dark-500 dark:text-gray-400 dark:hover:border-dark-400 dark:hover:text-gray-300"
+            >
+              <svg
+                class="mr-1 inline h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              {{ t('admin.accounts.addMapping') }}
+            </button>
+
+            <!-- Quick Add Buttons -->
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="preset in presetMappings"
+                :key="preset.label"
+                type="button"
+                @click="addPresetMapping(preset.from, preset.to)"
+                :class="['rounded-lg px-3 py-1 text-xs transition-colors', preset.color]"
+              >
+                + {{ preset.label }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1106,6 +1325,66 @@
         </div>
       </div>
 
+      <!-- OpenAI Codex 图片生成桥接账号级覆盖 -->
+      <div
+        v-if="account?.platform === 'openai' && (account?.type === 'oauth' || account?.type === 'apikey')"
+        class="border-t border-gray-200 pt-4 dark:border-dark-600"
+      >
+        <div class="overflow-hidden rounded-lg border border-sky-100 bg-sky-50/60 shadow-sm dark:border-sky-900/50 dark:bg-sky-950/20">
+          <div class="flex items-start gap-3 px-4 py-3">
+            <div class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-white text-sky-600 shadow-sm ring-1 ring-sky-100 dark:bg-dark-800 dark:text-sky-300 dark:ring-sky-900/60">
+              <Icon name="sparkles" size="sm" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <label class="input-label mb-0">{{ t('admin.accounts.openai.codexImageGenerationBridge') }}</label>
+                <span
+                  class="rounded-full px-2 py-0.5 text-[11px] font-medium"
+                  :class="codexImageGenerationBridgeBadgeClass"
+                >
+                  {{ codexImageGenerationBridgeBadgeLabel }}
+                </span>
+              </div>
+              <p class="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-300">
+                {{ t('admin.accounts.openai.codexImageGenerationBridgeDesc') }}
+              </p>
+            </div>
+          </div>
+          <div class="border-t border-sky-100 bg-white/70 p-2 dark:border-sky-900/50 dark:bg-dark-800/70">
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
+              <button
+                v-for="option in codexImageGenerationBridgeOptions"
+                :key="option.value"
+                type="button"
+                :data-testid="`codex-image-bridge-${option.value}`"
+                @click="codexImageGenerationBridgeMode = option.value"
+                :class="[
+                  'group flex min-h-[68px] items-start gap-2 rounded-md border px-3 py-2 text-left transition-all',
+                  codexImageGenerationBridgeMode === option.value
+                    ? 'border-sky-300 bg-sky-50 text-sky-900 shadow-sm ring-1 ring-sky-200 dark:border-sky-700 dark:bg-sky-900/25 dark:text-sky-100 dark:ring-sky-800'
+                    : 'border-transparent bg-transparent text-slate-600 hover:border-gray-200 hover:bg-gray-50 dark:text-slate-300 dark:hover:border-dark-500 dark:hover:bg-dark-700'
+                ]"
+              >
+                <span
+                  :class="[
+                    'mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors',
+                    codexImageGenerationBridgeMode === option.value
+                      ? 'border-sky-500 bg-sky-500 text-white'
+                      : 'border-gray-300 text-transparent group-hover:border-gray-400 dark:border-dark-500'
+                  ]"
+                >
+                  <Icon name="check" size="xs" :stroke-width="2" />
+                </span>
+                <span class="min-w-0">
+                  <span class="block text-sm font-medium">{{ option.label }}</span>
+                  <span class="mt-0.5 block text-xs leading-4 text-slate-500 dark:text-slate-400">{{ option.description }}</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- OpenAI WS Mode 三态（off/ctx_pool/passthrough） -->
       <div
         v-if="account?.platform === 'openai' && (account?.type === 'oauth' || account?.type === 'apikey')"
@@ -1157,10 +1436,84 @@
         </div>
       </div>
 
-      <!-- API Key / Bedrock 账号配额限制 -->
-      <div v-if="account?.type === 'apikey' || account?.type === 'bedrock'" class="border-t border-gray-200 pt-4 dark:border-dark-600 space-y-4">
+      <!-- Anthropic API Key: Web Search Emulation (hidden when global disabled) -->
+      <div
+        v-if="account?.platform === 'anthropic' && account?.type === 'apikey' && webSearchGlobalEnabled"
+        class="border-t border-gray-200 pt-4 dark:border-dark-600"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <label class="input-label mb-0">{{ t('admin.accounts.anthropic.webSearchEmulation') }}</label>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {{ t('admin.accounts.anthropic.webSearchEmulationDesc') }}
+            </p>
+          </div>
+          <select v-model="webSearchEmulationMode" class="input w-24 text-sm">
+            <option value="default">{{ t('admin.accounts.anthropic.webSearchDefault') }}</option>
+            <option value="enabled">{{ t('admin.accounts.anthropic.webSearchEnabled') }}</option>
+            <option value="disabled">{{ t('admin.accounts.anthropic.webSearchDisabled') }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 配额控制 (Anthropic apikey/bedrock: 配额限制 + 亲和) -->
+      <div
+        v-if="account?.platform === 'anthropic' && (account?.type === 'apikey' || account?.type === 'bedrock')"
+        class="border-t border-gray-200 pt-4 dark:border-dark-600 space-y-4"
+      >
         <div class="mb-3">
-          <h3 class="input-label mb-0 text-base font-semibold">{{ t('admin.accounts.quotaLimit') }}</h3>
+          <h3 class="input-label mb-0 text-base font-semibold">{{ t('admin.accounts.quotaControl.title') }}</h3>
+          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            {{ t('admin.accounts.quotaControl.hint') }}
+          </p>
+        </div>
+        <QuotaLimitCard
+          :totalLimit="editQuotaLimit"
+          :dailyLimit="editQuotaDailyLimit"
+          :weeklyLimit="editQuotaWeeklyLimit"
+          :dailyResetMode="editDailyResetMode"
+          :dailyResetHour="editDailyResetHour"
+          :weeklyResetMode="editWeeklyResetMode"
+          :weeklyResetDay="editWeeklyResetDay"
+          :weeklyResetHour="editWeeklyResetHour"
+          :resetTimezone="editResetTimezone"
+          :quotaNotifyGlobalEnabled="quotaNotifyGlobalEnabled"
+          :quotaNotifyDailyEnabled="quotaNotifyState.daily.enabled"
+          :quotaNotifyDailyThreshold="quotaNotifyState.daily.threshold"
+          :quotaNotifyDailyThresholdType="quotaNotifyState.daily.thresholdType"
+          :quotaNotifyWeeklyEnabled="quotaNotifyState.weekly.enabled"
+          :quotaNotifyWeeklyThreshold="quotaNotifyState.weekly.threshold"
+          :quotaNotifyWeeklyThresholdType="quotaNotifyState.weekly.thresholdType"
+          :quotaNotifyTotalEnabled="quotaNotifyState.total.enabled"
+          :quotaNotifyTotalThreshold="quotaNotifyState.total.threshold"
+          :quotaNotifyTotalThresholdType="quotaNotifyState.total.thresholdType"
+          @update:totalLimit="editQuotaLimit = $event"
+          @update:dailyLimit="editQuotaDailyLimit = $event"
+          @update:weeklyLimit="editQuotaWeeklyLimit = $event"
+          @update:dailyResetMode="editDailyResetMode = $event"
+          @update:dailyResetHour="editDailyResetHour = $event"
+          @update:weeklyResetMode="editWeeklyResetMode = $event"
+          @update:weeklyResetDay="editWeeklyResetDay = $event"
+          @update:weeklyResetHour="editWeeklyResetHour = $event"
+          @update:resetTimezone="editResetTimezone = $event"
+          @update:quotaNotifyDailyEnabled="quotaNotifyState.daily.enabled = $event"
+          @update:quotaNotifyDailyThreshold="quotaNotifyState.daily.threshold = $event"
+          @update:quotaNotifyDailyThresholdType="quotaNotifyState.daily.thresholdType = $event"
+          @update:quotaNotifyWeeklyEnabled="quotaNotifyState.weekly.enabled = $event"
+          @update:quotaNotifyWeeklyThreshold="quotaNotifyState.weekly.threshold = $event"
+          @update:quotaNotifyWeeklyThresholdType="quotaNotifyState.weekly.thresholdType = $event"
+          @update:quotaNotifyTotalEnabled="quotaNotifyState.total.enabled = $event"
+          @update:quotaNotifyTotalThreshold="quotaNotifyState.total.threshold = $event"
+          @update:quotaNotifyTotalThresholdType="quotaNotifyState.total.thresholdType = $event"
+        />
+      </div>
+      <!-- 配额控制 (非 Anthropic apikey/bedrock) -->
+      <div
+        v-else-if="account?.type === 'apikey' || account?.type === 'bedrock'"
+        class="border-t border-gray-200 pt-4 dark:border-dark-600 space-y-4"
+      >
+        <div class="mb-3">
+          <h3 class="input-label mb-0 text-base font-semibold">{{ t('admin.accounts.quotaControl.title') }}</h3>
           <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
             {{ t('admin.accounts.quotaLimitHint') }}
           </p>
@@ -1175,6 +1528,16 @@
           :weeklyResetDay="editWeeklyResetDay"
           :weeklyResetHour="editWeeklyResetHour"
           :resetTimezone="editResetTimezone"
+          :quotaNotifyGlobalEnabled="quotaNotifyGlobalEnabled"
+          :quotaNotifyDailyEnabled="quotaNotifyState.daily.enabled"
+          :quotaNotifyDailyThreshold="quotaNotifyState.daily.threshold"
+          :quotaNotifyDailyThresholdType="quotaNotifyState.daily.thresholdType"
+          :quotaNotifyWeeklyEnabled="quotaNotifyState.weekly.enabled"
+          :quotaNotifyWeeklyThreshold="quotaNotifyState.weekly.threshold"
+          :quotaNotifyWeeklyThresholdType="quotaNotifyState.weekly.thresholdType"
+          :quotaNotifyTotalEnabled="quotaNotifyState.total.enabled"
+          :quotaNotifyTotalThreshold="quotaNotifyState.total.threshold"
+          :quotaNotifyTotalThresholdType="quotaNotifyState.total.thresholdType"
           @update:totalLimit="editQuotaLimit = $event"
           @update:dailyLimit="editQuotaDailyLimit = $event"
           @update:weeklyLimit="editQuotaWeeklyLimit = $event"
@@ -1184,6 +1547,15 @@
           @update:weeklyResetDay="editWeeklyResetDay = $event"
           @update:weeklyResetHour="editWeeklyResetHour = $event"
           @update:resetTimezone="editResetTimezone = $event"
+          @update:quotaNotifyDailyEnabled="quotaNotifyState.daily.enabled = $event"
+          @update:quotaNotifyDailyThreshold="quotaNotifyState.daily.threshold = $event"
+          @update:quotaNotifyDailyThresholdType="quotaNotifyState.daily.thresholdType = $event"
+          @update:quotaNotifyWeeklyEnabled="quotaNotifyState.weekly.enabled = $event"
+          @update:quotaNotifyWeeklyThreshold="quotaNotifyState.weekly.threshold = $event"
+          @update:quotaNotifyWeeklyThresholdType="quotaNotifyState.weekly.thresholdType = $event"
+          @update:quotaNotifyTotalEnabled="quotaNotifyState.total.enabled = $event"
+          @update:quotaNotifyTotalThreshold="quotaNotifyState.total.threshold = $event"
+          @update:quotaNotifyTotalThresholdType="quotaNotifyState.total.thresholdType = $event"
         />
       </div>
 
@@ -1217,6 +1589,64 @@
         </div>
       </div>
 
+      <div
+        v-if="account?.platform === 'openai' && (account?.type === 'oauth' || account?.type === 'apikey')"
+        class="border-t border-gray-200 pt-4 dark:border-dark-600 space-y-4"
+      >
+        <div class="flex items-center justify-between">
+          <div>
+            <label class="input-label mb-0">{{ t('admin.accounts.openai.compactMode') }}</label>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {{ t('admin.accounts.openai.compactModeDesc') }}
+            </p>
+          </div>
+          <div class="w-44">
+            <Select v-model="openAICompactMode" :options="openAICompactModeOptions" />
+          </div>
+        </div>
+        <div class="rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-600 dark:bg-dark-700 dark:text-gray-300">
+          <span class="font-medium">{{ t(openAICompactStatusKey) }}</span>
+          <span
+            v-if="account?.extra?.openai_compact_checked_at"
+            class="ml-2 text-gray-500 dark:text-gray-400"
+          >
+            {{ t('admin.accounts.openai.compactLastChecked') }}:
+            {{ formatDateTime(new Date(String(account.extra.openai_compact_checked_at))) }}
+          </span>
+        </div>
+        <div>
+          <label class="input-label">{{ t('admin.accounts.openai.compactModelMapping') }}</label>
+          <p class="input-hint">{{ t('admin.accounts.openai.compactModelMappingDesc') }}</p>
+          <div v-if="openAICompactModelMappings.length > 0" class="mb-3 space-y-2">
+            <div
+              v-for="(mapping, index) in openAICompactModelMappings"
+              :key="getOpenAICompactModelMappingKey(mapping)"
+              class="flex items-center gap-2"
+            >
+              <input
+                v-model="mapping.from"
+                type="text"
+                class="input flex-1"
+                :placeholder="t('admin.accounts.fromModel')"
+              />
+              <span class="text-gray-400">→</span>
+              <input
+                v-model="mapping.to"
+                type="text"
+                class="input flex-1"
+                :placeholder="t('admin.accounts.toModel')"
+              />
+              <button type="button" @click="removeOpenAICompactModelMapping(index)" class="text-red-500 hover:text-red-700">
+                <Icon name="trash" size="sm" />
+              </button>
+            </div>
+          </div>
+          <button type="button" @click="addOpenAICompactModelMapping" class="btn btn-secondary text-sm">
+            + {{ t('admin.accounts.addMapping') }}
+          </button>
+        </div>
+      </div>
+
       <div>
         <div class="flex items-center justify-between">
           <div>
@@ -1245,7 +1675,7 @@
         </div>
       </div>
 
-      <!-- Quota Control Section (Anthropic OAuth/SetupToken only) -->
+      <!-- 配额控制 (Anthropic OAuth/SetupToken: 亲和 + 窗口费用 + 会话 + RPM 等) -->
       <div
         v-if="account?.platform === 'anthropic' && (account?.type === 'oauth' || account?.type === 'setup-token')"
         class="border-t border-gray-200 pt-4 dark:border-dark-600 space-y-4"
@@ -1512,6 +1942,14 @@
               />
             </button>
           </div>
+          <!-- Profile selector -->
+          <div v-if="tlsFingerprintEnabled" class="mt-3">
+            <select v-model="tlsFingerprintProfileId" class="input">
+              <option :value="null">{{ t('admin.accounts.quotaControl.tlsFingerprint.defaultProfile') }}</option>
+              <option v-if="tlsFingerprintProfiles.length > 0" :value="-1">{{ t('admin.accounts.quotaControl.tlsFingerprint.randomProfile') }}</option>
+              <option v-for="p in tlsFingerprintProfiles" :key="p.id" :value="p.id">{{ p.name }}</option>
+            </select>
+          </div>
         </div>
 
         <!-- Session ID Masking -->
@@ -1578,6 +2016,41 @@
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {{ t('admin.accounts.quotaControl.cacheTTLOverride.targetHint') }}
             </p>
+          </div>
+        </div>
+
+        <!-- Custom Base URL Relay -->
+        <div class="rounded-lg border border-gray-200 p-4 dark:border-dark-600">
+          <div class="flex items-center justify-between">
+            <div>
+              <label class="input-label mb-0">{{ t('admin.accounts.quotaControl.customBaseUrl.label') }}</label>
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                {{ t('admin.accounts.quotaControl.customBaseUrl.hint') }}
+              </p>
+            </div>
+            <button
+              type="button"
+              @click="customBaseUrlEnabled = !customBaseUrlEnabled"
+              :class="[
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2',
+                customBaseUrlEnabled ? 'bg-primary-600' : 'bg-gray-200 dark:bg-dark-600'
+              ]"
+            >
+              <span
+                :class="[
+                  'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                  customBaseUrlEnabled ? 'translate-x-5' : 'translate-x-0'
+                ]"
+              />
+            </button>
+          </div>
+          <div v-if="customBaseUrlEnabled" class="mt-3">
+            <input
+              v-model="customBaseUrl"
+              type="text"
+              class="input"
+              :placeholder="t('admin.accounts.quotaControl.customBaseUrl.urlHint')"
+            />
           </div>
         </div>
       </div>
@@ -1716,7 +2189,8 @@ import { useI18n } from 'vue-i18n'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 import { adminAPI } from '@/api/admin'
-import type { Account, Proxy, AdminGroup, CheckMixedChannelResponse } from '@/types'
+import { useQuotaNotifyState } from '@/composables/useQuotaNotifyState'
+import type { Account, Proxy, AdminGroup, CheckMixedChannelResponse, OpenAICompactMode } from '@/types'
 import BaseDialog from '@/components/common/BaseDialog.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import Select from '@/components/common/Select.vue'
@@ -1726,10 +2200,11 @@ import GroupSelector from '@/components/common/GroupSelector.vue'
 import ModelWhitelistSelector from '@/components/account/ModelWhitelistSelector.vue'
 import QuotaLimitCard from '@/components/account/QuotaLimitCard.vue'
 import { applyInterceptWarmup } from '@/components/account/credentialsBuilder'
-import { formatDateTimeLocalInput, parseDateTimeLocalInput } from '@/utils/format'
+import { formatDateTime, formatDateTimeLocalInput, parseDateTimeLocalInput } from '@/utils/format'
 import { createStableObjectKeyResolver } from '@/utils/stableObjectKey'
+import { VERTEX_LOCATION_OPTIONS } from '@/constants/account'
 import {
-  // OPENAI_WS_MODE_CTX_POOL,
+  OPENAI_WS_MODE_CTX_POOL,
   OPENAI_WS_MODE_OFF,
   OPENAI_WS_MODE_PASSTHROUGH,
   isOpenAIWSModeEnabled,
@@ -1797,11 +2272,15 @@ const editBedrockSessionToken = ref('')
 const editBedrockRegion = ref('')
 const editBedrockForceGlobal = ref(false)
 const editBedrockApiKeyValue = ref('')
+const editVertexProjectId = ref('')
+const editVertexClientEmail = ref('')
+const editVertexLocation = ref('us-central1')
 const isBedrockAPIKeyMode = computed(() =>
   props.account?.type === 'bedrock' &&
   (props.account?.credentials as Record<string, unknown>)?.auth_mode === 'apikey'
 )
 const modelMappings = ref<ModelMapping[]>([])
+const openAICompactModelMappings = ref<ModelMapping[]>([])
 const modelRestrictionMode = ref<'whitelist' | 'mapping'>('whitelist')
 const allowedModels = ref<string[]>([])
 const DEFAULT_POOL_MODE_RETRY_COUNT = 3
@@ -1821,6 +2300,7 @@ const antigravityModelMappings = ref<ModelMapping[]>([])
 const tempUnschedEnabled = ref(false)
 const tempUnschedRules = ref<TempUnschedRuleForm[]>([])
 const getModelMappingKey = createStableObjectKeyResolver<ModelMapping>('edit-model-mapping')
+const getOpenAICompactModelMappingKey = createStableObjectKeyResolver<ModelMapping>('edit-openai-compact-model-mapping')
 const getAntigravityModelMappingKey = createStableObjectKeyResolver<ModelMapping>('edit-antigravity-model-mapping')
 const getTempUnschedRuleKey = createStableObjectKeyResolver<TempUnschedRuleForm>('edit-temp-unsched-rule')
 
@@ -1850,16 +2330,40 @@ const umqModeOptions = computed(() => [
   { value: 'serialize', label: t('admin.accounts.quotaControl.rpmLimit.umqModeSerialize') },
 ])
 const tlsFingerprintEnabled = ref(false)
+const tlsFingerprintProfileId = ref<number | null>(null)
+const tlsFingerprintProfiles = ref<{ id: number; name: string }[]>([])
 const sessionIdMaskingEnabled = ref(false)
 const cacheTTLOverrideEnabled = ref(false)
 const cacheTTLOverrideTarget = ref<string>('5m')
+const customBaseUrlEnabled = ref(false)
+const customBaseUrl = ref('')
 
 // OpenAI 自动透传开关（OAuth/API Key）
 const openaiPassthroughEnabled = ref(false)
+const openAICompactMode = ref<OpenAICompactMode>('auto')
 const openaiOAuthResponsesWebSocketV2Mode = ref<OpenAIWSMode>(OPENAI_WS_MODE_OFF)
 const openaiAPIKeyResponsesWebSocketV2Mode = ref<OpenAIWSMode>(OPENAI_WS_MODE_OFF)
 const codexCLIOnlyEnabled = ref(false)
+type CodexImageGenerationBridgeMode = 'inherit' | 'enabled' | 'disabled'
+const codexImageGenerationBridgeMode = ref<CodexImageGenerationBridgeMode>('inherit')
 const anthropicPassthroughEnabled = ref(false)
+const webSearchEmulationMode = ref('default')
+const webSearchGlobalEnabled = ref(false)
+const {
+  globalEnabled: quotaNotifyGlobalEnabled,
+  state: quotaNotifyState,
+  loadGlobalState: loadQuotaNotifyGlobal,
+  loadFromExtra: loadQuotaNotifyFromExtra,
+  writeToExtra: writeQuotaNotifyToExtra,
+  reset: resetQuotaNotify,
+} = useQuotaNotifyState()
+
+// Load global feature states once
+adminAPI.settings.getWebSearchEmulationConfig().then(cfg => {
+  webSearchGlobalEnabled.value = cfg?.enabled === true && (cfg?.providers?.length ?? 0) > 0
+}).catch(() => { webSearchGlobalEnabled.value = false })
+
+loadQuotaNotifyGlobal()
 const editQuotaLimit = ref<number | null>(null)
 const editQuotaDailyLimit = ref<number | null>(null)
 const editQuotaWeeklyLimit = ref<number | null>(null)
@@ -1871,8 +2375,7 @@ const editWeeklyResetHour = ref<number | null>(null)
 const editResetTimezone = ref<string | null>(null)
 const openAIWSModeOptions = computed(() => [
   { value: OPENAI_WS_MODE_OFF, label: t('admin.accounts.openai.wsModeOff') },
-  // TODO: ctx_pool 选项暂时隐藏，待测试完成后恢复
-  // { value: OPENAI_WS_MODE_CTX_POOL, label: t('admin.accounts.openai.wsModeCtxPool') },
+  { value: OPENAI_WS_MODE_CTX_POOL, label: t('admin.accounts.openai.wsModeCtxPool') },
   { value: OPENAI_WS_MODE_PASSTHROUGH, label: t('admin.accounts.openai.wsModePassthrough') }
 ])
 const openaiResponsesWebSocketV2Mode = computed({
@@ -1893,9 +2396,68 @@ const openaiResponsesWebSocketV2Mode = computed({
 const openAIWSModeConcurrencyHintKey = computed(() =>
   resolveOpenAIWSModeConcurrencyHintKey(openaiResponsesWebSocketV2Mode.value)
 )
+const codexImageGenerationBridgeOptions = computed<Array<{
+  value: CodexImageGenerationBridgeMode
+  label: string
+  description: string
+}>>(() => [
+  {
+    value: 'inherit',
+    label: t('admin.accounts.openai.codexImageGenerationBridgeInherit'),
+    description: t('admin.accounts.openai.codexImageGenerationBridgeInheritDesc')
+  },
+  {
+    value: 'enabled',
+    label: t('admin.accounts.openai.codexImageGenerationBridgeEnabled'),
+    description: t('admin.accounts.openai.codexImageGenerationBridgeEnabledDesc')
+  },
+  {
+    value: 'disabled',
+    label: t('admin.accounts.openai.codexImageGenerationBridgeDisabled'),
+    description: t('admin.accounts.openai.codexImageGenerationBridgeDisabledDesc')
+  }
+])
+const codexImageGenerationBridgeBadgeLabel = computed(() => {
+  switch (codexImageGenerationBridgeMode.value) {
+    case 'enabled':
+      return t('admin.accounts.openai.codexImageGenerationBridgeBadgeEnabled')
+    case 'disabled':
+      return t('admin.accounts.openai.codexImageGenerationBridgeBadgeDisabled')
+    default:
+      return t('admin.accounts.openai.codexImageGenerationBridgeBadgeInherit')
+  }
+})
+const codexImageGenerationBridgeBadgeClass = computed(() => {
+  switch (codexImageGenerationBridgeMode.value) {
+    case 'enabled':
+      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+    case 'disabled':
+      return 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'
+    default:
+      return 'bg-slate-100 text-slate-600 dark:bg-dark-600 dark:text-slate-300'
+  }
+})
+const openAICompactModeOptions = computed(() => [
+  { value: 'auto', label: t('admin.accounts.openai.compactModeAuto') },
+  { value: 'force_on', label: t('admin.accounts.openai.compactModeForceOn') },
+  { value: 'force_off', label: t('admin.accounts.openai.compactModeForceOff') }
+])
 const isOpenAIModelRestrictionDisabled = computed(() =>
   props.account?.platform === 'openai' && openaiPassthroughEnabled.value
 )
+const openAICompactStatusKey = computed(() => {
+  const extra = props.account?.extra as Record<string, unknown> | undefined
+  if (!props.account || props.account.platform !== 'openai') return ''
+  const mode = typeof extra?.openai_compact_mode === 'string' ? extra.openai_compact_mode : 'auto'
+  if (mode === 'force_on') return 'admin.accounts.openai.compactSupported'
+  if (mode === 'force_off') return 'admin.accounts.openai.compactUnsupported'
+  if (typeof extra?.openai_compact_supported === 'boolean') {
+    return extra.openai_compact_supported
+      ? 'admin.accounts.openai.compactSupported'
+      : 'admin.accounts.openai.compactUnsupported'
+  }
+  return 'admin.accounts.openai.compactAuto'
+})
 
 // Computed: current preset mappings based on platform
 const presetMappings = computed(() => getPresetMappingsByPlatform(props.account?.platform || 'anthropic'))
@@ -1931,7 +2493,7 @@ const tempUnschedPresets = computed(() => [
 
 // Computed: default base URL based on platform
 const defaultBaseUrl = computed(() => {
-  if (props.account?.platform === 'openai' || props.account?.platform === 'sora') return 'https://api.openai.com'
+  if (props.account?.platform === 'openai') return 'https://api.openai.com'
   if (props.account?.platform === 'gemini') return 'https://generativelanguage.googleapis.com'
 	if (props.account?.platform === 'zai') return 'https://open.bigmodel.cn/api'
   if (props.account?.platform === 'kimi') return 'https://api.kimi.com/coding/v1'
@@ -2018,6 +2580,9 @@ const syncFormFromAccount = (newAccount: Account | null) => {
   const credentials = newAccount.credentials as Record<string, unknown> | undefined
   interceptWarmupRequests.value = credentials?.intercept_warmup_requests === true
   autoPauseOnExpired.value = newAccount.auto_pause_on_expired === true
+  editVertexProjectId.value = ''
+  editVertexClientEmail.value = ''
+  editVertexLocation.value = 'us-central1'
 
   // Load mixed scheduling setting (only for antigravity accounts)
   mixedScheduling.value = false
@@ -2028,12 +2593,25 @@ const syncFormFromAccount = (newAccount: Account | null) => {
 
   // Load OpenAI passthrough toggle (OpenAI OAuth/API Key)
   openaiPassthroughEnabled.value = false
+  openAICompactMode.value = 'auto'
+  openAICompactModelMappings.value = []
   openaiOAuthResponsesWebSocketV2Mode.value = OPENAI_WS_MODE_OFF
   openaiAPIKeyResponsesWebSocketV2Mode.value = OPENAI_WS_MODE_OFF
   codexCLIOnlyEnabled.value = false
+  codexImageGenerationBridgeMode.value = 'inherit'
   anthropicPassthroughEnabled.value = false
+  webSearchEmulationMode.value = 'default'
   if (newAccount.platform === 'openai' && (newAccount.type === 'oauth' || newAccount.type === 'apikey')) {
     openaiPassthroughEnabled.value = extra?.openai_passthrough === true || extra?.openai_oauth_passthrough === true
+    openAICompactMode.value = (extra?.openai_compact_mode as OpenAICompactMode) || 'auto'
+    const codexImageGenerationBridgeValue = typeof extra?.codex_image_generation_bridge === 'boolean'
+      ? extra.codex_image_generation_bridge
+      : extra?.codex_image_generation_bridge_enabled
+    if (codexImageGenerationBridgeValue === true) {
+      codexImageGenerationBridgeMode.value = 'enabled'
+    } else if (codexImageGenerationBridgeValue === false) {
+      codexImageGenerationBridgeMode.value = 'disabled'
+    }
     openaiOAuthResponsesWebSocketV2Mode.value = resolveOpenAIWSModeFromExtra(extra, {
       modeKey: 'openai_oauth_responses_websockets_v2_mode',
       enabledKey: 'openai_oauth_responses_websockets_v2_enabled',
@@ -2049,9 +2627,23 @@ const syncFormFromAccount = (newAccount: Account | null) => {
     if (newAccount.type === 'oauth') {
       codexCLIOnlyEnabled.value = extra?.codex_cli_only === true
     }
+    const credentials = newAccount.credentials as Record<string, unknown> | undefined
+    const compactMappings = credentials?.compact_model_mapping as Record<string, string> | undefined
+    if (compactMappings && typeof compactMappings === 'object') {
+      openAICompactModelMappings.value = Object.entries(compactMappings).map(([from, to]) => ({ from, to }))
+    }
   }
   if (newAccount.platform === 'anthropic' && newAccount.type === 'apikey') {
     anthropicPassthroughEnabled.value = extra?.anthropic_passthrough === true
+    // 三态：string "default"/"enabled"/"disabled"，向后兼容旧 bool
+    const wsVal = extra?.web_search_emulation
+    if (wsVal === 'enabled' || wsVal === 'disabled') {
+      webSearchEmulationMode.value = wsVal
+    } else if (wsVal === true) {
+      webSearchEmulationMode.value = 'enabled'
+    } else {
+      webSearchEmulationMode.value = 'default'
+    }
   }
 
   // Load quota limit for apikey/bedrock accounts (bedrock quota is also loaded in its own branch above)
@@ -2069,6 +2661,8 @@ const syncFormFromAccount = (newAccount: Account | null) => {
     editWeeklyResetDay.value = (extra?.quota_weekly_reset_day as number) ?? null
     editWeeklyResetHour.value = (extra?.quota_weekly_reset_hour as number) ?? null
     editResetTimezone.value = (extra?.quota_reset_timezone as string) || null
+    // Load quota notify config
+    loadQuotaNotifyFromExtra(extra)
   } else {
     editQuotaLimit.value = null
     editQuotaDailyLimit.value = null
@@ -2079,6 +2673,7 @@ const syncFormFromAccount = (newAccount: Account | null) => {
     editWeeklyResetDay.value = null
     editWeeklyResetHour.value = null
     editResetTimezone.value = null
+    resetQuotaNotify()
   }
 
   // Load antigravity model mapping (Antigravity 只支持映射模式)
@@ -2122,7 +2717,7 @@ const syncFormFromAccount = (newAccount: Account | null) => {
   if (newAccount.type === 'apikey' && newAccount.credentials) {
     const credentials = newAccount.credentials as Record<string, unknown>
     const platformDefaultUrl =
-      newAccount.platform === 'openai' || newAccount.platform === 'sora'
+      newAccount.platform === 'openai'
         ? 'https://api.openai.com'
         : newAccount.platform === 'gemini'
           ? 'https://generativelanguage.googleapis.com'
@@ -2197,6 +2792,8 @@ const syncFormFromAccount = (newAccount: Account | null) => {
     editQuotaLimit.value = typeof bedrockExtra.quota_limit === 'number' ? bedrockExtra.quota_limit : null
     editQuotaDailyLimit.value = typeof bedrockExtra.quota_daily_limit === 'number' ? bedrockExtra.quota_daily_limit : null
     editQuotaWeeklyLimit.value = typeof bedrockExtra.quota_weekly_limit === 'number' ? bedrockExtra.quota_weekly_limit : null
+    // Load quota notify for bedrock
+    loadQuotaNotifyFromExtra(bedrockExtra)
 
     // Load model mappings for bedrock
     const existingMappings = bedrockCreds.model_mapping as Record<string, string> | undefined
@@ -2220,9 +2817,34 @@ const syncFormFromAccount = (newAccount: Account | null) => {
   } else if (newAccount.type === 'upstream' && newAccount.credentials) {
     const credentials = newAccount.credentials as Record<string, unknown>
     editBaseUrl.value = (credentials.base_url as string) || ''
+  } else if ((newAccount.platform === 'gemini' || newAccount.platform === 'anthropic') && newAccount.type === 'service_account' && newAccount.credentials) {
+    const credentials = newAccount.credentials as Record<string, unknown>
+    editVertexProjectId.value = (credentials.project_id as string) || ''
+    editVertexClientEmail.value = (credentials.client_email as string) || ''
+    editVertexLocation.value = (credentials.location as string) || (credentials.vertex_location as string) || 'us-central1'
+
+    // Load model mappings for service_account
+    const existingMappings = credentials.model_mapping as Record<string, string> | undefined
+    if (existingMappings && typeof existingMappings === 'object') {
+      const entries = Object.entries(existingMappings)
+      const isWhitelistMode = entries.length > 0 && entries.every(([from, to]) => from === to)
+      if (isWhitelistMode) {
+        modelRestrictionMode.value = 'whitelist'
+        allowedModels.value = entries.map(([from]) => from)
+        modelMappings.value = []
+      } else {
+        modelRestrictionMode.value = 'mapping'
+        modelMappings.value = entries.map(([from, to]) => ({ from, to }))
+        allowedModels.value = []
+      }
+    } else {
+      modelRestrictionMode.value = 'whitelist'
+      modelMappings.value = []
+      allowedModels.value = []
+    }
   } else {
     const platformDefaultUrl =
-      newAccount.platform === 'openai' || newAccount.platform === 'sora'
+      newAccount.platform === 'openai'
         ? 'https://api.openai.com'
         : newAccount.platform === 'gemini'
           ? 'https://generativelanguage.googleapis.com'
@@ -2263,6 +2885,15 @@ const syncFormFromAccount = (newAccount: Account | null) => {
   editApiKey.value = ''
 }
 
+async function loadTLSProfiles() {
+  try {
+    const profiles = await adminAPI.tlsFingerprintProfiles.list()
+    tlsFingerprintProfiles.value = profiles.map(p => ({ id: p.id, name: p.name }))
+  } catch {
+    tlsFingerprintProfiles.value = []
+  }
+}
+
 watch(
   [() => props.show, () => props.account],
   ([show, newAccount], [wasShow, previousAccount]) => {
@@ -2271,6 +2902,7 @@ watch(
     }
     if (!wasShow || newAccount !== previousAccount) {
       syncFormFromAccount(newAccount)
+      loadTLSProfiles()
     }
   },
   { immediate: true }
@@ -2296,6 +2928,14 @@ const addPresetMapping = (from: string, to: string) => {
 
 const addAntigravityModelMapping = () => {
   antigravityModelMappings.value.push({ from: '', to: '' })
+}
+
+const addOpenAICompactModelMapping = () => {
+  openAICompactModelMappings.value.push({ from: '', to: '' })
+}
+
+const removeOpenAICompactModelMapping = (index: number) => {
+  openAICompactModelMappings.value.splice(index, 1)
 }
 
 const removeAntigravityModelMapping = (index: number) => {
@@ -2474,12 +3114,20 @@ function loadQuotaControlSettings(account: Account) {
   rpmStickyBuffer.value = null
   userMsgQueueMode.value = ''
   tlsFingerprintEnabled.value = false
+  tlsFingerprintProfileId.value = null
   sessionIdMaskingEnabled.value = false
   cacheTTLOverrideEnabled.value = false
   cacheTTLOverrideTarget.value = '5m'
+  customBaseUrlEnabled.value = false
+  customBaseUrl.value = ''
 
-  // Only applies to Anthropic OAuth/SetupToken accounts
-  if (account.platform !== 'anthropic' || (account.type !== 'oauth' && account.type !== 'setup-token')) {
+  // Remaining quota control settings only apply to Anthropic accounts
+  if (account.platform !== 'anthropic') {
+    return
+  }
+
+  // Window cost / session limit only apply to Anthropic OAuth/SetupToken accounts
+  if (account.type !== 'oauth' && account.type !== 'setup-token') {
     return
   }
 
@@ -2511,6 +3159,7 @@ function loadQuotaControlSettings(account: Account) {
   if (account.enable_tls_fingerprint === true) {
     tlsFingerprintEnabled.value = true
   }
+  tlsFingerprintProfileId.value = account.tls_fingerprint_profile_id ?? null
 
   // Load session ID masking setting
   if (account.session_id_masking_enabled === true) {
@@ -2521,6 +3170,12 @@ function loadQuotaControlSettings(account: Account) {
   if (account.cache_ttl_override_enabled === true) {
     cacheTTLOverrideEnabled.value = true
     cacheTTLOverrideTarget.value = account.cache_ttl_override_target || '5m'
+  }
+
+  // Load custom base URL setting
+  if (account.custom_base_url_enabled === true) {
+    customBaseUrlEnabled.value = true
+    customBaseUrl.value = account.custom_base_url || ''
   }
 }
 
@@ -2723,6 +3378,14 @@ const handleSubmit = async () => {
       } else if (currentCredentials.model_mapping) {
         newCredentials.model_mapping = currentCredentials.model_mapping
       }
+      if (props.account.platform === 'openai') {
+        const compactModelMapping = buildModelMappingObject('mapping', [], openAICompactModelMappings.value)
+        if (compactModelMapping) {
+          newCredentials.compact_model_mapping = compactModelMapping
+        } else {
+          delete newCredentials.compact_model_mapping
+        }
+      }
 
       // Add pool mode if enabled
       if (poolModeEnabled.value) {
@@ -2762,6 +3425,46 @@ const handleSubmit = async () => {
       // Add intercept warmup requests setting
       applyInterceptWarmup(newCredentials, interceptWarmupRequests.value, 'edit')
 
+      if (!applyTempUnschedConfig(newCredentials)) {
+        return
+      }
+
+      updatePayload.credentials = newCredentials
+    } else if ((props.account.platform === 'gemini' || props.account.platform === 'anthropic') && props.account.type === 'service_account') {
+      const currentCredentials = (props.account.credentials as Record<string, unknown>) || {}
+      const newCredentials: Record<string, unknown> = { ...currentCredentials }
+
+      if (!editVertexProjectId.value.trim()) {
+        appStore.showError(t('admin.accounts.vertexSaJsonMissingProjectId'))
+        return
+      }
+      if (!editVertexClientEmail.value.trim()) {
+        appStore.showError(t('admin.accounts.vertexSaJsonMissingClientEmail'))
+        return
+      }
+      if (!editVertexLocation.value.trim()) {
+        appStore.showError(t('admin.accounts.vertexLocationRequired'))
+        return
+      }
+
+      if (!currentCredentials.service_account_json && !currentCredentials.service_account) {
+        appStore.showError(t('admin.accounts.vertexSaJsonRequired'))
+        return
+      }
+      newCredentials.project_id = editVertexProjectId.value.trim()
+      newCredentials.client_email = editVertexClientEmail.value.trim()
+      newCredentials.location = editVertexLocation.value.trim()
+      newCredentials.tier_id = 'vertex'
+
+      // Add model mapping if configured
+      const modelMapping = buildModelMappingObject(modelRestrictionMode.value, allowedModels.value, modelMappings.value)
+      if (modelMapping) {
+        newCredentials.model_mapping = modelMapping
+      } else {
+        delete newCredentials.model_mapping
+      }
+
+      applyInterceptWarmup(newCredentials, interceptWarmupRequests.value, 'edit')
       if (!applyTempUnschedConfig(newCredentials)) {
         return
       }
@@ -2848,6 +3551,12 @@ const handleSubmit = async () => {
         // 透传模式保留现有映射
         newCredentials.model_mapping = currentCredentials.model_mapping
       }
+      const compactModelMapping = buildModelMappingObject('mapping', [], openAICompactModelMappings.value)
+      if (compactModelMapping) {
+        newCredentials.compact_model_mapping = compactModelMapping
+      } else {
+        delete newCredentials.compact_model_mapping
+      }
 
       updatePayload.credentials = newCredentials
     }
@@ -2895,7 +3604,7 @@ const handleSubmit = async () => {
 
     // For Anthropic OAuth/SetupToken accounts, handle quota control settings in extra
     if (props.account.platform === 'anthropic' && (props.account.type === 'oauth' || props.account.type === 'setup-token')) {
-      const currentExtra = (props.account.extra as Record<string, unknown>) || {}
+      const currentExtra = (updatePayload.extra as Record<string, unknown>) || (props.account.extra as Record<string, unknown>) || {}
       const newExtra: Record<string, unknown> = { ...currentExtra }
 
       // Window cost limit settings
@@ -2945,8 +3654,14 @@ const handleSubmit = async () => {
       // TLS fingerprint setting
       if (tlsFingerprintEnabled.value) {
         newExtra.enable_tls_fingerprint = true
+        if (tlsFingerprintProfileId.value) {
+          newExtra.tls_fingerprint_profile_id = tlsFingerprintProfileId.value
+        } else {
+          delete newExtra.tls_fingerprint_profile_id
+        }
       } else {
         delete newExtra.enable_tls_fingerprint
+        delete newExtra.tls_fingerprint_profile_id
       }
 
       // Session ID masking setting
@@ -2965,17 +3680,31 @@ const handleSubmit = async () => {
         delete newExtra.cache_ttl_override_target
       }
 
+      // Custom base URL relay setting
+      if (customBaseUrlEnabled.value && customBaseUrl.value.trim()) {
+        newExtra.custom_base_url_enabled = true
+        newExtra.custom_base_url = customBaseUrl.value.trim()
+      } else {
+        delete newExtra.custom_base_url_enabled
+        delete newExtra.custom_base_url
+      }
+
       updatePayload.extra = newExtra
     }
 
-    // For Anthropic API Key accounts, handle passthrough mode in extra
+    // For Anthropic API Key accounts, handle passthrough mode + web search emulation in extra
     if (props.account.platform === 'anthropic' && props.account.type === 'apikey') {
-      const currentExtra = (props.account.extra as Record<string, unknown>) || {}
+      const currentExtra = (updatePayload.extra as Record<string, unknown>) || (props.account.extra as Record<string, unknown>) || {}
       const newExtra: Record<string, unknown> = { ...currentExtra }
       if (anthropicPassthroughEnabled.value) {
         newExtra.anthropic_passthrough = true
       } else {
         delete newExtra.anthropic_passthrough
+      }
+      if (webSearchEmulationMode.value === 'default') {
+        delete newExtra.web_search_emulation
+      } else {
+        newExtra.web_search_emulation = webSearchEmulationMode.value
       }
       updatePayload.extra = newExtra
     }
@@ -3000,6 +3729,18 @@ const handleSubmit = async () => {
         delete newExtra.openai_passthrough
         delete newExtra.openai_oauth_passthrough
       }
+      if (openAICompactMode.value === 'auto') {
+        delete newExtra.openai_compact_mode
+      } else {
+        newExtra.openai_compact_mode = openAICompactMode.value
+      }
+
+      delete newExtra.codex_image_generation_bridge_enabled
+      if (codexImageGenerationBridgeMode.value === 'inherit') {
+        delete newExtra.codex_image_generation_bridge
+      } else {
+        newExtra.codex_image_generation_bridge = codexImageGenerationBridgeMode.value === 'enabled'
+      }
 
       if (props.account.type === 'oauth') {
         if (codexCLIOnlyEnabled.value) {
@@ -3020,20 +3761,27 @@ const handleSubmit = async () => {
       const currentExtra = (updatePayload.extra as Record<string, unknown>) ||
         (props.account.extra as Record<string, unknown>) || {}
       const newExtra: Record<string, unknown> = { ...currentExtra }
+      // Total quota
       if (editQuotaLimit.value != null && editQuotaLimit.value > 0) {
         newExtra.quota_limit = editQuotaLimit.value
       } else {
         delete newExtra.quota_limit
       }
+      // Daily quota
       if (editQuotaDailyLimit.value != null && editQuotaDailyLimit.value > 0) {
         newExtra.quota_daily_limit = editQuotaDailyLimit.value
       } else {
         delete newExtra.quota_daily_limit
+        delete newExtra.quota_daily_used
+        delete newExtra.quota_daily_start
       }
+      // Weekly quota
       if (editQuotaWeeklyLimit.value != null && editQuotaWeeklyLimit.value > 0) {
         newExtra.quota_weekly_limit = editQuotaWeeklyLimit.value
       } else {
         delete newExtra.quota_weekly_limit
+        delete newExtra.quota_weekly_used
+        delete newExtra.quota_weekly_start
       }
       // Quota reset mode config
       if (editDailyResetMode.value === 'fixed') {
@@ -3057,6 +3805,8 @@ const handleSubmit = async () => {
       } else {
         delete newExtra.quota_reset_timezone
       }
+      // Quota notify config
+      writeQuotaNotifyToExtra(newExtra, 'update')
       updatePayload.extra = newExtra
     }
 

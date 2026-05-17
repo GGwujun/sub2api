@@ -36,7 +36,13 @@ func reinitLoggerForTest(t *testing.T) {
 }
 
 func TestInit_DualOutput(t *testing.T) {
-	tmpDir := t.TempDir()
+	// Use os.MkdirTemp instead of t.TempDir to avoid cleanup failures
+	// when lumberjack holds file handles on Windows.
+	tmpDir, err := os.MkdirTemp("", "logger-test-*")
+	if err != nil {
+		t.Fatalf("create temp dir: %v", err)
+	}
+	t.Cleanup(func() { _ = os.RemoveAll(tmpDir) })
 	logPath := filepath.Join(tmpDir, "logs", "sub2api.log")
 
 	origStdout := os.Stdout
@@ -85,7 +91,9 @@ func TestInit_DualOutput(t *testing.T) {
 
 	L().Info("dual-output-info")
 	L().Warn("dual-output-warn")
-	Sync()
+
+	// Skip Sync() — on Windows, fsync on pipes deadlocks (FlushFileBuffers).
+	// The log data is already in the pipe buffer; closing writers is sufficient.
 
 	_ = stdoutW.Close()
 	_ = stderrW.Close()
@@ -195,7 +203,9 @@ func TestInit_CallerShouldPointToCallsite(t *testing.T) {
 	}
 
 	L().Info("caller-check")
-	Sync()
+	// Skip Sync() — on Windows, fsync on pipes deadlocks (FlushFileBuffers).
+	os.Stdout = origStdout
+	os.Stderr = origStderr
 	_ = stdoutW.Close()
 	logBytes := []byte(<-stdoutCh)
 

@@ -90,7 +90,11 @@ export default {
         'scale-in': 'scaleIn 0.2s ease-out',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         shimmer: 'shimmer 2s linear infinite',
-        glow: 'glow 2s ease-in-out infinite alternate'
+        glow: 'glow 2s ease-in-out infinite alternate',
+        'cursor-blink': 'cursorBlink 1s step-end infinite',
+        'hero-wave': 'heroWave 2s ease-in-out infinite',
+        'hero-wave-text': 'heroWaveText 3s ease-in-out infinite',
+        'progress-slide': 'progressSlide 1.5s ease-in-out infinite'
       },
       keyframes: {
         fadeIn: {
@@ -120,6 +124,22 @@ export default {
         glow: {
           '0%': { boxShadow: '0 0 20px rgba(20, 184, 166, 0.25)' },
           '100%': { boxShadow: '0 0 30px rgba(20, 184, 166, 0.4)' }
+        },
+        cursorBlink: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0' }
+        },
+        heroWave: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-2px)' }
+        },
+        heroWaveText: {
+          '0%, 100%': { backgroundPosition: '0% center' },
+          '50%': { backgroundPosition: '100% center' }
+        },
+        progressSlide: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' }
         }
       },
       backdropBlur: {
