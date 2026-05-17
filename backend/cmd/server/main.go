@@ -64,7 +64,7 @@ func main() {
 	flag.Parse()
 
 	if *showVersion {
-		log.Printf("Dsx2API %s (commit: %s, built: %s)\n", Version, Commit, Date)
+		log.Printf("Sub2API %s (commit: %s, built: %s)\n", Version, Commit, Date)
 		return
 	}
 
@@ -113,11 +113,8 @@ func runSetupServer() {
 	// Get server address from config.yaml or environment variables (SERVER_HOST, SERVER_PORT)
 	// This allows users to run setup on a different address if needed
 	addr := config.GetServerAddress()
-	// DEBUG: Print configuration details
-	log.Printf("[DEBUG] Server address from config: %s", addr)
-	log.Printf("[DEBUG] SERVER_PORT env: %s", os.Getenv("SERVER_PORT"))
 	log.Printf("Setup wizard available at http://%s", addr)
-	log.Println("Complete the setup wizard to configure Dsx2API")
+	log.Println("Complete the setup wizard to configure Sub2API")
 
 	server := &http.Server{
 		Addr:              addr,
@@ -135,21 +132,6 @@ func runMainServer() {
 	cfg, err := config.LoadForBootstrap()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
-	}
-	// DEBUG: Print server configuration
-	log.Printf("[DEBUG] Loaded config - Host: %s, Port: %d", cfg.Server.Host, cfg.Server.Port)
-	log.Printf("[DEBUG] Config Server.Address(): %s", cfg.Server.Address())
-	// 强制 IPv4，避免 systemd 下绑定到 IPv6
-	if cfg.Server.Host == "" || cfg.Server.Host == ":" {
-		cfg.Server.Host = "0.0.0.0"
-		log.Printf("[DEBUG] Forced Host to 0.0.0.0")
-	}
-
-	log.Printf("[DEBUG] SERVER_PORT env: %s", os.Getenv("SERVER_PORT"))
-	// FORCE: Override port to 8899 for testing
-	if cfg.Server.Port != 8899 {
-		log.Printf("[DEBUG] Overriding port from %d to 8899", cfg.Server.Port)
-		cfg.Server.Port = 8899
 	}
 	if err := logger.Init(logger.OptionsFromConfig(cfg.Log)); err != nil {
 		log.Fatalf("Failed to initialize logger: %v", err)

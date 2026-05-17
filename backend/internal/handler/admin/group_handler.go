@@ -1,6 +1,9 @@
 package admin
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -19,6 +22,55 @@ type GroupHandler struct {
 	groupCapacityService *service.GroupCapacityService
 }
 
+type optionalLimitField struct {
+	set   bool
+	value *float64
+}
+
+func (f *optionalLimitField) UnmarshalJSON(data []byte) error {
+	f.set = true
+
+	trimmed := bytes.TrimSpace(data)
+	if bytes.Equal(trimmed, []byte("null")) {
+		f.value = nil
+		return nil
+	}
+
+	var number float64
+	if err := json.Unmarshal(trimmed, &number); err == nil {
+		f.value = &number
+		return nil
+	}
+
+	var text string
+	if err := json.Unmarshal(trimmed, &text); err == nil {
+		text = strings.TrimSpace(text)
+		if text == "" {
+			f.value = nil
+			return nil
+		}
+		number, err = strconv.ParseFloat(text, 64)
+		if err != nil {
+			return fmt.Errorf("invalid numeric limit value %q: %w", text, err)
+		}
+		f.value = &number
+		return nil
+	}
+
+	return fmt.Errorf("invalid limit value: %s", string(trimmed))
+}
+
+func (f optionalLimitField) ToServiceInput() *float64 {
+	if !f.set {
+		return nil
+	}
+	if f.value != nil {
+		return f.value
+	}
+	zero := 0.0
+	return &zero
+}
+
 // NewGroupHandler creates a new admin group handler
 func NewGroupHandler(adminService service.AdminService, dashboardService *service.DashboardService, groupCapacityService *service.GroupCapacityService) *GroupHandler {
 	return &GroupHandler{
@@ -30,15 +82,15 @@ func NewGroupHandler(adminService service.AdminService, dashboardService *servic
 
 // CreateGroupRequest represents create group request
 type CreateGroupRequest struct {
-	Name             string   `json:"name" binding:"required"`
-	Description      string   `json:"description"`
-	Platform         string   `json:"platform" binding:"omitempty,oneof=anthropic openai gemini antigravity sora zai zhipu kimi minimaxCode"`
-	RateMultiplier   float64  `json:"rate_multiplier"`
-	IsExclusive      bool     `json:"is_exclusive"`
-	SubscriptionType string   `json:"subscription_type" binding:"omitempty,oneof=standard subscription token_quota"`
-	DailyLimitUSD    *float64 `json:"daily_limit_usd"`
-	WeeklyLimitUSD   *float64 `json:"weekly_limit_usd"`
-	MonthlyLimitUSD  *float64 `json:"monthly_limit_usd"`
+	Name             string             `json:"name" binding:"required"`
+	Description      string             `json:"description"`
+	Platform         string             `json:"platform" binding:"omitempty,oneof=anthropic openai gemini antigravity sora zai zhipu kimi minimaxCode"`
+	RateMultiplier   float64            `json:"rate_multiplier"`
+	IsExclusive      bool               `json:"is_exclusive"`
+	SubscriptionType string             `json:"subscription_type" binding:"omitempty,oneof=standard subscription token_quota"`
+	DailyLimitUSD    optionalLimitField `json:"daily_limit_usd"`
+	WeeklyLimitUSD   optionalLimitField `json:"weekly_limit_usd"`
+	MonthlyLimitUSD  optionalLimitField `json:"monthly_limit_usd"`
 	// Token 配额配置（token_quota 类型使用）
 	TokenQuota        *int64 `json:"token_quota"`
 	TokenQuotaDaily   *int64 `json:"token_quota_daily"`
@@ -74,16 +126,16 @@ type CreateGroupRequest struct {
 
 // UpdateGroupRequest represents update group request
 type UpdateGroupRequest struct {
-	Name             string   `json:"name"`
-	Description      string   `json:"description"`
-	Platform         string   `json:"platform" binding:"omitempty,oneof=anthropic openai gemini antigravity sora zai zhipu kimi minimaxCode"`
-	RateMultiplier   *float64 `json:"rate_multiplier"`
-	IsExclusive      *bool    `json:"is_exclusive"`
-	Status           string   `json:"status" binding:"omitempty,oneof=active inactive"`
-	SubscriptionType string   `json:"subscription_type" binding:"omitempty,oneof=standard subscription token_quota"`
-	DailyLimitUSD    *float64 `json:"daily_limit_usd"`
-	WeeklyLimitUSD   *float64 `json:"weekly_limit_usd"`
-	MonthlyLimitUSD  *float64 `json:"monthly_limit_usd"`
+	Name             string             `json:"name"`
+	Description      string             `json:"description"`
+	Platform         string             `json:"platform" binding:"omitempty,oneof=anthropic openai gemini antigravity sora zai zhipu kimi minimaxCode"`
+	RateMultiplier   *float64           `json:"rate_multiplier"`
+	IsExclusive      *bool              `json:"is_exclusive"`
+	Status           string             `json:"status" binding:"omitempty,oneof=active inactive"`
+	SubscriptionType string             `json:"subscription_type" binding:"omitempty,oneof=standard subscription token_quota"`
+	DailyLimitUSD    optionalLimitField `json:"daily_limit_usd"`
+	WeeklyLimitUSD   optionalLimitField `json:"weekly_limit_usd"`
+	MonthlyLimitUSD  optionalLimitField `json:"monthly_limit_usd"`
 	// Token 配额配置（token_quota 类型使用）
 	TokenQuota        *int64 `json:"token_quota"`
 	TokenQuotaDaily   *int64 `json:"token_quota_daily"`
@@ -215,9 +267,9 @@ func (h *GroupHandler) Create(c *gin.Context) {
 		AllowImageGeneration:            req.AllowImageGeneration,
 		ImageRateIndependent:            req.ImageRateIndependent,
 		ImageRateMultiplier:             req.ImageRateMultiplier,
-		DailyLimitUSD:                   req.DailyLimitUSD,
-		WeeklyLimitUSD:                  req.WeeklyLimitUSD,
-		MonthlyLimitUSD:                 req.MonthlyLimitUSD,
+		DailyLimitUSD:                   req.DailyLimitUSD.ToServiceInput(),
+		WeeklyLimitUSD:                  req.WeeklyLimitUSD.ToServiceInput(),
+		MonthlyLimitUSD:                 req.MonthlyLimitUSD.ToServiceInput(),
 		TokenQuota:                      req.TokenQuota,
 		TokenQuotaDaily:                 req.TokenQuotaDaily,
 		TokenQuotaWeekly:                req.TokenQuotaWeekly,
@@ -274,9 +326,9 @@ func (h *GroupHandler) Update(c *gin.Context) {
 		AllowImageGeneration:            req.AllowImageGeneration,
 		ImageRateIndependent:            req.ImageRateIndependent,
 		ImageRateMultiplier:             req.ImageRateMultiplier,
-		DailyLimitUSD:                   req.DailyLimitUSD,
-		WeeklyLimitUSD:                  req.WeeklyLimitUSD,
-		MonthlyLimitUSD:                 req.MonthlyLimitUSD,
+		DailyLimitUSD:                   req.DailyLimitUSD.ToServiceInput(),
+		WeeklyLimitUSD:                  req.WeeklyLimitUSD.ToServiceInput(),
+		MonthlyLimitUSD:                 req.MonthlyLimitUSD.ToServiceInput(),
 		TokenQuota:                      req.TokenQuota,
 		TokenQuotaDaily:                 req.TokenQuotaDaily,
 		TokenQuotaWeekly:                req.TokenQuotaWeekly,
