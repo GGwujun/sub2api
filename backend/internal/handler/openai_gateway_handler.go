@@ -677,7 +677,7 @@ func (h *OpenAIGatewayHandler) Messages(c *gin.Context) {
 			failedAccountIDs,
 			service.OpenAIUpstreamTransportAny,
 			platform,
-				false,
+			false,
 		)
 		if err != nil {
 			reqLog.Warn("openai_messages.account_select_failed",
@@ -702,7 +702,7 @@ func (h *OpenAIGatewayHandler) Messages(c *gin.Context) {
 						failedAccountIDs,
 						service.OpenAIUpstreamTransportAny,
 						platform,
-							false,
+						false,
 					)
 					if err == nil && selection != nil {
 						c.Set("openai_messages_fallback_model", defaultModel)
