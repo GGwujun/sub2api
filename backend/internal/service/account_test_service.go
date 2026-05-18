@@ -53,8 +53,6 @@ type TestEvent struct {
 	Error    string `json:"error,omitempty"`
 }
 
-
-
 const (
 	defaultGeminiTextTestPrompt  = "hi"
 	defaultGeminiImageTestPrompt = "Generate a cute orange cat astronaut sticker on a clean pastel background."

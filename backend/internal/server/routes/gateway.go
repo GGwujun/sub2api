@@ -148,7 +148,6 @@ func RegisterGatewayRoutes(
 		antigravityV1Beta.POST("/models/*modelAction", h.Gateway.GeminiV1BetaModels)
 	}
 
-
 	// Zhipu 专用路由（强制使用 zhipu 平台）
 	zhipuV1 := r.Group("/zhipu/v1")
 	zhipuV1.Use(bodyLimit)

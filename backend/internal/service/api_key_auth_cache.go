@@ -97,25 +97,25 @@ type APIKeyAuthGroupSnapshot struct {
 	SupportedModelScopes []string `json:"supported_model_scopes,omitempty"`
 
 	// OpenAI Messages 调度配置（仅 openai 平台使用）
-		AllowMessagesDispatch       bool                              `json:"allow_messages_dispatch"`
-		DefaultMappedModel          string                            `json:"default_mapped_model,omitempty"`
-		MessagesDispatchModelConfig OpenAIMessagesDispatchModelConfig `json:"messages_dispatch_model_config,omitempty"`
+	AllowMessagesDispatch       bool                              `json:"allow_messages_dispatch"`
+	DefaultMappedModel          string                            `json:"default_mapped_model,omitempty"`
+	MessagesDispatchModelConfig OpenAIMessagesDispatchModelConfig `json:"messages_dispatch_model_config,omitempty"`
 
-		// Token 配额配置（token_quota 类型使用）
-		TokenQuota             *int64     `json:"token_quota,omitempty"`
-		TokenQuotaUsed         *int64     `json:"token_quota_used,omitempty"`
-		TokenQuotaDaily        *int64     `json:"token_quota_daily,omitempty"`
-		TokenQuotaDailyUsed    *int64     `json:"token_quota_daily_used,omitempty"`
-		TokenQuotaDailyStart   *time.Time `json:"token_quota_daily_start,omitempty"`
-		TokenQuotaWeekly       *int64     `json:"token_quota_weekly,omitempty"`
-		TokenQuotaWeeklyUsed   *int64     `json:"token_quota_weekly_used,omitempty"`
-		TokenQuotaWeeklyStart  *time.Time `json:"token_quota_weekly_start,omitempty"`
-		TokenQuotaMonthly      *int64     `json:"token_quota_monthly,omitempty"`
-		TokenQuotaMonthlyUsed  *int64     `json:"token_quota_monthly_used,omitempty"`
-		TokenQuotaMonthlyStart *time.Time `json:"token_quota_monthly_start,omitempty"`
+	// Token 配额配置（token_quota 类型使用）
+	TokenQuota             *int64     `json:"token_quota,omitempty"`
+	TokenQuotaUsed         *int64     `json:"token_quota_used,omitempty"`
+	TokenQuotaDaily        *int64     `json:"token_quota_daily,omitempty"`
+	TokenQuotaDailyUsed    *int64     `json:"token_quota_daily_used,omitempty"`
+	TokenQuotaDailyStart   *time.Time `json:"token_quota_daily_start,omitempty"`
+	TokenQuotaWeekly       *int64     `json:"token_quota_weekly,omitempty"`
+	TokenQuotaWeeklyUsed   *int64     `json:"token_quota_weekly_used,omitempty"`
+	TokenQuotaWeeklyStart  *time.Time `json:"token_quota_weekly_start,omitempty"`
+	TokenQuotaMonthly      *int64     `json:"token_quota_monthly,omitempty"`
+	TokenQuotaMonthlyUsed  *int64     `json:"token_quota_monthly_used,omitempty"`
+	TokenQuotaMonthlyStart *time.Time `json:"token_quota_monthly_start,omitempty"`
 
-		// RPMLimit 分组级每分钟请求数上限（0 = 不限制）；用于 billing_cache_service.checkRPM 级联判断。
-		RPMLimit int `json:"rpm_limit"`
+	// RPMLimit 分组级每分钟请求数上限（0 = 不限制）；用于 billing_cache_service.checkRPM 级联判断。
+	RPMLimit int `json:"rpm_limit"`
 
 	// Sora 生成计费配置（sora 平台使用）
 	SoraImagePrice360          *float64 `json:"sora_image_price_360,omitempty"`
