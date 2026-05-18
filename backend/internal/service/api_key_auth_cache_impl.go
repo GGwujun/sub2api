@@ -234,17 +234,6 @@ func (s *APIKeyService) snapshotFromAPIKey(ctx context.Context, apiKey *APIKey) 
 			BalanceNotifyExtraEmails:   apiKey.User.BalanceNotifyExtraEmails,
 			TotalRecharged:             apiKey.User.TotalRecharged,
 			RPMLimit:                   apiKey.User.RPMLimit,
-
-
-
-
-
-
-
-
-
-
-
 		},
 	}
 
@@ -284,14 +273,14 @@ func (s *APIKeyService) snapshotFromAPIKey(ctx context.Context, apiKey *APIKey) 
 			DefaultMappedModel:              apiKey.Group.DefaultMappedModel,
 			MessagesDispatchModelConfig:     apiKey.Group.MessagesDispatchModelConfig,
 			RPMLimit:                        apiKey.Group.RPMLimit,
-		TokenQuota:                     apiKey.Group.TokenQuota,
-		TokenQuotaDaily:                apiKey.Group.TokenQuotaDaily,
-		TokenQuotaWeekly:               apiKey.Group.TokenQuotaWeekly,
-		TokenQuotaMonthly:              apiKey.Group.TokenQuotaMonthly,
-		SoraImagePrice360:              apiKey.Group.SoraImagePrice360,
-		SoraImagePrice540:              apiKey.Group.SoraImagePrice540,
-		SoraVideoPricePerRequest:       apiKey.Group.SoraVideoPricePerRequest,
-		SoraVideoPricePerRequestHD:     apiKey.Group.SoraVideoPricePerRequestHD,
+			TokenQuota:                      apiKey.Group.TokenQuota,
+			TokenQuotaDaily:                 apiKey.Group.TokenQuotaDaily,
+			TokenQuotaWeekly:                apiKey.Group.TokenQuotaWeekly,
+			TokenQuotaMonthly:               apiKey.Group.TokenQuotaMonthly,
+			SoraImagePrice360:               apiKey.Group.SoraImagePrice360,
+			SoraImagePrice540:               apiKey.Group.SoraImagePrice540,
+			SoraVideoPricePerRequest:        apiKey.Group.SoraVideoPricePerRequest,
+			SoraVideoPricePerRequestHD:      apiKey.Group.SoraVideoPricePerRequestHD,
 		}
 	}
 	return snapshot
@@ -362,14 +351,14 @@ func (s *APIKeyService) snapshotToAPIKey(key string, snapshot *APIKeyAuthSnapsho
 			DefaultMappedModel:              snapshot.Group.DefaultMappedModel,
 			MessagesDispatchModelConfig:     snapshot.Group.MessagesDispatchModelConfig,
 			RPMLimit:                        snapshot.Group.RPMLimit,
-		TokenQuota:                     snapshot.Group.TokenQuota,
-		TokenQuotaDaily:                snapshot.Group.TokenQuotaDaily,
-		TokenQuotaWeekly:               snapshot.Group.TokenQuotaWeekly,
-		TokenQuotaMonthly:              snapshot.Group.TokenQuotaMonthly,
-		SoraImagePrice360:              snapshot.Group.SoraImagePrice360,
-		SoraImagePrice540:              snapshot.Group.SoraImagePrice540,
-		SoraVideoPricePerRequest:       snapshot.Group.SoraVideoPricePerRequest,
-		SoraVideoPricePerRequestHD:     snapshot.Group.SoraVideoPricePerRequestHD,
+			TokenQuota:                      snapshot.Group.TokenQuota,
+			TokenQuotaDaily:                 snapshot.Group.TokenQuotaDaily,
+			TokenQuotaWeekly:                snapshot.Group.TokenQuotaWeekly,
+			TokenQuotaMonthly:               snapshot.Group.TokenQuotaMonthly,
+			SoraImagePrice360:               snapshot.Group.SoraImagePrice360,
+			SoraImagePrice540:               snapshot.Group.SoraImagePrice540,
+			SoraVideoPricePerRequest:        snapshot.Group.SoraVideoPricePerRequest,
+			SoraVideoPricePerRequestHD:      snapshot.Group.SoraVideoPricePerRequestHD,
 		}
 	}
 	s.compileAPIKeyIPRules(apiKey)

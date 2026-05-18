@@ -840,10 +840,10 @@ func (s *defaultOpenAIAccountScheduler) selectByLoadBalance(
 		if fresh == nil || !s.isAccountTransportCompatible(fresh, req.RequiredTransport) || !s.isAccountRequestCompatible(ctx, fresh, req) {
 			continue
 		}
-			if req.RequireCompact && openAICompactSupportTier(fresh) == 0 {
-				compactBlocked = true
-				continue
-			}
+		if req.RequireCompact && openAICompactSupportTier(fresh) == 0 {
+			compactBlocked = true
+			continue
+		}
 		result, acquireErr := s.service.tryAcquireAccountSlot(ctx, fresh.ID, fresh.Concurrency)
 		if acquireErr != nil {
 			return nil, candidateCount, topK, loadSkew, acquireErr
@@ -871,13 +871,13 @@ func (s *defaultOpenAIAccountScheduler) selectByLoadBalance(
 		if fresh == nil || !s.isAccountTransportCompatible(fresh, req.RequiredTransport) || !s.isAccountRequestCompatible(ctx, fresh, req) {
 			continue
 		}
-			if req.RequireCompact && openAICompactSupportTier(fresh) == 0 {
-				compactBlocked = true
-				continue
-			}
-			return &AccountSelectionResult{
-				Account: fresh,
-				WaitPlan: &AccountWaitPlan{
+		if req.RequireCompact && openAICompactSupportTier(fresh) == 0 {
+			compactBlocked = true
+			continue
+		}
+		return &AccountSelectionResult{
+			Account: fresh,
+			WaitPlan: &AccountWaitPlan{
 				AccountID:      fresh.ID,
 				MaxConcurrency: fresh.Concurrency,
 				Timeout:        cfg.FallbackWaitTimeout,
@@ -1112,7 +1112,7 @@ func (s *OpenAIGatewayService) SelectAccountWithSchedulerForPlatform(
 			if _, exists := effectiveExcludedIDs[selection.Account.ID]; exists {
 				return nil, decision, ErrNoAvailableAccounts
 			}
-				decision.Layer = openAIAccountScheduleLayerLoadBalance
+			decision.Layer = openAIAccountScheduleLayerLoadBalance
 			effectiveExcludedIDs[selection.Account.ID] = struct{}{}
 		}
 	}

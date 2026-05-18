@@ -213,7 +213,7 @@ const (
 	SettingKeyCustomEndpoints             = "custom_endpoints"              // 自定义端点列表（JSON 数组）
 
 	// Sora 客户端功能开关
-	SettingKeySoraClientEnabled           = "sora_client_enabled"           // 是否启用 Sora 客户端（管理员手动控制）
+	SettingKeySoraClientEnabled = "sora_client_enabled" // 是否启用 Sora 客户端（管理员手动控制）
 	// Sora S3 存储配置
 	SettingKeySoraS3Enabled         = "sora_s3_enabled"           // 是否启用 Sora S3 存储
 	SettingKeySoraS3Endpoint        = "sora_s3_endpoint"          // S3 端点地址
