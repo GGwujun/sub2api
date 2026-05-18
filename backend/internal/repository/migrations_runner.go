@@ -367,8 +367,8 @@ func extractExecutableMigrationContent(content string) string {
 		}
 
 		if insideUp {
-			builder.WriteString(line)
-			builder.WriteString("\n")
+			_, _ = builder.WriteString(line)
+			_, _ = builder.WriteString("\n")
 		}
 	}
 

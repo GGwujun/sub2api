@@ -278,7 +278,7 @@ func (h *OpenAIGatewayHandler) Responses(c *gin.Context) {
 			failedAccountIDs,
 			service.OpenAIUpstreamTransportAny,
 			platform,
-				service.IsOpenAIResponsesCompactPathForTest(c),
+			service.IsOpenAIResponsesCompactPathForTest(c),
 		)
 		if err != nil {
 			reqLog.Warn("openai.account_select_failed",
