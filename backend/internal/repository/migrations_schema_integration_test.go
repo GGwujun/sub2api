@@ -171,7 +171,6 @@ SELECT EXISTS (
 }
 
 func requireIndexAbsent(t *testing.T, tx *sql.Tx, table, index string) {
-func requireMigrationApplied(t *testing.T, tx *sql.Tx, filename string) {
 	t.Helper()
 
 	var exists bool
@@ -214,6 +213,21 @@ WHERE ns.nspname = 'public'
 	for _, fragment := range fragments {
 		require.Contains(t, def, fragment, "expected index definition for %s.%s to contain %q", table, index, fragment)
 	}
+}
+
+func requireMigrationApplied(t *testing.T, tx *sql.Tx, filename string) {
+	t.Helper()
+
+	var exists bool
+	err := tx.QueryRowContext(context.Background(), `
+SELECT EXISTS (
+	SELECT 1
+	FROM schema_migrations
+	WHERE filename = $1
+)
+`, filename).Scan(&exists)
+	require.NoError(t, err, "query schema_migrations for %s", filename)
+	require.True(t, exists, "expected migration %s to be applied", filename)
 }
 
 func requireForeignKeyOnDelete(t *testing.T, tx *sql.Tx, table, column, refTable, expected string) {
@@ -281,11 +295,6 @@ WHERE table_schema = 'public'
 	for _, fragment := range fragments {
 		require.Contains(t, columnDefault.String, fragment, "expected default for %s.%s to contain %q", table, column, fragment)
 	}
-	FROM schema_migrations
-	WHERE filename = $1
-`, filename).Scan(&exists)
-	require.NoError(t, err, "query schema_migrations for %s", filename)
-	require.True(t, exists, "expected migration %s to be applied", filename)
 }
 
 func requireColumn(t *testing.T, tx *sql.Tx, table, column, dataType string, maxLen int, nullable bool) {
