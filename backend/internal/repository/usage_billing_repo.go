@@ -112,6 +112,13 @@ func (r *usageBillingRepository) applyUsageBillingEffects(ctx context.Context, t
 		}
 	}
 
+	// Token quota subscription: increment token usage
+	if cmd.SubscriptionTokenCost > 0 && cmd.SubscriptionID != nil {
+		if err := incrementUsageBillingSubscriptionTokens(ctx, tx, *cmd.SubscriptionID, cmd.SubscriptionTokenCost); err != nil {
+			return err
+		}
+	}
+
 	if cmd.BalanceCost > 0 {
 		newBalance, err := deductUsageBillingBalance(ctx, tx, cmd.UserID, cmd.BalanceCost)
 		if err != nil {
@@ -160,6 +167,32 @@ func incrementUsageBillingSubscription(ctx context.Context, tx *sql.Tx, subscrip
 			AND g.deleted_at IS NULL
 	`
 	res, err := tx.ExecContext(ctx, updateSQL, costUSD, subscriptionID)
+	if err != nil {
+		return err
+	}
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if affected > 0 {
+		return nil
+	}
+	return service.ErrSubscriptionNotFound
+}
+
+func incrementUsageBillingSubscriptionTokens(ctx context.Context, tx *sql.Tx, subscriptionID int64, tokens int64) error {
+	const updateSQL = `
+		UPDATE user_subscriptions us
+		SET
+			token_usage_total = us.token_usage_total + $1,
+			token_usage_daily = us.token_usage_daily + $1,
+			token_usage_weekly = us.token_usage_weekly + $1,
+			token_usage_monthly = us.token_usage_monthly + $1,
+			updated_at = NOW()
+		WHERE us.id = $2
+			AND us.deleted_at IS NULL
+	`
+	res, err := tx.ExecContext(ctx, updateSQL, tokens, subscriptionID)
 	if err != nil {
 		return err
 	}

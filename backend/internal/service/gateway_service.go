@@ -7949,6 +7949,12 @@ func postUsageBilling(ctx context.Context, p *postUsageBillingParams, deps *bill
 				slog.Error("increment subscription usage failed", "subscription_id", p.Subscription.ID, "error", err)
 			}
 		}
+		// Token quota subscription: increment token usage
+		if p.IsTokenQuotaBill && p.TotalTokens > 0 {
+			if err := deps.userSubRepo.IncrementTokenUsage(billingCtx, p.Subscription.ID, p.TotalTokens); err != nil {
+				slog.Error("increment subscription token usage failed", "subscription_id", p.Subscription.ID, "tokens", p.TotalTokens, "error", err)
+			}
+		}
 	} else {
 		if cost.ActualCost > 0 {
 			if err := deps.userRepo.DeductBalance(billingCtx, p.User.ID, cost.ActualCost); err != nil {
@@ -8051,6 +8057,10 @@ func buildUsageBillingCommand(requestID string, usageLog *UsageLog, p *postUsage
 	if p.IsSubscriptionBill && p.Subscription != nil && p.Cost.TotalCost > 0 {
 		cmd.SubscriptionID = &p.Subscription.ID
 		cmd.SubscriptionCost = p.Cost.ActualCost
+		// Token quota subscription: record token usage
+		if p.IsTokenQuotaBill && usageLog != nil {
+			cmd.SubscriptionTokenCost = int64(usageLog.InputTokens + usageLog.OutputTokens)
+		}
 	} else if p.Cost.ActualCost > 0 {
 		cmd.BalanceCost = p.Cost.ActualCost
 	}
@@ -8424,6 +8434,7 @@ func (s *GatewayService) recordUsageCore(ctx context.Context, input *recordUsage
 
 	// 判断计费方式：订阅模式 vs 余额模式
 	isSubscriptionBilling := subscription != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
+	isTokenQuotaBilling := isSubscriptionBilling && apiKey.Group.IsTokenQuotaType()
 	billingType := BillingTypeBalance
 	if isSubscriptionBilling {
 		billingType = BillingTypeSubscription
@@ -8467,6 +8478,8 @@ func (s *GatewayService) recordUsageCore(ctx context.Context, input *recordUsage
 		Subscription:          subscription,
 		RequestPayloadHash:    resolveUsageBillingPayloadFingerprint(ctx, input.RequestPayloadHash),
 		IsSubscriptionBill:    isSubscriptionBilling,
+		IsTokenQuotaBill:      isTokenQuotaBilling,
+		TotalTokens:           int64(usageLog.TotalTokens()),
 		AccountRateMultiplier: accountRateMultiplier,
 		APIKeyService:         input.APIKeyService,
 	}, s.billingDeps(), s.usageBillingRepo)

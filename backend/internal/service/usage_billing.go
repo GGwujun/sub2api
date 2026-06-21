@@ -34,11 +34,12 @@ type UsageBillingCommand struct {
 	ImageCount          int
 	MediaType           string
 
-	BalanceCost         float64
-	SubscriptionCost    float64
-	APIKeyQuotaCost     float64
-	APIKeyRateLimitCost float64
-	AccountQuotaCost    float64
+	BalanceCost            float64
+	SubscriptionCost       float64
+	SubscriptionTokenCost  int64 // Token usage for token quota subscriptions
+	APIKeyQuotaCost        float64
+	APIKeyRateLimitCost    float64
+	AccountQuotaCost       float64
 }
 
 func (c *UsageBillingCommand) Normalize() {
@@ -56,7 +57,7 @@ func buildUsageBillingFingerprint(c *UsageBillingCommand) string {
 		return ""
 	}
 	raw := fmt.Sprintf(
-		"%d|%d|%d|%s|%s|%s|%s|%d|%d|%d|%d|%d|%d|%s|%d|%0.10f|%0.10f|%0.10f|%0.10f|%0.10f",
+		"%d|%d|%d|%s|%s|%s|%s|%d|%d|%d|%d|%d|%d|%s|%d|%0.10f|%0.10f|%d|%0.10f|%0.10f|%0.10f",
 		c.UserID,
 		c.AccountID,
 		c.APIKeyID,
@@ -74,6 +75,7 @@ func buildUsageBillingFingerprint(c *UsageBillingCommand) string {
 		valueOrZero(c.SubscriptionID),
 		c.BalanceCost,
 		c.SubscriptionCost,
+		c.SubscriptionTokenCost,
 		c.APIKeyQuotaCost,
 		c.APIKeyRateLimitCost,
 		c.AccountQuotaCost,
