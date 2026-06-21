@@ -117,6 +117,12 @@ type Group struct {
 	// RPMLimit 分组级每分钟请求数上限（0 = 不限制），设置后覆盖用户级 rpm_limit。
 	RPMLimit int `json:"rpm_limit"`
 
+	// Token 配额配置（token_quota 类型使用）
+	TokenQuota        *int64 `json:"token_quota,omitempty"`
+	TokenQuotaDaily   *int64 `json:"token_quota_daily,omitempty"`
+	TokenQuotaWeekly  *int64 `json:"token_quota_weekly,omitempty"`
+	TokenQuotaMonthly *int64 `json:"token_quota_monthly,omitempty"`
+
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
