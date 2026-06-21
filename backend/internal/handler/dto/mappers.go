@@ -733,10 +733,18 @@ func userSubscriptionFromServiceBase(sub *service.UserSubscription) UserSubscrip
 		DailyUsageUSD:      sub.DailyUsageUSD,
 		WeeklyUsageUSD:     sub.WeeklyUsageUSD,
 		MonthlyUsageUSD:    sub.MonthlyUsageUSD,
-		CreatedAt:          sub.CreatedAt,
-		UpdatedAt:          sub.UpdatedAt,
-		User:               UserFromServiceShallow(sub.User),
-		Group:              GroupFromServiceShallow(sub.Group),
+		// Token 配额使用量
+		TokenUsageTotal:         sub.TokenUsageTotal,
+		TokenUsageDaily:         sub.TokenUsageDaily,
+		TokenUsageWeekly:        sub.TokenUsageWeekly,
+		TokenUsageMonthly:       sub.TokenUsageMonthly,
+		TokenDailyWindowStart:   sub.TokenDailyWindowStart,
+		TokenWeeklyWindowStart:  sub.TokenWeeklyWindowStart,
+		TokenMonthlyWindowStart: sub.TokenMonthlyWindowStart,
+		CreatedAt:               sub.CreatedAt,
+		UpdatedAt:               sub.UpdatedAt,
+		User:                    UserFromServiceShallow(sub.User),
+		Group:                   GroupFromServiceShallow(sub.Group),
 	}
 }
 

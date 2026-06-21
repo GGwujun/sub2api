@@ -513,6 +513,15 @@ type UserSubscription struct {
 	WeeklyUsageUSD  float64 `json:"weekly_usage_usd"`
 	MonthlyUsageUSD float64 `json:"monthly_usage_usd"`
 
+	// Token 配额使用量
+	TokenUsageTotal         int64      `json:"token_usage_total"`
+	TokenUsageDaily         int64      `json:"token_usage_daily"`
+	TokenUsageWeekly        int64      `json:"token_usage_weekly"`
+	TokenUsageMonthly       int64      `json:"token_usage_monthly"`
+	TokenDailyWindowStart   *time.Time `json:"token_daily_window_start"`
+	TokenWeeklyWindowStart  *time.Time `json:"token_weekly_window_start"`
+	TokenMonthlyWindowStart *time.Time `json:"token_monthly_window_start"`
+
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 
