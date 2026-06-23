@@ -741,7 +741,9 @@ func (s *MiniMaxGatewayService) RecordUsage(ctx context.Context, input *MiniMaxR
 	// 确定计费类型（订阅 vs 余额）
 	var subscription *UserSubscription
 	isTokenQuotaBill := (input.APIKey.Group != nil && input.APIKey.Group.IsTokenQuotaType()) || input.APIKey.HasTokenQuota()
-	isSubscriptionBilling := !isTokenQuotaBill && input.APIKey.GroupID != nil && input.APIKey.Group != nil && input.APIKey.Group.IsSubscriptionType()
+	// Token 配额订阅也是订阅计费（与 gateway_service.go 主通道语义一致），
+	// 否则 postUsageBilling 的 IncrementTokenUsage（被 IsSubscriptionBill 门控）永远执行不到。
+	isSubscriptionBilling := input.APIKey.GroupID != nil && input.APIKey.Group != nil && input.APIKey.Group.IsSubscriptionType()
 	// Token 配额模式也需要加载订阅
 	needsSubscription := isSubscriptionBilling || isTokenQuotaBill
 	if needsSubscription && s.userSubRepo != nil && input.APIKey.GroupID != nil {

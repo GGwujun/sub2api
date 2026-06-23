@@ -385,6 +385,11 @@ type ZhipuUsage struct {
 	PromptTokens     int `json:"prompt_tokens"`
 	CompletionTokens int `json:"completion_tokens"`
 	TotalTokens      int `json:"total_tokens"`
+	// ThoughtsTokens 是思考模型（如 glm-4.5/glm-5.2 思考模式）的思维链 token 数。
+	// 智谱规范中 thoughts_token 理论上是 completion_tokens 的子集，但不同模型/版本
+	// 实测可能将其单独返回而不计入 completion_tokens，因此单独采集并在最终统计时
+	// 以安全方式纳入 output（见 effectiveZhipuOutputTokens），避免思考 token 漏算。
+	ThoughtsTokens int `json:"thoughts_token"`
 }
 
 // Forward forwards a request to Zhipu API with retry support
@@ -604,6 +609,14 @@ func extractZhipuUsage(body []byte) *ZhipuUsage {
 		}
 	}
 
+	// 采集思考 token（思考模型的思维链消耗）
+	for _, path := range []string{"usage.thoughts_token", "message.usage.thoughts_token"} {
+		if thoughtsTokens := gjson.GetBytes(body, path).Int(); thoughtsTokens > 0 {
+			usage.ThoughtsTokens = int(thoughtsTokens)
+			break
+		}
+	}
+
 	if totalTokens := gjson.GetBytes(body, "usage.total_tokens").Int(); totalTokens > 0 {
 		usage.TotalTokens = int(totalTokens)
 	} else if totalTokens := gjson.GetBytes(body, "message.usage.total_tokens").Int(); totalTokens > 0 {
@@ -613,7 +626,7 @@ func extractZhipuUsage(body []byte) *ZhipuUsage {
 	}
 
 	// Return nil if no usage info found
-	if usage.PromptTokens == 0 && usage.CompletionTokens == 0 && usage.TotalTokens == 0 {
+	if usage.PromptTokens == 0 && usage.CompletionTokens == 0 && usage.ThoughtsTokens == 0 && usage.TotalTokens == 0 {
 		return nil
 	}
 
@@ -645,6 +658,9 @@ func mergeZhipuUsage(dst **ZhipuUsage, patch *ZhipuUsage) {
 	if patch.CompletionTokens > current.CompletionTokens {
 		current.CompletionTokens = patch.CompletionTokens
 	}
+	if patch.ThoughtsTokens > current.ThoughtsTokens {
+		current.ThoughtsTokens = patch.ThoughtsTokens
+	}
 	if patch.TotalTokens > current.TotalTokens {
 		current.TotalTokens = patch.TotalTokens
 	}
@@ -652,6 +668,34 @@ func mergeZhipuUsage(dst **ZhipuUsage, patch *ZhipuUsage) {
 	if computedTotal > current.TotalTokens {
 		current.TotalTokens = computedTotal
 	}
+}
+
+// effectiveZhipuOutputTokens 计算应计入统计的输出 token 数（含思考 token）。
+//
+// 智谱规范称 thoughts_token 是 completion_tokens 的子集，但部分模型/版本实测会将其
+// 单独返回而不计入 completion_tokens。为避免思考 token 漏算导致额度统计偏少，这里取
+// 以下口径的最大值作为安全上界：
+//   - completion_tokens（规范含思考时的正确值）
+//   - completion_tokens + thoughts_tokens（思考被单独计算时的正确值）
+//   - total_tokens - prompt_tokens（智谱给出的总输出，最权威）
+//
+// 取 max 既不会少算思考 token，也通过 total 兜底防止 completion 已含思考时被重复累加。
+func effectiveZhipuOutputTokens(usage *ZhipuUsage) int {
+	if usage == nil {
+		return 0
+	}
+	completion := usage.CompletionTokens
+	candidates := []int{completion, completion + usage.ThoughtsTokens}
+	if usage.TotalTokens > usage.PromptTokens {
+		candidates = append(candidates, usage.TotalTokens-usage.PromptTokens)
+	}
+	max := completion
+	for _, c := range candidates {
+		if c > max {
+			max = c
+		}
+	}
+	return max
 }
 
 // ForwardStream forwards a streaming request to Zhipu API with retry support
@@ -1199,7 +1243,9 @@ func (s *ZhipuGatewayService) RecordUsage(ctx context.Context, input *ZhipuRecor
 	// Determine billing type (subscription vs balance)
 	var subscription *UserSubscription
 	isTokenQuotaBill := (apiKey.Group != nil && apiKey.Group.IsTokenQuotaType()) || apiKey.HasTokenQuota()
-	isSubscriptionBilling := !isTokenQuotaBill && apiKey.GroupID != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
+	// Token 配额订阅也是订阅计费（与 gateway_service.go 主通道语义一致），
+	// 否则 postUsageBilling 的 IncrementTokenUsage（被 IsSubscriptionBill 门控）永远执行不到。
+	isSubscriptionBilling := apiKey.GroupID != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
 	// Token 配额模式也需要加载订阅
 	needsSubscription := isSubscriptionBilling || isTokenQuotaBill
 	if needsSubscription && s.userSubRepo != nil && apiKey.GroupID != nil {
@@ -1238,7 +1284,7 @@ func (s *ZhipuGatewayService) RecordUsage(ctx context.Context, input *ZhipuRecor
 		RequestID:             normalizeZhipuRequestID(input.RequestID, apiKey.ID),
 		Model:                 input.Model,
 		InputTokens:           usage.PromptTokens,
-		OutputTokens:          usage.CompletionTokens,
+		OutputTokens:          effectiveZhipuOutputTokens(usage),
 		InputCost:             inputCost * multiplier,
 		OutputCost:            outputCost * multiplier,
 		TotalCost:             totalCost,

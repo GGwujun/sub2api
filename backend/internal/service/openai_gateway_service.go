@@ -5368,7 +5368,9 @@ func (s *OpenAIGatewayService) RecordUsage(ctx context.Context, input *OpenAIRec
 
 	// Determine billing type
 	isTokenQuotaBill := (apiKey.Group != nil && apiKey.Group.IsTokenQuotaType()) || apiKey.HasTokenQuota()
-	isSubscriptionBilling := !isTokenQuotaBill && subscription != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
+	// Token 配额订阅也是订阅计费（与 gateway_service.go 主通道语义一致），
+	// 否则 postUsageBilling 的 IncrementTokenUsage（被 IsSubscriptionBill 门控）永远执行不到。
+	isSubscriptionBilling := subscription != nil && apiKey.Group != nil && apiKey.Group.IsSubscriptionType()
 	billingType := BillingTypeBalance
 	if isTokenQuotaBill {
 		billingType = BillingTypeTokenQuota
