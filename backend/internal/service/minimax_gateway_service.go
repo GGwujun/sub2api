@@ -867,6 +867,7 @@ func (s *MiniMaxGatewayService) RecordUsage(ctx context.Context, input *MiniMaxR
 			IsSubscriptionBill:    isSubscriptionBilling,
 			IsTokenQuotaBill:      isTokenQuotaBill,
 			AccountRateMultiplier: accountRateMultiplier,
+			GroupRateMultiplier:   multiplier,
 			APIKeyService:         input.APIKeyService,
 		}, s.billingDeps())
 	}

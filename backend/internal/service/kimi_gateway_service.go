@@ -921,6 +921,7 @@ func (s *KimiGatewayService) RecordUsage(ctx context.Context, input *KimiRecordU
 			IsSubscriptionBill:    isSubscriptionBilling,
 			IsTokenQuotaBill:      isTokenQuotaBill,
 			AccountRateMultiplier: accountRateMultiplier,
+			GroupRateMultiplier:   multiplier,
 			APIKeyService:         input.APIKeyService,
 		}, s.billingDeps())
 	}

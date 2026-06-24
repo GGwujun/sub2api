@@ -390,6 +390,11 @@ type ZhipuUsage struct {
 	// 实测可能将其单独返回而不计入 completion_tokens，因此单独采集并在最终统计时
 	// 以安全方式纳入 output（见 effectiveZhipuOutputTokens），避免思考 token 漏算。
 	ThoughtsTokens int `json:"thoughts_token"`
+	// CacheCreationInputTokens / CacheReadInputTokens 对应智谱 Claude 协议的
+	// cache_creation_input_tokens / cache_read_input_tokens（prompt 缓存命中/写入的
+	// token）。单独采集并写入 usage_log 的 cache 列，避免长上下文用户漏算缓存 token。
+	CacheCreationInputTokens int `json:"cache_creation_input_tokens"`
+	CacheReadInputTokens     int `json:"cache_read_input_tokens"`
 }
 
 // Forward forwards a request to Zhipu API with retry support
@@ -617,6 +622,34 @@ func extractZhipuUsage(body []byte) *ZhipuUsage {
 		}
 	}
 
+	// 采集 prompt 缓存 token。
+	// 同时覆盖两种协议：Anthropic 风格（/zhipu/claude，cache_creation/cache_read_input_tokens）
+	// 与 OpenAI 风格（/zhipu/v1，prompt_cache_hit/miss_tokens 等智谱 BigModel 字段）。
+	cacheCreatePaths := []string{
+		"usage.cache_creation_input_tokens",
+		"message.usage.cache_creation_input_tokens",
+		"usage.prompt_cache_miss_tokens",
+		"message.usage.prompt_cache_miss_tokens",
+	}
+	for _, path := range cacheCreatePaths {
+		if v := gjson.GetBytes(body, path).Int(); v > 0 {
+			usage.CacheCreationInputTokens = int(v)
+			break
+		}
+	}
+	cacheReadPaths := []string{
+		"usage.cache_read_input_tokens",
+		"message.usage.cache_read_input_tokens",
+		"usage.prompt_cache_hit_tokens",
+		"message.usage.prompt_cache_hit_tokens",
+	}
+	for _, path := range cacheReadPaths {
+		if v := gjson.GetBytes(body, path).Int(); v > 0 {
+			usage.CacheReadInputTokens = int(v)
+			break
+		}
+	}
+
 	if totalTokens := gjson.GetBytes(body, "usage.total_tokens").Int(); totalTokens > 0 {
 		usage.TotalTokens = int(totalTokens)
 	} else if totalTokens := gjson.GetBytes(body, "message.usage.total_tokens").Int(); totalTokens > 0 {
@@ -626,7 +659,8 @@ func extractZhipuUsage(body []byte) *ZhipuUsage {
 	}
 
 	// Return nil if no usage info found
-	if usage.PromptTokens == 0 && usage.CompletionTokens == 0 && usage.ThoughtsTokens == 0 && usage.TotalTokens == 0 {
+	if usage.PromptTokens == 0 && usage.CompletionTokens == 0 && usage.ThoughtsTokens == 0 && usage.TotalTokens == 0 &&
+		usage.CacheCreationInputTokens == 0 && usage.CacheReadInputTokens == 0 {
 		return nil
 	}
 
@@ -661,6 +695,12 @@ func mergeZhipuUsage(dst **ZhipuUsage, patch *ZhipuUsage) {
 	if patch.ThoughtsTokens > current.ThoughtsTokens {
 		current.ThoughtsTokens = patch.ThoughtsTokens
 	}
+	if patch.CacheCreationInputTokens > current.CacheCreationInputTokens {
+		current.CacheCreationInputTokens = patch.CacheCreationInputTokens
+	}
+	if patch.CacheReadInputTokens > current.CacheReadInputTokens {
+		current.CacheReadInputTokens = patch.CacheReadInputTokens
+	}
 	if patch.TotalTokens > current.TotalTokens {
 		current.TotalTokens = patch.TotalTokens
 	}
@@ -686,8 +726,12 @@ func effectiveZhipuOutputTokens(usage *ZhipuUsage) int {
 	}
 	completion := usage.CompletionTokens
 	candidates := []int{completion, completion + usage.ThoughtsTokens}
-	if usage.TotalTokens > usage.PromptTokens {
-		candidates = append(candidates, usage.TotalTokens-usage.PromptTokens)
+	// total_tokens - prompt_tokens 是总输出，但需扣除 cache token：
+	// cache_read/cache_creation 已单独计入 usageLog 的 cache 列（并经 TotalTokens()
+	// 纳入额度扣减），若此处不扣除会导致 cache 被重复计入 output。
+	cacheTokens := usage.CacheReadInputTokens + usage.CacheCreationInputTokens
+	if usage.TotalTokens > usage.PromptTokens+cacheTokens {
+		candidates = append(candidates, usage.TotalTokens-usage.PromptTokens-cacheTokens)
 	}
 	max := completion
 	for _, c := range candidates {
@@ -1285,6 +1329,8 @@ func (s *ZhipuGatewayService) RecordUsage(ctx context.Context, input *ZhipuRecor
 		Model:                 input.Model,
 		InputTokens:           usage.PromptTokens,
 		OutputTokens:          effectiveZhipuOutputTokens(usage),
+		CacheCreationTokens:   usage.CacheCreationInputTokens,
+		CacheReadTokens:       usage.CacheReadInputTokens,
 		InputCost:             inputCost * multiplier,
 		OutputCost:            outputCost * multiplier,
 		TotalCost:             totalCost,
@@ -1356,6 +1402,7 @@ func (s *ZhipuGatewayService) RecordUsage(ctx context.Context, input *ZhipuRecor
 			IsSubscriptionBill:    isSubscriptionBilling,
 			IsTokenQuotaBill:      isTokenQuotaBill,
 			AccountRateMultiplier: accountRateMultiplier,
+			GroupRateMultiplier:   multiplier,
 			APIKeyService:         input.APIKeyService,
 		}, s.billingDeps())
 	} else if s.deferredService != nil {

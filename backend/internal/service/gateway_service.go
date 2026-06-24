@@ -7917,7 +7917,9 @@ type postUsageBillingParams struct {
 	IsTokenQuotaBill      bool
 	TotalTokens           int64
 	AccountRateMultiplier float64
-	APIKeyService         APIKeyQuotaUpdater
+	// GroupRateMultiplier 分组费率倍率，用于 token 配额订阅按倍率速度扣减 token 额度。
+	GroupRateMultiplier float64
+	APIKeyService       APIKeyQuotaUpdater
 }
 
 func (p *postUsageBillingParams) shouldDeductAPIKeyQuota() bool {
@@ -7949,10 +7951,17 @@ func postUsageBilling(ctx context.Context, p *postUsageBillingParams, deps *bill
 				slog.Error("increment subscription usage failed", "subscription_id", p.Subscription.ID, "error", err)
 			}
 		}
-		// Token quota subscription: increment token usage
+		// Token quota subscription: increment token usage.
+		// 应用分组费率倍率（GroupRateMultiplier）：让 token 额度按倍率速度消耗，
+		// 与金额侧 ActualCost（已含倍率）保持一致。倍率缺失或<=0 时按 1.0。
 		if p.IsTokenQuotaBill && p.TotalTokens > 0 {
-			if err := deps.userSubRepo.IncrementTokenUsage(billingCtx, p.Subscription.ID, p.TotalTokens); err != nil {
-				slog.Error("increment subscription token usage failed", "subscription_id", p.Subscription.ID, "tokens", p.TotalTokens, "error", err)
+			mult := p.GroupRateMultiplier
+			if mult <= 0 {
+				mult = 1.0
+			}
+			billedTokens := int64(float64(p.TotalTokens) * mult)
+			if err := deps.userSubRepo.IncrementTokenUsage(billingCtx, p.Subscription.ID, billedTokens); err != nil {
+				slog.Error("increment subscription token usage failed", "subscription_id", p.Subscription.ID, "tokens", billedTokens, "error", err)
 			}
 		}
 	} else {
@@ -8057,9 +8066,16 @@ func buildUsageBillingCommand(requestID string, usageLog *UsageLog, p *postUsage
 	if p.IsSubscriptionBill && p.Subscription != nil && p.Cost.TotalCost > 0 {
 		cmd.SubscriptionID = &p.Subscription.ID
 		cmd.SubscriptionCost = p.Cost.ActualCost
-		// Token quota subscription: record token usage
+		// Token quota subscription: record token usage.
+		// 应用分组费率倍率（usageLog.RateMultiplier）：让 token 额度按倍率速度消耗，
+		// 与金额侧 ActualCost（已含倍率）保持一致的计费语义。
+		// 倍率缺失或 0 时按 1.0 处理，避免漏扣。
 		if p.IsTokenQuotaBill && usageLog != nil {
-			cmd.SubscriptionTokenCost = int64(usageLog.InputTokens + usageLog.OutputTokens)
+			mult := usageLog.RateMultiplier
+			if mult <= 0 {
+				mult = 1.0
+			}
+			cmd.SubscriptionTokenCost = int64(float64(usageLog.InputTokens+usageLog.OutputTokens) * mult)
 		}
 	} else if p.Cost.ActualCost > 0 {
 		cmd.BalanceCost = p.Cost.ActualCost
