@@ -336,6 +336,24 @@ func (r *userSubscriptionRepository) ResetMonthlyUsage(ctx context.Context, id i
 	return translatePersistenceError(err, service.ErrSubscriptionNotFound, nil)
 }
 
+// ResetTokenUsage 重置 token 用量字段（兑换码续期回拨额度场景）。
+// token_usage_total 设为 newTotal（service 层已按 max(0,total-quota) 算好），
+// 周期字段(daily/weekly/monthly)清零、各窗口起始时间重置为当前时间。
+func (r *userSubscriptionRepository) ResetTokenUsage(ctx context.Context, id int64, newTotal int64) error {
+	client := clientFromContext(ctx, r.client)
+	now := time.Now()
+	_, err := client.UserSubscription.UpdateOneID(id).
+		SetTokenUsageTotal(newTotal).
+		SetTokenUsageDaily(0).
+		SetTokenUsageWeekly(0).
+		SetTokenUsageMonthly(0).
+		SetTokenDailyWindowStart(now).
+		SetTokenWeeklyWindowStart(now).
+		SetTokenMonthlyWindowStart(now).
+		Save(ctx)
+	return translatePersistenceError(err, service.ErrSubscriptionNotFound, nil)
+}
+
 // IncrementUsage 原子性地累加订阅用量。
 // 限额检查已在请求前由 BillingCacheService.CheckBillingEligibility 完成，
 // 此处仅负责记录实际消费，确保消费数据的完整性。

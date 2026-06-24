@@ -125,6 +125,9 @@ func (userSubRepoNoop) IncrementUsage(context.Context, int64, float64) error {
 func (userSubRepoNoop) IncrementTokenUsage(context.Context, int64, int64) error {
 	panic("unexpected IncrementTokenUsage call")
 }
+func (userSubRepoNoop) ResetTokenUsage(context.Context, int64, int64) error {
+	panic("unexpected ResetTokenUsage call")
+}
 func (userSubRepoNoop) BatchUpdateExpiredStatus(context.Context) (int64, error) {
 	panic("unexpected BatchUpdateExpiredStatus call")
 }

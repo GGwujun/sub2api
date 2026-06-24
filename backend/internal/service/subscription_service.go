@@ -153,6 +153,11 @@ type AssignSubscriptionInput struct {
 	ValidityDays int
 	AssignedBy   int64
 	Notes        string
+	// ResetTokenUsage 续期时是否回拨 token 用量（兑换码兑换场景为 true）。
+	// 回拨规则：token_usage_total = max(0, token_usage_total - 分组 token_quota)，
+	// 周期字段(daily/weekly/monthly)及窗口起始时间一并重置。
+	// 仅兑换码等"购买新周期"语义的场景设 true；支付履约/管理员/注册等默认 false。
+	ResetTokenUsage bool
 }
 
 // AssignSubscription 分配订阅给用户（不允许重复分配）
@@ -224,6 +229,24 @@ func (s *SubscriptionService) AssignOrExtendSubscription(ctx context.Context, in
 		if err := s.userSubRepo.ExtendExpiry(txCtx, existingSub.ID, newExpiresAt); err != nil {
 			_ = tx.Rollback()
 			return nil, false, fmt.Errorf("extend subscription: %w", err)
+		}
+
+		// 兑换码等"购买新周期"场景：回拨 token 用量，让用户重新获得可用额度。
+		// token_usage_total = max(0, total - 分组token_quota)，负数兜底为 0；
+		// 周期字段及窗口起始时间一并重置。仅 token 配额订阅有意义。
+		if input.ResetTokenUsage && group.IsTokenQuotaType() {
+			quota := int64(0)
+			if group.TokenQuota != nil && *group.TokenQuota > 0 {
+				quota = *group.TokenQuota
+			}
+			newTotal := existingSub.TokenUsageTotal - quota
+			if newTotal < 0 {
+				newTotal = 0
+			}
+			if err := s.userSubRepo.ResetTokenUsage(txCtx, existingSub.ID, newTotal); err != nil {
+				_ = tx.Rollback()
+				return nil, false, fmt.Errorf("rollback subscription token usage: %w", err)
+			}
 		}
 
 		// 如果订阅已过期或被暂停，恢复为active状态
