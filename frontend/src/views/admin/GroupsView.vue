@@ -3072,6 +3072,10 @@ const platformOptions = computed(() => [
   { value: "openai", label: "OpenAI" },
   { value: "gemini", label: "Gemini" },
   { value: "antigravity", label: "Antigravity" },
+  { value: "sora", label: "Sora" },
+  { value: "zai", label: "Z.AI Coding Plan" },
+  { value: "kimi", label: "Kimi For Coding" },
+  { value: "minimaxCode", label: "MiniMax Coding Plan" },
 ]);
 
 const platformFilterOptions = computed(() => [
