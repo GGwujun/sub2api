@@ -1515,6 +1515,7 @@ export interface UserSubscription {
   monthly_window_start: string | null
   // Token 配额使用量
   token_usage_total: number
+  token_quota_accumulated: number // 累计获得的 Token 配额总额度（多次兑换累加）
   token_usage_daily: number
   token_usage_weekly: number
   token_usage_monthly: number

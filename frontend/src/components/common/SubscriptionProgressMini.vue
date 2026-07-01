@@ -74,14 +74,14 @@
               <template v-else>
                 <template v-if="isTokenQuotaGroup(subscription)">
                   <div
-                    v-if="subscription.group?.token_quota && subscription.group.token_quota > 0"
+                    v-if="hasTokenQuotaTotalLimit(subscription)"
                     class="flex items-center gap-2"
                   >
                     <span class="w-10 flex-shrink-0 text-[10px] text-gray-500">{{
                       t('subscriptionProgress.tokenTotal')
                     }}</span>
                     <span class="text-[10px] text-gray-500">
-                      {{ formatTokenLimit(subscription.group.token_quota) }}
+                      {{ formatTokenLimit(getTokenQuotaAccumulated(subscription)) }}
                     </span>
                   </div>
                   <div
@@ -287,13 +287,28 @@ function isTokenQuotaGroup(sub: UserSubscription): boolean {
 
 function hasTokenQuotaLimits(sub: UserSubscription): boolean {
   const group = sub.group
-  return !!(
-    group?.token_quota &&
-    group.token_quota > 0
-  ) ||
+  // 使用累计配额判断是否有总配额限制
+  const hasTotalQuota = (sub.token_quota_accumulated && sub.token_quota_accumulated > 0) ||
+    (group?.token_quota && group.token_quota > 0)
+  return !!hasTotalQuota ||
     !!(group?.token_quota_daily && group.token_quota_daily > 0) ||
     !!(group?.token_quota_weekly && group.token_quota_weekly > 0) ||
     !!(group?.token_quota_monthly && group.token_quota_monthly > 0)
+}
+
+function hasTokenQuotaTotalLimit(sub: UserSubscription): boolean {
+  // 优先使用累计配额，如果没有则使用分组配额
+  const accumulated = sub.token_quota_accumulated
+  const groupQuota = sub.group?.token_quota
+  return !!((accumulated && accumulated > 0) || (groupQuota && groupQuota > 0))
+}
+
+function getTokenQuotaAccumulated(sub: UserSubscription): number {
+  // 优先返回累计配额，如果没有则返回分组配额
+  if (sub.token_quota_accumulated && sub.token_quota_accumulated > 0) {
+    return sub.token_quota_accumulated
+  }
+  return sub.group?.token_quota || 0
 }
 
 function formatTokenLimit(tokens: number): string {

@@ -215,18 +215,18 @@
             <div class="min-w-[280px] space-y-2">
               <!-- Token Quota Usage -->
               <template v-if="isTokenQuotaSubscription(row)">
-                <div v-if="row.group?.token_quota && row.group.token_quota > 0" class="usage-row">
+                <div v-if="hasTokenQuotaTotalLimit(row)" class="usage-row">
                   <div class="flex items-center gap-2">
                     <span class="usage-label">{{ t('userSubscriptions.tokenTotal') }}</span>
                     <div class="h-1.5 flex-1 rounded-full bg-gray-200 dark:bg-dark-600">
                       <div
                         class="h-1.5 rounded-full transition-all"
-                        :class="getProgressClass(getTokenUsageTotal(row), row.group.token_quota)"
-                        :style="{ width: getProgressWidth(getTokenUsageTotal(row), row.group.token_quota) }"
+                        :class="getProgressClass(getTokenUsageTotal(row), getTokenQuotaAccumulated(row))"
+                        :style="{ width: getProgressWidth(getTokenUsageTotal(row), getTokenQuotaAccumulated(row)) }"
                       ></div>
                     </div>
                     <span class="usage-amount">
-                      {{ formatTokenUsage(getTokenUsageTotal(row), row.group.token_quota) }}
+                      {{ formatTokenUsage(getTokenUsageTotal(row), getTokenQuotaAccumulated(row)) }}
                     </span>
                   </div>
                 </div>
@@ -1445,10 +1445,28 @@ const isTokenQuotaSubscription = (subscription: UserSubscription): boolean =>
 
 const hasTokenQuotaLimits = (subscription: UserSubscription): boolean => {
   const group = subscription.group
-  return !!(group?.token_quota && group.token_quota > 0) ||
+  // 使用累计配额判断是否有总配额限制
+  const hasTotalQuota = (subscription.token_quota_accumulated && subscription.token_quota_accumulated > 0) ||
+    (group?.token_quota && group.token_quota > 0)
+  return !!hasTotalQuota ||
     !!(group?.token_quota_daily && group.token_quota_daily > 0) ||
     !!(group?.token_quota_weekly && group.token_quota_weekly > 0) ||
     !!(group?.token_quota_monthly && group.token_quota_monthly > 0)
+}
+
+const hasTokenQuotaTotalLimit = (subscription: UserSubscription): boolean => {
+  // 优先使用累计配额，如果没有则使用分组配额
+  const accumulated = subscription.token_quota_accumulated
+  const groupQuota = subscription.group?.token_quota
+  return !!((accumulated && accumulated > 0) || (groupQuota && groupQuota > 0))
+}
+
+const getTokenQuotaAccumulated = (subscription: UserSubscription): number => {
+  // 优先返回累计配额，如果没有则返回分组配额
+  if (subscription.token_quota_accumulated && subscription.token_quota_accumulated > 0) {
+    return subscription.token_quota_accumulated
+  }
+  return subscription.group?.token_quota || 0
 }
 
 const getTokenUsageTotal = (subscription: UserSubscription): number =>
