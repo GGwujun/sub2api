@@ -2034,20 +2034,24 @@ func init() {
 	usersubscriptionDescTokenUsageTotal := usersubscriptionFields[11].Descriptor()
 	// usersubscription.DefaultTokenUsageTotal holds the default value on creation for the token_usage_total field.
 	usersubscription.DefaultTokenUsageTotal = usersubscriptionDescTokenUsageTotal.Default.(int64)
+	// usersubscriptionDescTokenQuotaAccumulated is the schema descriptor for token_quota_accumulated field.
+	usersubscriptionDescTokenQuotaAccumulated := usersubscriptionFields[12].Descriptor()
+	// usersubscription.DefaultTokenQuotaAccumulated holds the default value on creation for the token_quota_accumulated field.
+	usersubscription.DefaultTokenQuotaAccumulated = usersubscriptionDescTokenQuotaAccumulated.Default.(int64)
 	// usersubscriptionDescTokenUsageDaily is the schema descriptor for token_usage_daily field.
-	usersubscriptionDescTokenUsageDaily := usersubscriptionFields[12].Descriptor()
+	usersubscriptionDescTokenUsageDaily := usersubscriptionFields[13].Descriptor()
 	// usersubscription.DefaultTokenUsageDaily holds the default value on creation for the token_usage_daily field.
 	usersubscription.DefaultTokenUsageDaily = usersubscriptionDescTokenUsageDaily.Default.(int64)
 	// usersubscriptionDescTokenUsageWeekly is the schema descriptor for token_usage_weekly field.
-	usersubscriptionDescTokenUsageWeekly := usersubscriptionFields[13].Descriptor()
+	usersubscriptionDescTokenUsageWeekly := usersubscriptionFields[14].Descriptor()
 	// usersubscription.DefaultTokenUsageWeekly holds the default value on creation for the token_usage_weekly field.
 	usersubscription.DefaultTokenUsageWeekly = usersubscriptionDescTokenUsageWeekly.Default.(int64)
 	// usersubscriptionDescTokenUsageMonthly is the schema descriptor for token_usage_monthly field.
-	usersubscriptionDescTokenUsageMonthly := usersubscriptionFields[14].Descriptor()
+	usersubscriptionDescTokenUsageMonthly := usersubscriptionFields[15].Descriptor()
 	// usersubscription.DefaultTokenUsageMonthly holds the default value on creation for the token_usage_monthly field.
 	usersubscription.DefaultTokenUsageMonthly = usersubscriptionDescTokenUsageMonthly.Default.(int64)
 	// usersubscriptionDescAssignedAt is the schema descriptor for assigned_at field.
-	usersubscriptionDescAssignedAt := usersubscriptionFields[19].Descriptor()
+	usersubscriptionDescAssignedAt := usersubscriptionFields[20].Descriptor()
 	// usersubscription.DefaultAssignedAt holds the default value on creation for the assigned_at field.
 	usersubscription.DefaultAssignedAt = usersubscriptionDescAssignedAt.Default.(func() time.Time)
 }

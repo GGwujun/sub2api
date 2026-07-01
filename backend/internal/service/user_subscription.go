@@ -21,6 +21,7 @@ type UserSubscription struct {
 
 	// Token 配额使用量（Token 配额订阅模式使用）
 	TokenUsageTotal         int64
+	TokenQuotaAccumulated   int64 // 累计获得的 Token 配额总额度（多次兑换累加）
 	TokenUsageDaily         int64
 	TokenUsageWeekly        int64
 	TokenUsageMonthly       int64

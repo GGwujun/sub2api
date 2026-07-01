@@ -231,21 +231,20 @@ func (s *SubscriptionService) AssignOrExtendSubscription(ctx context.Context, in
 			return nil, false, fmt.Errorf("extend subscription: %w", err)
 		}
 
-		// 兑换码等"购买新周期"场景：回拨 token 用量，让用户重新获得可用额度。
-		// token_usage_total = max(0, total - 分组token_quota)，负数兜底为 0；
-		// 周期字段及窗口起始时间一并重置。仅 token 配额订阅有意义。
+		// 兑换码等"购买新周期"场景：累加 Token 配额额度
+		// 业务需求：同一订阅多次兑换，额度累加，已使用量保持不变
+		// 实现：累加 token_quota_accumulated，不清零 token_usage_total
+		// 仅 token 配额订阅有意义。
 		if input.ResetTokenUsage && group.IsTokenQuotaType() {
 			quota := int64(0)
 			if group.TokenQuota != nil && *group.TokenQuota > 0 {
 				quota = *group.TokenQuota
 			}
-			newTotal := existingSub.TokenUsageTotal - quota
-			if newTotal < 0 {
-				newTotal = 0
-			}
-			if err := s.userSubRepo.ResetTokenUsage(txCtx, existingSub.ID, newTotal); err != nil {
+			// 累加总额度（而不是清零使用量）
+			newAccumulated := existingSub.TokenQuotaAccumulated + quota
+			if err := s.userSubRepo.AccumulateTokenQuota(txCtx, existingSub.ID, newAccumulated); err != nil {
 				_ = tx.Rollback()
-				return nil, false, fmt.Errorf("rollback subscription token usage: %w", err)
+				return nil, false, fmt.Errorf("accumulate subscription token quota: %w", err)
 			}
 		}
 
@@ -327,16 +326,28 @@ func (s *SubscriptionService) createSubscription(ctx context.Context, input *Ass
 		expiresAt = MaxExpiresAt
 	}
 
+	// 获取分组信息，初始化 Token 配额总额度
+	group, err := s.groupRepo.GetByID(ctx, input.GroupID)
+	if err != nil {
+		return nil, fmt.Errorf("group not found: %w", err)
+	}
+
+	tokenQuotaAccumulated := int64(0)
+	if group.IsTokenQuotaType() && group.TokenQuota != nil && *group.TokenQuota > 0 {
+		tokenQuotaAccumulated = *group.TokenQuota
+	}
+
 	sub := &UserSubscription{
-		UserID:     input.UserID,
-		GroupID:    input.GroupID,
-		StartsAt:   now,
-		ExpiresAt:  expiresAt,
-		Status:     SubscriptionStatusActive,
-		AssignedAt: now,
-		Notes:      input.Notes,
-		CreatedAt:  now,
-		UpdatedAt:  now,
+		UserID:                 input.UserID,
+		GroupID:                input.GroupID,
+		StartsAt:               now,
+		ExpiresAt:              expiresAt,
+		Status:                 SubscriptionStatusActive,
+		TokenQuotaAccumulated:  tokenQuotaAccumulated, // 初始化累计额度
+		AssignedAt:             now,
+		Notes:                  input.Notes,
+		CreatedAt:              now,
+		UpdatedAt:              now,
 	}
 	// 只有当 AssignedBy > 0 时才设置（0 表示系统分配，如兑换码）
 	if input.AssignedBy > 0 {
@@ -871,7 +882,13 @@ func (s *SubscriptionService) ValidateAndCheckLimits(sub *UserSubscription, grou
 
 	// 4. 检查 Token 配额限额（Token 配额订阅模式）
 	if group.IsTokenQuotaType() {
-		if group.TokenQuota != nil && *group.TokenQuota > 0 && sub.TokenUsageTotal >= *group.TokenQuota {
+		// 使用累计额度判断超限（支持多次兑换额度累加）
+		// 如果累计额度 > 0，则用累计额度判断；否则回退到分组额度
+		effectiveQuota := sub.TokenQuotaAccumulated
+		if effectiveQuota <= 0 && group.TokenQuota != nil && *group.TokenQuota > 0 {
+			effectiveQuota = *group.TokenQuota
+		}
+		if effectiveQuota > 0 && sub.TokenUsageTotal >= effectiveQuota {
 			return needsMaintenance, ErrTokenQuotaExceeded
 		}
 		if group.TokenQuotaDaily != nil && *group.TokenQuotaDaily > 0 && sub.TokenUsageDaily >= *group.TokenQuotaDaily {

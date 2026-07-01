@@ -339,6 +339,7 @@ func (r *userSubscriptionRepository) ResetMonthlyUsage(ctx context.Context, id i
 // ResetTokenUsage 重置 token 用量字段（兑换码续期回拨额度场景）。
 // token_usage_total 设为 newTotal（service 层已按 max(0,total-quota) 算好），
 // 周期字段(daily/weekly/monthly)清零、各窗口起始时间重置为当前时间。
+// 注意：此方法已废弃，请使用 AccumulateTokenQuota 替代（支持额度累加）。
 func (r *userSubscriptionRepository) ResetTokenUsage(ctx context.Context, id int64, newTotal int64) error {
 	client := clientFromContext(ctx, r.client)
 	now := time.Now()
@@ -350,6 +351,16 @@ func (r *userSubscriptionRepository) ResetTokenUsage(ctx context.Context, id int
 		SetTokenDailyWindowStart(now).
 		SetTokenWeeklyWindowStart(now).
 		SetTokenMonthlyWindowStart(now).
+		Save(ctx)
+	return translatePersistenceError(err, service.ErrSubscriptionNotFound, nil)
+}
+
+// AccumulateTokenQuota 累加 Token 配额总额度（多次兑换额度累加场景）。
+// 不清零使用量，仅累加累计额度。
+func (r *userSubscriptionRepository) AccumulateTokenQuota(ctx context.Context, id int64, newAccumulated int64) error {
+	client := clientFromContext(ctx, r.client)
+	_, err := client.UserSubscription.UpdateOneID(id).
+		SetTokenQuotaAccumulated(newAccumulated).
 		Save(ctx)
 	return translatePersistenceError(err, service.ErrSubscriptionNotFound, nil)
 }
@@ -495,6 +506,7 @@ func userSubscriptionEntityToService(m *dbent.UserSubscription) *service.UserSub
 		MonthlyUsageUSD:    m.MonthlyUsageUsd,
 		// Token 配额使用量
 		TokenUsageTotal:         m.TokenUsageTotal,
+		TokenQuotaAccumulated:   m.TokenQuotaAccumulated, // 累计获得的总额度
 		TokenUsageDaily:         m.TokenUsageDaily,
 		TokenUsageWeekly:        m.TokenUsageWeekly,
 		TokenUsageMonthly:       m.TokenUsageMonthly,

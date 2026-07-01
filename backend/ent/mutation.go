@@ -44552,6 +44552,8 @@ type UserSubscriptionMutation struct {
 	addmonthly_usage_usd       *float64
 	token_usage_total          *int64
 	addtoken_usage_total       *int64
+	token_quota_accumulated    *int64
+	addtoken_quota_accumulated *int64
 	token_usage_daily          *int64
 	addtoken_usage_daily       *int64
 	token_usage_weekly         *int64
@@ -45348,6 +45350,62 @@ func (m *UserSubscriptionMutation) ResetTokenUsageTotal() {
 	m.addtoken_usage_total = nil
 }
 
+// SetTokenQuotaAccumulated sets the "token_quota_accumulated" field.
+func (m *UserSubscriptionMutation) SetTokenQuotaAccumulated(i int64) {
+	m.token_quota_accumulated = &i
+	m.addtoken_quota_accumulated = nil
+}
+
+// TokenQuotaAccumulated returns the value of the "token_quota_accumulated" field in the mutation.
+func (m *UserSubscriptionMutation) TokenQuotaAccumulated() (r int64, exists bool) {
+	v := m.token_quota_accumulated
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTokenQuotaAccumulated returns the old "token_quota_accumulated" field's value of the UserSubscription entity.
+// If the UserSubscription object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserSubscriptionMutation) OldTokenQuotaAccumulated(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTokenQuotaAccumulated is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTokenQuotaAccumulated requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTokenQuotaAccumulated: %w", err)
+	}
+	return oldValue.TokenQuotaAccumulated, nil
+}
+
+// AddTokenQuotaAccumulated adds i to the "token_quota_accumulated" field.
+func (m *UserSubscriptionMutation) AddTokenQuotaAccumulated(i int64) {
+	if m.addtoken_quota_accumulated != nil {
+		*m.addtoken_quota_accumulated += i
+	} else {
+		m.addtoken_quota_accumulated = &i
+	}
+}
+
+// AddedTokenQuotaAccumulated returns the value that was added to the "token_quota_accumulated" field in this mutation.
+func (m *UserSubscriptionMutation) AddedTokenQuotaAccumulated() (r int64, exists bool) {
+	v := m.addtoken_quota_accumulated
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTokenQuotaAccumulated resets all changes to the "token_quota_accumulated" field.
+func (m *UserSubscriptionMutation) ResetTokenQuotaAccumulated() {
+	m.token_quota_accumulated = nil
+	m.addtoken_quota_accumulated = nil
+}
+
 // SetTokenUsageDaily sets the "token_usage_daily" field.
 func (m *UserSubscriptionMutation) SetTokenUsageDaily(i int64) {
 	m.token_usage_daily = &i
@@ -45979,7 +46037,7 @@ func (m *UserSubscriptionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserSubscriptionMutation) Fields() []string {
-	fields := make([]string, 0, 24)
+	fields := make([]string, 0, 25)
 	if m.created_at != nil {
 		fields = append(fields, usersubscription.FieldCreatedAt)
 	}
@@ -46024,6 +46082,9 @@ func (m *UserSubscriptionMutation) Fields() []string {
 	}
 	if m.token_usage_total != nil {
 		fields = append(fields, usersubscription.FieldTokenUsageTotal)
+	}
+	if m.token_quota_accumulated != nil {
+		fields = append(fields, usersubscription.FieldTokenQuotaAccumulated)
 	}
 	if m.token_usage_daily != nil {
 		fields = append(fields, usersubscription.FieldTokenUsageDaily)
@@ -46090,6 +46151,8 @@ func (m *UserSubscriptionMutation) Field(name string) (ent.Value, bool) {
 		return m.MonthlyUsageUsd()
 	case usersubscription.FieldTokenUsageTotal:
 		return m.TokenUsageTotal()
+	case usersubscription.FieldTokenQuotaAccumulated:
+		return m.TokenQuotaAccumulated()
 	case usersubscription.FieldTokenUsageDaily:
 		return m.TokenUsageDaily()
 	case usersubscription.FieldTokenUsageWeekly:
@@ -46147,6 +46210,8 @@ func (m *UserSubscriptionMutation) OldField(ctx context.Context, name string) (e
 		return m.OldMonthlyUsageUsd(ctx)
 	case usersubscription.FieldTokenUsageTotal:
 		return m.OldTokenUsageTotal(ctx)
+	case usersubscription.FieldTokenQuotaAccumulated:
+		return m.OldTokenQuotaAccumulated(ctx)
 	case usersubscription.FieldTokenUsageDaily:
 		return m.OldTokenUsageDaily(ctx)
 	case usersubscription.FieldTokenUsageWeekly:
@@ -46279,6 +46344,13 @@ func (m *UserSubscriptionMutation) SetField(name string, value ent.Value) error 
 		}
 		m.SetTokenUsageTotal(v)
 		return nil
+	case usersubscription.FieldTokenQuotaAccumulated:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTokenQuotaAccumulated(v)
+		return nil
 	case usersubscription.FieldTokenUsageDaily:
 		v, ok := value.(int64)
 		if !ok {
@@ -46362,6 +46434,9 @@ func (m *UserSubscriptionMutation) AddedFields() []string {
 	if m.addtoken_usage_total != nil {
 		fields = append(fields, usersubscription.FieldTokenUsageTotal)
 	}
+	if m.addtoken_quota_accumulated != nil {
+		fields = append(fields, usersubscription.FieldTokenQuotaAccumulated)
+	}
 	if m.addtoken_usage_daily != nil {
 		fields = append(fields, usersubscription.FieldTokenUsageDaily)
 	}
@@ -46387,6 +46462,8 @@ func (m *UserSubscriptionMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedMonthlyUsageUsd()
 	case usersubscription.FieldTokenUsageTotal:
 		return m.AddedTokenUsageTotal()
+	case usersubscription.FieldTokenQuotaAccumulated:
+		return m.AddedTokenQuotaAccumulated()
 	case usersubscription.FieldTokenUsageDaily:
 		return m.AddedTokenUsageDaily()
 	case usersubscription.FieldTokenUsageWeekly:
@@ -46429,6 +46506,13 @@ func (m *UserSubscriptionMutation) AddField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddTokenUsageTotal(v)
+		return nil
+	case usersubscription.FieldTokenQuotaAccumulated:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTokenQuotaAccumulated(v)
 		return nil
 	case usersubscription.FieldTokenUsageDaily:
 		v, ok := value.(int64)
@@ -46579,6 +46663,9 @@ func (m *UserSubscriptionMutation) ResetField(name string) error {
 		return nil
 	case usersubscription.FieldTokenUsageTotal:
 		m.ResetTokenUsageTotal()
+		return nil
+	case usersubscription.FieldTokenQuotaAccumulated:
+		m.ResetTokenQuotaAccumulated()
 		return nil
 	case usersubscription.FieldTokenUsageDaily:
 		m.ResetTokenUsageDaily()

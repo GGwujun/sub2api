@@ -128,6 +128,9 @@ func (userSubRepoNoop) IncrementTokenUsage(context.Context, int64, int64) error 
 func (userSubRepoNoop) ResetTokenUsage(context.Context, int64, int64) error {
 	panic("unexpected ResetTokenUsage call")
 }
+func (userSubRepoNoop) AccumulateTokenQuota(context.Context, int64, int64) error {
+	panic("unexpected AccumulateTokenQuota call")
+}
 func (userSubRepoNoop) BatchUpdateExpiredStatus(context.Context) (int64, error) {
 	panic("unexpected BatchUpdateExpiredStatus call")
 }

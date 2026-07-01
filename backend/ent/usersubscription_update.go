@@ -271,6 +271,27 @@ func (_u *UserSubscriptionUpdate) AddTokenUsageTotal(v int64) *UserSubscriptionU
 	return _u
 }
 
+// SetTokenQuotaAccumulated sets the "token_quota_accumulated" field.
+func (_u *UserSubscriptionUpdate) SetTokenQuotaAccumulated(v int64) *UserSubscriptionUpdate {
+	_u.mutation.ResetTokenQuotaAccumulated()
+	_u.mutation.SetTokenQuotaAccumulated(v)
+	return _u
+}
+
+// SetNillableTokenQuotaAccumulated sets the "token_quota_accumulated" field if the given value is not nil.
+func (_u *UserSubscriptionUpdate) SetNillableTokenQuotaAccumulated(v *int64) *UserSubscriptionUpdate {
+	if v != nil {
+		_u.SetTokenQuotaAccumulated(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaAccumulated adds value to the "token_quota_accumulated" field.
+func (_u *UserSubscriptionUpdate) AddTokenQuotaAccumulated(v int64) *UserSubscriptionUpdate {
+	_u.mutation.AddTokenQuotaAccumulated(v)
+	return _u
+}
+
 // SetTokenUsageDaily sets the "token_usage_daily" field.
 func (_u *UserSubscriptionUpdate) SetTokenUsageDaily(v int64) *UserSubscriptionUpdate {
 	_u.mutation.ResetTokenUsageDaily()
@@ -665,6 +686,12 @@ func (_u *UserSubscriptionUpdate) sqlSave(ctx context.Context) (_node int, err e
 	}
 	if value, ok := _u.mutation.AddedTokenUsageTotal(); ok {
 		_spec.AddField(usersubscription.FieldTokenUsageTotal, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenQuotaAccumulated(); ok {
+		_spec.SetField(usersubscription.FieldTokenQuotaAccumulated, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaAccumulated(); ok {
+		_spec.AddField(usersubscription.FieldTokenQuotaAccumulated, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.TokenUsageDaily(); ok {
 		_spec.SetField(usersubscription.FieldTokenUsageDaily, field.TypeInt64, value)
@@ -1103,6 +1130,27 @@ func (_u *UserSubscriptionUpdateOne) AddTokenUsageTotal(v int64) *UserSubscripti
 	return _u
 }
 
+// SetTokenQuotaAccumulated sets the "token_quota_accumulated" field.
+func (_u *UserSubscriptionUpdateOne) SetTokenQuotaAccumulated(v int64) *UserSubscriptionUpdateOne {
+	_u.mutation.ResetTokenQuotaAccumulated()
+	_u.mutation.SetTokenQuotaAccumulated(v)
+	return _u
+}
+
+// SetNillableTokenQuotaAccumulated sets the "token_quota_accumulated" field if the given value is not nil.
+func (_u *UserSubscriptionUpdateOne) SetNillableTokenQuotaAccumulated(v *int64) *UserSubscriptionUpdateOne {
+	if v != nil {
+		_u.SetTokenQuotaAccumulated(*v)
+	}
+	return _u
+}
+
+// AddTokenQuotaAccumulated adds value to the "token_quota_accumulated" field.
+func (_u *UserSubscriptionUpdateOne) AddTokenQuotaAccumulated(v int64) *UserSubscriptionUpdateOne {
+	_u.mutation.AddTokenQuotaAccumulated(v)
+	return _u
+}
+
 // SetTokenUsageDaily sets the "token_usage_daily" field.
 func (_u *UserSubscriptionUpdateOne) SetTokenUsageDaily(v int64) *UserSubscriptionUpdateOne {
 	_u.mutation.ResetTokenUsageDaily()
@@ -1527,6 +1575,12 @@ func (_u *UserSubscriptionUpdateOne) sqlSave(ctx context.Context) (_node *UserSu
 	}
 	if value, ok := _u.mutation.AddedTokenUsageTotal(); ok {
 		_spec.AddField(usersubscription.FieldTokenUsageTotal, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.TokenQuotaAccumulated(); ok {
+		_spec.SetField(usersubscription.FieldTokenQuotaAccumulated, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedTokenQuotaAccumulated(); ok {
+		_spec.AddField(usersubscription.FieldTokenQuotaAccumulated, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.TokenUsageDaily(); ok {
 		_spec.SetField(usersubscription.FieldTokenUsageDaily, field.TypeInt64, value)

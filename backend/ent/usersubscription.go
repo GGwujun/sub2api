@@ -49,6 +49,8 @@ type UserSubscription struct {
 	MonthlyUsageUsd float64 `json:"monthly_usage_usd,omitempty"`
 	// TokenUsageTotal holds the value of the "token_usage_total" field.
 	TokenUsageTotal int64 `json:"token_usage_total,omitempty"`
+	// TokenQuotaAccumulated holds the value of the "token_quota_accumulated" field.
+	TokenQuotaAccumulated int64 `json:"token_quota_accumulated,omitempty"`
 	// TokenUsageDaily holds the value of the "token_usage_daily" field.
 	TokenUsageDaily int64 `json:"token_usage_daily,omitempty"`
 	// TokenUsageWeekly holds the value of the "token_usage_weekly" field.
@@ -137,7 +139,7 @@ func (*UserSubscription) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case usersubscription.FieldDailyUsageUsd, usersubscription.FieldWeeklyUsageUsd, usersubscription.FieldMonthlyUsageUsd:
 			values[i] = new(sql.NullFloat64)
-		case usersubscription.FieldID, usersubscription.FieldUserID, usersubscription.FieldGroupID, usersubscription.FieldTokenUsageTotal, usersubscription.FieldTokenUsageDaily, usersubscription.FieldTokenUsageWeekly, usersubscription.FieldTokenUsageMonthly, usersubscription.FieldAssignedBy:
+		case usersubscription.FieldID, usersubscription.FieldUserID, usersubscription.FieldGroupID, usersubscription.FieldTokenUsageTotal, usersubscription.FieldTokenQuotaAccumulated, usersubscription.FieldTokenUsageDaily, usersubscription.FieldTokenUsageWeekly, usersubscription.FieldTokenUsageMonthly, usersubscription.FieldAssignedBy:
 			values[i] = new(sql.NullInt64)
 		case usersubscription.FieldStatus, usersubscription.FieldNotes:
 			values[i] = new(sql.NullString)
@@ -257,6 +259,12 @@ func (_m *UserSubscription) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field token_usage_total", values[i])
 			} else if value.Valid {
 				_m.TokenUsageTotal = value.Int64
+			}
+		case usersubscription.FieldTokenQuotaAccumulated:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field token_quota_accumulated", values[i])
+			} else if value.Valid {
+				_m.TokenQuotaAccumulated = value.Int64
 			}
 		case usersubscription.FieldTokenUsageDaily:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -425,6 +433,9 @@ func (_m *UserSubscription) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("token_usage_total=")
 	builder.WriteString(fmt.Sprintf("%v", _m.TokenUsageTotal))
+	builder.WriteString(", ")
+	builder.WriteString("token_quota_accumulated=")
+	builder.WriteString(fmt.Sprintf("%v", _m.TokenQuotaAccumulated))
 	builder.WriteString(", ")
 	builder.WriteString("token_usage_daily=")
 	builder.WriteString(fmt.Sprintf("%v", _m.TokenUsageDaily))

@@ -45,6 +45,8 @@ const (
 	FieldMonthlyUsageUsd = "monthly_usage_usd"
 	// FieldTokenUsageTotal holds the string denoting the token_usage_total field in the database.
 	FieldTokenUsageTotal = "token_usage_total"
+	// FieldTokenQuotaAccumulated holds the string denoting the token_quota_accumulated field in the database.
+	FieldTokenQuotaAccumulated = "token_quota_accumulated"
 	// FieldTokenUsageDaily holds the string denoting the token_usage_daily field in the database.
 	FieldTokenUsageDaily = "token_usage_daily"
 	// FieldTokenUsageWeekly holds the string denoting the token_usage_weekly field in the database.
@@ -121,6 +123,7 @@ var Columns = []string{
 	FieldWeeklyUsageUsd,
 	FieldMonthlyUsageUsd,
 	FieldTokenUsageTotal,
+	FieldTokenQuotaAccumulated,
 	FieldTokenUsageDaily,
 	FieldTokenUsageWeekly,
 	FieldTokenUsageMonthly,
@@ -168,6 +171,8 @@ var (
 	DefaultMonthlyUsageUsd float64
 	// DefaultTokenUsageTotal holds the default value on creation for the "token_usage_total" field.
 	DefaultTokenUsageTotal int64
+	// DefaultTokenQuotaAccumulated holds the default value on creation for the "token_quota_accumulated" field.
+	DefaultTokenQuotaAccumulated int64
 	// DefaultTokenUsageDaily holds the default value on creation for the "token_usage_daily" field.
 	DefaultTokenUsageDaily int64
 	// DefaultTokenUsageWeekly holds the default value on creation for the "token_usage_weekly" field.
@@ -259,6 +264,11 @@ func ByMonthlyUsageUsd(opts ...sql.OrderTermOption) OrderOption {
 // ByTokenUsageTotal orders the results by the token_usage_total field.
 func ByTokenUsageTotal(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTokenUsageTotal, opts...).ToFunc()
+}
+
+// ByTokenQuotaAccumulated orders the results by the token_quota_accumulated field.
+func ByTokenQuotaAccumulated(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTokenQuotaAccumulated, opts...).ToFunc()
 }
 
 // ByTokenUsageDaily orders the results by the token_usage_daily field.

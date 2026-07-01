@@ -203,6 +203,20 @@ func (_c *UserSubscriptionCreate) SetNillableTokenUsageTotal(v *int64) *UserSubs
 	return _c
 }
 
+// SetTokenQuotaAccumulated sets the "token_quota_accumulated" field.
+func (_c *UserSubscriptionCreate) SetTokenQuotaAccumulated(v int64) *UserSubscriptionCreate {
+	_c.mutation.SetTokenQuotaAccumulated(v)
+	return _c
+}
+
+// SetNillableTokenQuotaAccumulated sets the "token_quota_accumulated" field if the given value is not nil.
+func (_c *UserSubscriptionCreate) SetNillableTokenQuotaAccumulated(v *int64) *UserSubscriptionCreate {
+	if v != nil {
+		_c.SetTokenQuotaAccumulated(*v)
+	}
+	return _c
+}
+
 // SetTokenUsageDaily sets the "token_usage_daily" field.
 func (_c *UserSubscriptionCreate) SetTokenUsageDaily(v int64) *UserSubscriptionCreate {
 	_c.mutation.SetTokenUsageDaily(v)
@@ -444,6 +458,10 @@ func (_c *UserSubscriptionCreate) defaults() error {
 		v := usersubscription.DefaultTokenUsageTotal
 		_c.mutation.SetTokenUsageTotal(v)
 	}
+	if _, ok := _c.mutation.TokenQuotaAccumulated(); !ok {
+		v := usersubscription.DefaultTokenQuotaAccumulated
+		_c.mutation.SetTokenQuotaAccumulated(v)
+	}
 	if _, ok := _c.mutation.TokenUsageDaily(); !ok {
 		v := usersubscription.DefaultTokenUsageDaily
 		_c.mutation.SetTokenUsageDaily(v)
@@ -505,6 +523,9 @@ func (_c *UserSubscriptionCreate) check() error {
 	}
 	if _, ok := _c.mutation.TokenUsageTotal(); !ok {
 		return &ValidationError{Name: "token_usage_total", err: errors.New(`ent: missing required field "UserSubscription.token_usage_total"`)}
+	}
+	if _, ok := _c.mutation.TokenQuotaAccumulated(); !ok {
+		return &ValidationError{Name: "token_quota_accumulated", err: errors.New(`ent: missing required field "UserSubscription.token_quota_accumulated"`)}
 	}
 	if _, ok := _c.mutation.TokenUsageDaily(); !ok {
 		return &ValidationError{Name: "token_usage_daily", err: errors.New(`ent: missing required field "UserSubscription.token_usage_daily"`)}
@@ -602,6 +623,10 @@ func (_c *UserSubscriptionCreate) createSpec() (*UserSubscription, *sqlgraph.Cre
 	if value, ok := _c.mutation.TokenUsageTotal(); ok {
 		_spec.SetField(usersubscription.FieldTokenUsageTotal, field.TypeInt64, value)
 		_node.TokenUsageTotal = value
+	}
+	if value, ok := _c.mutation.TokenQuotaAccumulated(); ok {
+		_spec.SetField(usersubscription.FieldTokenQuotaAccumulated, field.TypeInt64, value)
+		_node.TokenQuotaAccumulated = value
 	}
 	if value, ok := _c.mutation.TokenUsageDaily(); ok {
 		_spec.SetField(usersubscription.FieldTokenUsageDaily, field.TypeInt64, value)
@@ -967,6 +992,24 @@ func (u *UserSubscriptionUpsert) UpdateTokenUsageTotal() *UserSubscriptionUpsert
 // AddTokenUsageTotal adds v to the "token_usage_total" field.
 func (u *UserSubscriptionUpsert) AddTokenUsageTotal(v int64) *UserSubscriptionUpsert {
 	u.Add(usersubscription.FieldTokenUsageTotal, v)
+	return u
+}
+
+// SetTokenQuotaAccumulated sets the "token_quota_accumulated" field.
+func (u *UserSubscriptionUpsert) SetTokenQuotaAccumulated(v int64) *UserSubscriptionUpsert {
+	u.Set(usersubscription.FieldTokenQuotaAccumulated, v)
+	return u
+}
+
+// UpdateTokenQuotaAccumulated sets the "token_quota_accumulated" field to the value that was provided on create.
+func (u *UserSubscriptionUpsert) UpdateTokenQuotaAccumulated() *UserSubscriptionUpsert {
+	u.SetExcluded(usersubscription.FieldTokenQuotaAccumulated)
+	return u
+}
+
+// AddTokenQuotaAccumulated adds v to the "token_quota_accumulated" field.
+func (u *UserSubscriptionUpsert) AddTokenQuotaAccumulated(v int64) *UserSubscriptionUpsert {
+	u.Add(usersubscription.FieldTokenQuotaAccumulated, v)
 	return u
 }
 
@@ -1420,6 +1463,27 @@ func (u *UserSubscriptionUpsertOne) AddTokenUsageTotal(v int64) *UserSubscriptio
 func (u *UserSubscriptionUpsertOne) UpdateTokenUsageTotal() *UserSubscriptionUpsertOne {
 	return u.Update(func(s *UserSubscriptionUpsert) {
 		s.UpdateTokenUsageTotal()
+	})
+}
+
+// SetTokenQuotaAccumulated sets the "token_quota_accumulated" field.
+func (u *UserSubscriptionUpsertOne) SetTokenQuotaAccumulated(v int64) *UserSubscriptionUpsertOne {
+	return u.Update(func(s *UserSubscriptionUpsert) {
+		s.SetTokenQuotaAccumulated(v)
+	})
+}
+
+// AddTokenQuotaAccumulated adds v to the "token_quota_accumulated" field.
+func (u *UserSubscriptionUpsertOne) AddTokenQuotaAccumulated(v int64) *UserSubscriptionUpsertOne {
+	return u.Update(func(s *UserSubscriptionUpsert) {
+		s.AddTokenQuotaAccumulated(v)
+	})
+}
+
+// UpdateTokenQuotaAccumulated sets the "token_quota_accumulated" field to the value that was provided on create.
+func (u *UserSubscriptionUpsertOne) UpdateTokenQuotaAccumulated() *UserSubscriptionUpsertOne {
+	return u.Update(func(s *UserSubscriptionUpsert) {
+		s.UpdateTokenQuotaAccumulated()
 	})
 }
 
@@ -2065,6 +2129,27 @@ func (u *UserSubscriptionUpsertBulk) AddTokenUsageTotal(v int64) *UserSubscripti
 func (u *UserSubscriptionUpsertBulk) UpdateTokenUsageTotal() *UserSubscriptionUpsertBulk {
 	return u.Update(func(s *UserSubscriptionUpsert) {
 		s.UpdateTokenUsageTotal()
+	})
+}
+
+// SetTokenQuotaAccumulated sets the "token_quota_accumulated" field.
+func (u *UserSubscriptionUpsertBulk) SetTokenQuotaAccumulated(v int64) *UserSubscriptionUpsertBulk {
+	return u.Update(func(s *UserSubscriptionUpsert) {
+		s.SetTokenQuotaAccumulated(v)
+	})
+}
+
+// AddTokenQuotaAccumulated adds v to the "token_quota_accumulated" field.
+func (u *UserSubscriptionUpsertBulk) AddTokenQuotaAccumulated(v int64) *UserSubscriptionUpsertBulk {
+	return u.Update(func(s *UserSubscriptionUpsert) {
+		s.AddTokenQuotaAccumulated(v)
+	})
+}
+
+// UpdateTokenQuotaAccumulated sets the "token_quota_accumulated" field to the value that was provided on create.
+func (u *UserSubscriptionUpsertBulk) UpdateTokenQuotaAccumulated() *UserSubscriptionUpsertBulk {
+	return u.Update(func(s *UserSubscriptionUpsert) {
+		s.UpdateTokenQuotaAccumulated()
 	})
 }
 

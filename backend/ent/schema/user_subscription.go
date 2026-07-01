@@ -72,6 +72,10 @@ func (UserSubscription) Fields() []ent.Field {
 		// Token 配额使用量（Token 配额订阅模式使用）
 		field.Int64("token_usage_total").
 			Default(0),
+		// TokenQuotaAccumulated 累计获得的 Token 配额总额度
+		// 每次兑换订阅时累加，用于支持"多次兑换额度累加"的业务需求
+		field.Int64("token_quota_accumulated").
+			Default(0),
 		field.Int64("token_usage_daily").
 			Default(0),
 		field.Int64("token_usage_weekly").

@@ -130,6 +130,11 @@ func TokenUsageTotal(v int64) predicate.UserSubscription {
 	return predicate.UserSubscription(sql.FieldEQ(FieldTokenUsageTotal, v))
 }
 
+// TokenQuotaAccumulated applies equality check predicate on the "token_quota_accumulated" field. It's identical to TokenQuotaAccumulatedEQ.
+func TokenQuotaAccumulated(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenQuotaAccumulated, v))
+}
+
 // TokenUsageDaily applies equality check predicate on the "token_usage_daily" field. It's identical to TokenUsageDailyEQ.
 func TokenUsageDaily(v int64) predicate.UserSubscription {
 	return predicate.UserSubscription(sql.FieldEQ(FieldTokenUsageDaily, v))
@@ -798,6 +803,46 @@ func TokenUsageTotalLT(v int64) predicate.UserSubscription {
 // TokenUsageTotalLTE applies the LTE predicate on the "token_usage_total" field.
 func TokenUsageTotalLTE(v int64) predicate.UserSubscription {
 	return predicate.UserSubscription(sql.FieldLTE(FieldTokenUsageTotal, v))
+}
+
+// TokenQuotaAccumulatedEQ applies the EQ predicate on the "token_quota_accumulated" field.
+func TokenQuotaAccumulatedEQ(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldEQ(FieldTokenQuotaAccumulated, v))
+}
+
+// TokenQuotaAccumulatedNEQ applies the NEQ predicate on the "token_quota_accumulated" field.
+func TokenQuotaAccumulatedNEQ(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNEQ(FieldTokenQuotaAccumulated, v))
+}
+
+// TokenQuotaAccumulatedIn applies the In predicate on the "token_quota_accumulated" field.
+func TokenQuotaAccumulatedIn(vs ...int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldIn(FieldTokenQuotaAccumulated, vs...))
+}
+
+// TokenQuotaAccumulatedNotIn applies the NotIn predicate on the "token_quota_accumulated" field.
+func TokenQuotaAccumulatedNotIn(vs ...int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldNotIn(FieldTokenQuotaAccumulated, vs...))
+}
+
+// TokenQuotaAccumulatedGT applies the GT predicate on the "token_quota_accumulated" field.
+func TokenQuotaAccumulatedGT(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGT(FieldTokenQuotaAccumulated, v))
+}
+
+// TokenQuotaAccumulatedGTE applies the GTE predicate on the "token_quota_accumulated" field.
+func TokenQuotaAccumulatedGTE(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldGTE(FieldTokenQuotaAccumulated, v))
+}
+
+// TokenQuotaAccumulatedLT applies the LT predicate on the "token_quota_accumulated" field.
+func TokenQuotaAccumulatedLT(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLT(FieldTokenQuotaAccumulated, v))
+}
+
+// TokenQuotaAccumulatedLTE applies the LTE predicate on the "token_quota_accumulated" field.
+func TokenQuotaAccumulatedLTE(v int64) predicate.UserSubscription {
+	return predicate.UserSubscription(sql.FieldLTE(FieldTokenQuotaAccumulated, v))
 }
 
 // TokenUsageDailyEQ applies the EQ predicate on the "token_usage_daily" field.
