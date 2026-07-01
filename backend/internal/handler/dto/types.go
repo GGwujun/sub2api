@@ -515,6 +515,7 @@ type UserSubscription struct {
 
 	// Token 配额使用量
 	TokenUsageTotal         int64      `json:"token_usage_total"`
+	TokenQuotaAccumulated   int64      `json:"token_quota_accumulated"` // 累计获得的总额度
 	TokenUsageDaily         int64      `json:"token_usage_daily"`
 	TokenUsageWeekly        int64      `json:"token_usage_weekly"`
 	TokenUsageMonthly       int64      `json:"token_usage_monthly"`

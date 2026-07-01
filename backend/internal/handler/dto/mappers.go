@@ -735,6 +735,7 @@ func userSubscriptionFromServiceBase(sub *service.UserSubscription) UserSubscrip
 		MonthlyUsageUSD:    sub.MonthlyUsageUSD,
 		// Token 配额使用量
 		TokenUsageTotal:         sub.TokenUsageTotal,
+		TokenQuotaAccumulated:   sub.TokenQuotaAccumulated, // 累计获得的总额度
 		TokenUsageDaily:         sub.TokenUsageDaily,
 		TokenUsageWeekly:        sub.TokenUsageWeekly,
 		TokenUsageMonthly:       sub.TokenUsageMonthly,
